@@ -220,8 +220,8 @@
 	color = COLOR_TOXIN_SLEEPTOXIN
 	toxpwr = 0
 	custom_metabolism = REAGENTS_METABOLISM
-	overdose_threshold = REAGENTS_OVERDOSE*2
-	overdose_crit_threshold = REAGENTS_OVERDOSE_CRITICAL*2
+	overdose_threshold = REAGENTS_OVERDOSE*3
+	overdose_crit_threshold = REAGENTS_OVERDOSE_CRITICAL*3
 	scannable = TRUE
 	taste_description = "cough syrup"
 	trait_flags = BRADYCARDICS
@@ -463,27 +463,30 @@
 	custom_metabolism = REAGENTS_METABOLISM * 2
 	overdose_threshold = 10000 //Overdosing for neuro is what happens when you run out of stamina to avoid its oxy and toxin damage
 	toxpwr = 0
-	var/neuro_stun_cd = 0
+	//var/neuro_stun_cd = 0
 
 /datum/reagent/toxin/xeno_neurotoxin/on_mob_life(mob/living/L, metabolism)
 	var/power = 0
 	var/crit_threshold = L.get_crit_threshold()
 	var/healthfactor = (L.health - crit_threshold)/(L.getMaxHealth() - crit_threshold)
 	switch(current_cycle * healthfactor)
-		if(1 to 20)
+		if(1 to 18)
 			power = (2*effect_str) //While stamina loss is going, stamina regen apparently doesn't happen, so I can keep this smaller.
 			L.reagent_pain_modifier -= PAIN_REDUCTION_LIGHT
-		if(21 to 45)
+		if(19 to 40)
 			power = (6*effect_str)
 			L.reagent_pain_modifier -= PAIN_REDUCTION_HEAVY
 			L.jitter(4) //Shows that things are bad
-		if(46 to INFINITY)
+		if(41 to INFINITY)
 			power = (15*effect_str)
 			L.reagent_pain_modifier -= PAIN_REDUCTION_VERY_HEAVY
 			L.jitter(8) //Shows that things are *really* bad
 
 	power *= healthfactor
-	var/stamina_loss_limit = L.maxHealth * 2
+	/*
+
+	//Non lethal variant, deals only stamina damage
+	var/stamina_loss_limit = L.maxHealth * STAMINA_LOSS_LIMIT_MULTIPLIER
 	var/applied_damage = clamp(power, 0, (stamina_loss_limit - L.getStaminaLoss()))
 	var/damage_overflow = power - applied_damage
 	if((damage_overflow > 0) && COOLDOWN_FINISHED(src, neuro_stun_cd))
@@ -491,28 +494,29 @@
 		COOLDOWN_START(src, neuro_stun_cd, 5 MINUTES) //only do the hard stun once every five minutes, unless the reagent is cleared completely
 	else
 		L.adjustStaminaLoss(applied_damage)
-	/*
+	*/
+
 	//Apply stamina damage, then apply any 'excess' stamina damage beyond our maximum as tox and oxy damage
-	var/stamina_loss_limit = L.maxHealth * 2
+	var/stamina_loss_limit = L.maxHealth * STAMINA_LOSS_LIMIT_MULTIPLIER
 	var/applied_damage = clamp(power, 0, (stamina_loss_limit - L.getStaminaLoss()))
 	L.adjustStaminaLoss(applied_damage) //If we're under our stamina_loss limit, apply the difference between our limit and current stamina damage or power, whichever's less
 	var/damage_overflow = power - applied_damage
-	if(damage_overflow > 0) //If we exceed maxHealth * 2 stamina damage, apply any excess as toxloss and oxyloss
+	if(damage_overflow > 0) //If we exceed maxHealth * STAMINA_LOSS_LIMIT_MULTIPLIER stamina damage, apply any excess as toxloss and oxyloss
 		L.adjustToxLoss(damage_overflow * 0.5)
 		L.adjustOxyLoss(damage_overflow * 0.5)
 		L.Losebreath(2) //So the oxy loss actually means something.
-	*/
+
 	L.set_timed_status_effect(2 SECONDS, /datum/status_effect/speech/stutter, only_if_higher = TRUE)
 
-	if(L.incapacitated(TRUE) || HAS_TRAIT(L, TRAIT_FLOORED)) //includes paralyzed, nested, resting
+	if(L.incapacitated()) //includes paralyzed or nested but not resting
 		custom_metabolism = initial(custom_metabolism) * (1 + (volume/20)) //double speed at 20 units, triple at 40 units, quadruple at 60, etc
 	else
 		custom_metabolism = initial(custom_metabolism)
 
 	if(L.reagents.get_reagent_amount(/datum/reagent/medicine/dylovene) > 1)
-		custom_metabolism += 5
+		custom_metabolism *= 1.4
 	if(L.reagents.get_reagent_amount(/datum/reagent/hypervene) > 1)
-		custom_metabolism += 5
+		custom_metabolism *= 3
 
 	if(current_cycle < 21) //Additional effects at higher cycles
 		return ..()
@@ -671,7 +675,7 @@
 
 /datum/reagent/toxin/xeno_aphrotoxin
 	name = "Aphrotoxin"
-	description = "An aphrodisiac mixed with larva growth toxin made naturally be some xenos, it is used to disorient hosts and prepare them for breeding. Also to boost larva growth."
+	description = "An aphrodisiac made naturally by some xenos, it is used to disorient hosts and prepare them for breeding."
 	reagent_state = LIQUID
 	color = COLOR_TOXIN_APHROTOXIN
 	overdose_threshold = 10000
@@ -701,47 +705,38 @@
 	color = "#b002db"
 
 /datum/reagent/toxin/xeno_aphrotoxin/on_mob_life(mob/living/L, metabolism)
+	if(prob(5))
+		if(CHECK_BITFIELD(L.status_flags, XENO_HOST))
+			L.reagents.add_reagent(/datum/reagent/consumable/larvajelly, 2)
+			L.reagents.remove_reagent(/datum/reagent/toxin/xeno_aphrotoxin, 4)
 	particle_holder.particles.spawning = 1 + round(debuff_owner.reagents.get_reagent_amount(/datum/reagent/toxin/xeno_aphrotoxin) / 4)
-	switch(current_cycle)
-		if(1 to 10)
-			if(prob(10))
-				to_chat(L, span_warning("You feel your [L.gender==MALE ? "cock throb a little," : "vagina get a bit wet,"] distracting you.") )
-				L.AdjustConfused(1 SECONDS)
-				L.adjustStaminaLoss(10)
-				L.sexcon.adjust_arousal(10)
-		if(11 to 30)
-			if(prob(15))
-				to_chat(L, span_warning("You feel your [L.gender==MALE ? "cock harden and throb." : "vagina drip down your legs."] your knees feel weak!") )
-				L.blur_eyes(1)
-				L.AdjustConfused(2 SECONDS)
-				L.adjustStaminaLoss(15)
-				L.sexcon.adjust_arousal(15)
-			if(prob(10))
-				L.AdjustConfused(1 SECONDS)
-		if(31 to 50)
-			if(prob(15))
-				L.emote("blush")
-				to_chat(L, span_warning("You feel your [L.gender==MALE ? "cock throb with need!" : "vagina drool like a waterfall!"] Your legs tremble, too weak to walk for a moment.") )
-				L.blur_eyes(2)
-				L.jitter(2)
-				L.SetImmobilized(2 SECONDS)
-				L.AdjustConfused(3 SECONDS)
-				L.adjustStaminaLoss(20)
-				L.sexcon.adjust_arousal(20)
-			if(prob(15))
-				L.AdjustConfused(2 SECONDS)
-		if(51 to INFINITY)
-			if(prob(15))
-				L.emote("moan")
-				to_chat(L, span_warning("You feel your [L.gender==MALE ? "cock throb hard as steel!" : "vagina drool like rain, burn like fire!"] your legs almost give up as you come near orgasm!") )
-				L.blur_eyes(3)
-				L.jitter(3)
-				L.SetImmobilized(3 SECONDS)
-				L.AdjustConfused(4 SECONDS)
-				L.adjustStaminaLoss(25)
-				L.sexcon.adjust_arousal(25)
-			if(prob(20))
-				L.AdjustConfused(2 SECONDS)
+	if(prob(25))
+		L.adjustStaminaLoss(L.reagents.get_reagent_amount(/datum/reagent/toxin/xeno_aphrotoxin))
+		if(L.sexcon)
+			L.sexcon.adjust_arousal(L.reagents.get_reagent_amount(/datum/reagent/toxin/xeno_aphrotoxin))
+			switch(L.sexcon.arousal)
+				if(1 to 50)
+					to_chat(L, span_warning("You feel your [L.gender==MALE ? "cock throb a little," : "vagina get a bit wet,"] distracting you.") )
+					L.adjustStaminaLoss(5)
+					L.sexcon.adjust_arousal(5)
+				if(51 to 100)
+					to_chat(L, span_warning("You feel your [L.gender==MALE ? "cock harden and throb." : "vagina drip down your legs."] your knees feel weak!") )
+					L.adjustStaminaLoss(10)
+					L.sexcon.adjust_arousal(10)
+				if(101 to 150)
+					L.emote("blush")
+					to_chat(L, span_warning("You feel your [L.gender==MALE ? "cock throb with need!" : "vagina drool like a waterfall!"] Your legs tremble, too weak to walk for a moment.") )
+					L.blur_eyes(1)
+					L.AdjustConfused(1 SECONDS)
+					L.adjustStaminaLoss(15)
+					L.sexcon.adjust_arousal(15)
+				if(151 to MAX_AROUSAL)
+					L.emote("moan")
+					to_chat(L, span_warning("You feel your [L.gender==MALE ? "cock throb hard as steel!" : "vagina drool like rain, burn like fire!"] your legs almost give up as you come near orgasm!") )
+					L.blur_eyes(2)
+					L.AdjustConfused(2 SECONDS)
+					L.adjustStaminaLoss(20)
+					L.sexcon.adjust_arousal(20)
 	return ..()
 
 /// Called when the debuff's owner uses the Resist action for this debuff.
@@ -758,7 +753,7 @@
 	if(clothesundoed != 1)
 		if(debuff_ownerhuman.w_uniform)
 			debuff_ownerhuman.visible_message(span_warning("[debuff_ownerhuman] begins to undo [t_his] clothes and expose [t_his] [debuff_ownerhuman.gender==MALE ? "cock" : "pussy"]!"), span_warning("You begin to undo your clothes and expose your [debuff_ownerhuman.gender==MALE ? "cock" : "pussy"]."), span_warning("You hear ruffling."), 5)
-			if(!do_after(debuff_owner, 5 SECONDS, TRUE, debuff_owner, BUSY_ICON_CLOCK))
+			if(!do_after(debuff_owner, 2 SECONDS, TRUE, debuff_owner, BUSY_ICON_CLOCK))
 				debuff_owner?.balloon_alert(debuff_owner, "Interrupted")
 				return
 	clothesundoed = 1
@@ -778,8 +773,9 @@
 	debuff_owner.adjustStaminaLoss(75)
 
 	playsound(usr.loc, "sound/effects/splat.ogg", 30)
-	debuff_owner.reagents.remove_reagent(/datum/reagent/toxin/xeno_aphrotoxin, 10)
-	debuff_owner.reagents.remove_reagent(/datum/reagent/consumable/larvajelly, 3)
+	debuff_owner.update_eye_blur()
+	debuff_owner.reagents.remove_reagent(/datum/reagent/toxin/xeno_aphrotoxin, 15)
+	debuff_owner.reagents.remove_reagent(/datum/reagent/consumable/larvajelly, 6)
 	debuff_owner.sexcon.ejaculate(debuff_owner)
 	if(debuff_owner.getStaminaLoss() > 120)
 		if(prob(5))

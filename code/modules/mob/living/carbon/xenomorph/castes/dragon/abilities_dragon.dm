@@ -47,10 +47,10 @@
 
 	var/was_successful = TRUE
 	if(do_after_length)
-		xeno_owner.move_resist = MOVE_FORCE_OVERPOWERING
+		xeno_owner.set_move_resist(MOVE_FORCE_OVERPOWERING)
 		xeno_owner.add_traits(list(TRAIT_HANDS_BLOCKED, TRAIT_IMMOBILE), DRAGON_ABILITY_TRAIT)
 		was_successful = do_after(xeno_owner, do_after_length, IGNORE_HELD_ITEM, xeno_owner, BUSY_ICON_DANGER, extra_checks = CALLBACK(src, PROC_REF(can_use_ability), target, FALSE, ABILITY_USE_BUSY))
-		xeno_owner.move_resist = initial(xeno_owner.move_resist)
+		xeno_owner.set_move_resist(xeno_owner.get_initial_move_resist())
 		xeno_owner.remove_traits(list(TRAIT_HANDS_BLOCKED, TRAIT_IMMOBILE), DRAGON_ABILITY_TRAIT)
 	if(was_successful && handle_regular_ability(target, affected_turfs))
 		return
@@ -112,7 +112,7 @@
 /// Performs a different interaction based on if there is a grabbed human.
 /datum/action/ability/activable/xeno/backhand/proc/handle_grabbed_human(mob/living/carbon/human/grabbed_human)
 	xeno_owner.face_atom(grabbed_human)
-	xeno_owner.move_resist = MOVE_FORCE_OVERPOWERING
+	xeno_owner.set_move_resist(MOVE_FORCE_OVERPOWERING)
 	xeno_owner.add_traits(list(TRAIT_HANDS_BLOCKED, TRAIT_IMMOBILE), DRAGON_ABILITY_TRAIT)
 	xeno_owner.visible_message(span_danger("[xeno_owner] lifts [grabbed_human] into the air and gets ready to slam!"))
 	if(do_after(xeno_owner, DRAGON_GRABBED_ABILITY_TIME, IGNORE_HELD_ITEM, xeno_owner, BUSY_ICON_DANGER, extra_checks = CALLBACK(src, PROC_REF(grab_extra_check))))
@@ -132,7 +132,7 @@
 				animate(pixel_z = living_in_range.pixel_z - 8, time = 0.25 SECONDS, easing = CIRCULAR_EASING|EASE_IN)
 		grabbed_human.take_overall_damage(get_damage() * 1.7, BRUTE, MELEE, max_limbs = 3, updating_health = TRUE) // 76.5
 		xeno_owner.gain_plasma(250)
-	xeno_owner.move_resist = initial(xeno_owner.move_resist)
+	xeno_owner.set_move_resist(xeno_owner.get_initial_move_resist())
 	xeno_owner.remove_traits(list(TRAIT_HANDS_BLOCKED, TRAIT_IMMOBILE), DRAGON_ABILITY_TRAIT)
 	succeed_activate()
 	add_cooldown()
@@ -198,11 +198,11 @@
 		start_landing()
 		return
 	xeno_owner.setDir(SOUTH)
-	xeno_owner.move_resist = MOVE_FORCE_OVERPOWERING
+	xeno_owner.set_move_resist(MOVE_FORCE_OVERPOWERING)
 	xeno_owner.add_traits(list(TRAIT_HANDS_BLOCKED, TRAIT_IMMOBILE), DRAGON_ABILITY_TRAIT)
 	playsound(get_turf(xeno_owner), 'sound/effects/alien/dragon/flying_progress.ogg', 75, TRUE, 9)
 	var/was_successful = do_after(xeno_owner, 5 SECONDS, IGNORE_HELD_ITEM, xeno_owner, BUSY_ICON_DANGER, extra_checks = CALLBACK(src, PROC_REF(can_use_ability), target, FALSE, ABILITY_USE_BUSY))
-	xeno_owner.move_resist = initial(xeno_owner.move_resist)
+	xeno_owner.set_move_resist(xeno_owner.get_initial_move_resist())
 	xeno_owner.remove_traits(list(TRAIT_HANDS_BLOCKED, TRAIT_IMMOBILE), DRAGON_ABILITY_TRAIT)
 	if(!was_successful)
 		return
@@ -223,7 +223,7 @@
 	RegisterSignal(xeno_owner, COMSIG_MOVABLE_PRE_MOVE, PROC_REF(on_move_attempt))
 	COOLDOWN_RESET(src, animation_cooldown)
 	animate(xeno_owner, pixel_x = 0, pixel_y = 0, time = 0)
-	xeno_owner.status_flags = GODMODE|INCORPOREAL
+	xeno_owner.status_flags = INCORPOREAL
 	xeno_owner.resistance_flags = RESIST_ALL
 	xeno_owner.add_pass_flags(PASS_LOW_STRUCTURE|PASS_DEFENSIVE_STRUCTURE|PASS_FIRE, DRAGON_ABILITY_TRAIT)
 	xeno_owner.density = FALSE
@@ -335,10 +335,10 @@
 	. = COMPONENT_MOVABLE_BLOCK_PRE_MOVE
 	if(isclosedturf(newloc) && !istype(newloc, /turf/closed/wall/resin))
 		return
+	if(isclosedturf(newloc) && istype(newloc, /turf/closed/wall/resin) && !xeno_owner.issamexenohive(newloc))
+		return
 	for(var/atom/atom_on_turf AS in newloc.contents)
 		if(istype(atom_on_turf, /obj/structure/mineral_door/resin) && xeno_owner.issamexenohive(atom_on_turf))
-			continue
-		if(istype(atom_on_turf, /turf/closed/wall/resin) && xeno_owner.issamexenohive(atom_on_turf))
 			continue
 		if(atom_on_turf.CanPass(xeno_owner, newloc))
 			continue
@@ -413,7 +413,7 @@
 
 /datum/action/ability/activable/xeno/backhand/dragon_breath/handle_grabbed_human(mob/living/carbon/human/grabbed_human)
 	xeno_owner.face_atom(grabbed_human)
-	xeno_owner.move_resist = MOVE_FORCE_OVERPOWERING
+	xeno_owner.set_move_resist(MOVE_FORCE_OVERPOWERING)
 	xeno_owner.add_traits(list(TRAIT_HANDS_BLOCKED, TRAIT_IMMOBILE), DRAGON_ABILITY_TRAIT)
 	xeno_owner.visible_message(span_danger("[xeno_owner] inhales and turns their sights to [grabbed_human]..."))
 	if(do_after(xeno_owner, DRAGON_GRABBED_ABILITY_TIME, IGNORE_HELD_ITEM, xeno_owner, BUSY_ICON_DANGER, extra_checks = CALLBACK(src, PROC_REF(grab_extra_check))))
@@ -452,15 +452,15 @@
 		grabbed_human.take_overall_damage(get_damage() * 5.5, BURN, armor_type, max_limbs = length(grabbed_human.get_damageable_limbs()), updating_health = TRUE) // 110
 		grabbed_human.knockback(xeno_owner, 5, 1)
 		xeno_owner.gain_plasma(250)
-	xeno_owner.move_resist = initial(xeno_owner.move_resist)
+	xeno_owner.set_move_resist(xeno_owner.get_initial_move_resist())
 	xeno_owner.remove_traits(list(TRAIT_HANDS_BLOCKED, TRAIT_IMMOBILE), DRAGON_ABILITY_TRAIT)
 	succeed_activate()
 	add_cooldown()
 	return TRUE
 
 /datum/action/ability/activable/xeno/backhand/dragon_breath/handle_regular_ability(atom/target, list/turf/affected_turfs)
-	xeno_owner.add_movespeed_modifier(MOVESPEED_ID_DRAGON_BREATH, TRUE, 0, NONE, TRUE, 8)
-	xeno_owner.move_resist = MOVE_FORCE_OVERPOWERING
+	xeno_owner.add_movespeed_modifier(MOVESPEED_ID_DRAGON_BREATH, TRUE, 0, NONE, TRUE, 2)
+	xeno_owner.set_move_resist(MOVE_FORCE_OVERPOWERING)
 	xeno_owner.soft_armor = xeno_owner.soft_armor.modifyAllRatings(15)
 	ADD_TRAIT(xeno_owner, TRAIT_HANDS_BLOCKED, DRAGON_ABILITY_TRAIT)
 	RegisterSignal(xeno_owner, COMSIG_MOVABLE_MOVED, PROC_REF(on_move))
@@ -552,7 +552,7 @@
 /// Undoes everything associated with starting the ability.
 /datum/action/ability/activable/xeno/backhand/dragon_breath/proc/end_ability()
 	xeno_owner.remove_movespeed_modifier(MOVESPEED_ID_DRAGON_BREATH)
-	xeno_owner.move_resist = initial(xeno_owner.move_resist)
+	xeno_owner.set_move_resist(xeno_owner.get_initial_move_resist())
 	xeno_owner.soft_armor = xeno_owner.soft_armor.modifyAllRatings(-15)
 	REMOVE_TRAIT(xeno_owner, TRAIT_HANDS_BLOCKED, DRAGON_ABILITY_TRAIT)
 	UnregisterSignal(xeno_owner, list(COMSIG_MOVABLE_MOVED, COMSIG_MOB_STAT_CHANGED))
@@ -595,10 +595,10 @@
 	for(var/turf/impacted_turf AS in impacted_turfs)
 		new /obj/effect/temp_visual/dragon/warning(impacted_turf, 0.5 SECONDS)
 
-	xeno_owner.move_resist = MOVE_FORCE_OVERPOWERING
+	xeno_owner.set_move_resist(MOVE_FORCE_OVERPOWERING)
 	xeno_owner.add_traits(list(TRAIT_HANDS_BLOCKED, TRAIT_IMMOBILE), DRAGON_ABILITY_TRAIT)
 	var/was_successful = do_after(xeno_owner, 0.5 SECONDS, IGNORE_HELD_ITEM, xeno_owner, BUSY_ICON_DANGER)
-	xeno_owner.move_resist = initial(xeno_owner.move_resist)
+	xeno_owner.set_move_resist(xeno_owner.get_initial_move_resist())
 	xeno_owner.remove_traits(list(TRAIT_HANDS_BLOCKED, TRAIT_IMMOBILE), DRAGON_ABILITY_TRAIT)
 	if(!was_successful)
 		return
@@ -624,7 +624,7 @@
 				if(impacted_living.stat == DEAD)
 					continue
 				impacted_living.take_overall_damage(damage, BURN, MELEE, max_limbs = 5, updating_health = TRUE)
-				if(impacted_living.move_resist < MOVE_FORCE_OVERPOWERING)
+				if(impacted_living.get_move_resist() < MOVE_FORCE_OVERPOWERING)
 					living_to_knockback += impacted_living
 
 				animate(impacted_living, pixel_z = impacted_living.pixel_z + 8, time = 0.25 SECONDS, easing = CIRCULAR_EASING|EASE_OUT, flags = ANIMATION_END_NOW|ANIMATION_PARALLEL)
@@ -635,7 +635,7 @@
 				continue
 			if(isfire(impacted_atom))
 				var/obj/fire/fire = impacted_atom
-				fire.reduce_fire(20)
+				fire.reduce_fire(20, 10)
 				continue
 			if(!(impacted_atom.resistance_flags & XENO_DAMAGEABLE))
 				continue
@@ -643,7 +643,7 @@
 			if(ishitbox(impacted_obj))
 				impacted_obj.take_damage(damage * 1/3, BRUTE, MELEE, blame_mob = xeno_owner) // Adjusted for 3x3 multitile vehicles.
 				continue
-			if(!isvehicle(impacted_obj))
+			if(isvehicle(impacted_obj))
 				impacted_obj.take_damage(damage, BRUTE, MELEE, blame_mob = xeno_owner)
 				continue
 			if(ismecha(impacted_obj))
@@ -704,10 +704,10 @@
 	for(var/turf/impacted_turf AS in impacted_turfs)
 		new /obj/effect/temp_visual/dragon/warning(impacted_turf, 0.5 SECONDS)
 
-	xeno_owner.move_resist = MOVE_FORCE_OVERPOWERING
+	xeno_owner.set_move_resist(MOVE_FORCE_OVERPOWERING)
 	xeno_owner.add_traits(list(TRAIT_HANDS_BLOCKED, TRAIT_IMMOBILE), DRAGON_ABILITY_TRAIT)
 	var/was_successful = do_after(xeno_owner, 0.5 SECONDS, IGNORE_HELD_ITEM, xeno_owner, BUSY_ICON_DANGER)
-	xeno_owner.move_resist = initial(xeno_owner.move_resist)
+	xeno_owner.set_move_resist(xeno_owner.get_initial_move_resist())
 	xeno_owner.remove_traits(list(TRAIT_HANDS_BLOCKED, TRAIT_IMMOBILE), DRAGON_ABILITY_TRAIT)
 	if(!was_successful)
 		return
@@ -717,7 +717,7 @@
 		for(var/mob/living/carbon/human/affected_human in impacted_turf)
 			if(affected_human.stat == DEAD)
 				continue
-			if(affected_human.move_resist >= MOVE_FORCE_OVERPOWERING)
+			if(affected_human.get_move_resist() >= MOVE_FORCE_OVERPOWERING)
 				continue
 			acceptable_humans += affected_human
 
@@ -765,6 +765,7 @@
 	damage_taken_so_far = 0
 
 	ADD_TRAIT(grabbed_human, TRAIT_IMMOBILE, DRAGON_ABILITY_TRAIT)
+	xeno_owner.add_movespeed_modifier("movespeed_id_dragon_grab", TRUE, 0, NONE, TRUE, 6)
 	RegisterSignal(grabbing_item, COMSIG_QDELETING, PROC_REF(end_grabbing))
 	RegisterSignal(grabbed_human, COMSIG_MOB_STAT_CHANGED, PROC_REF(human_stat_changed))
 	RegisterSignal(grabbed_human, COMSIG_LIVING_DO_MOVE_RESIST, PROC_REF(on_resist_attempt))
@@ -777,6 +778,7 @@
 /datum/action/ability/activable/xeno/grab/proc/failed_to_grab()
 	if(grabbed_human)
 		REMOVE_TRAIT(grabbed_human, TRAIT_IMMOBILE, DRAGON_ABILITY_TRAIT)
+	xeno_owner.remove_movespeed_modifier("movespeed_id_dragon_grab")
 	grabbed_human = null
 	succeed_activate()
 	add_cooldown()
@@ -791,6 +793,7 @@
 		UnregisterSignal(xeno_owner, list(COMSIG_XENOMORPH_BRUTE_DAMAGE, COMSIG_XENOMORPH_BURN_DAMAGE))
 		if(grabbed_human)
 			UnregisterSignal(grabbed_human, list(COMSIG_MOB_STAT_CHANGED, COMSIG_LIVING_DO_MOVE_RESIST))
+	xeno_owner.remove_movespeed_modifier("movespeed_id_dragon_grab")
 	grabbed_human = null
 	grabbing_item = null
 	if(no_cooldown)
@@ -863,10 +866,10 @@
 	for(var/turf/impacted_turf AS in impacted_turfs)
 		new /obj/effect/temp_visual/dragon/warning(impacted_turf, 3 SECONDS)
 
-	xeno_owner.move_resist = MOVE_FORCE_OVERPOWERING
+	xeno_owner.set_move_resist(MOVE_FORCE_OVERPOWERING)
 	ADD_TRAIT(xeno_owner, TRAIT_IMMOBILE, DRAGON_ABILITY_TRAIT)
 	var/was_successful = do_after(xeno_owner, 3 SECONDS, IGNORE_HELD_ITEM, xeno_owner, BUSY_ICON_DANGER)
-	xeno_owner.move_resist = initial(xeno_owner.move_resist)
+	xeno_owner.set_move_resist(xeno_owner.get_initial_move_resist())
 	REMOVE_TRAIT(xeno_owner, TRAIT_IMMOBILE, DRAGON_ABILITY_TRAIT)
 	if(!was_successful)
 		return

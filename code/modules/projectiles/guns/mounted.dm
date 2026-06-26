@@ -54,10 +54,12 @@
 
 	attachable_allowed = list(
 		/obj/item/attachable/scope/unremovable/hsg_102,
+		/obj/item/attachable/motiondetector/advanced/sg,
 	)
 
 	starting_attachment_types = list(
 		/obj/item/attachable/scope/unremovable/hsg_102,
+		/obj/item/attachable/motiondetector/advanced/sg,
 	)
 
 	allowed_ammo_types = list(
@@ -213,7 +215,7 @@
 	w_class = WEIGHT_CLASS_HUGE
 	equip_slot_flags = ITEM_SLOT_BACK
 	icon = 'icons/obj/machines/deployable/heavy_laser.dmi'
-	icon_state = "heavylaser"
+	icon_state = "heavylaser_deployable"
 
 	fire_sound = 'sound/weapons/guns/fire/tank_flamethrower.ogg'
 	reload_sound = 'sound/weapons/guns/interact/minigun_cocked.ogg'
@@ -495,8 +497,8 @@
 	inhand_x_dimension = 64
 	inhand_y_dimension = 32
 	caliber = CALIBER_14X5 // codex
-	max_shells = 5 //codex
-	max_chamber_items = 5
+	max_shells = 6 //codex
+	max_chamber_items = 6
 	force = 30
 	fire_sound = 'sound/weapons/guns/fire/ptrs.ogg'
 	dry_fire_sound = 'sound/weapons/guns/fire/m41a_empty.ogg'
@@ -515,7 +517,7 @@
 		/obj/item/attachable/scope,
 	)
 
-	starting_attachment_types = list(/obj/item/attachable/stock/clf_heavyrifle)
+	starting_attachment_types = list(/obj/item/attachable/stock/clf_heavyrifle, /obj/item/attachable/scope)
 	attachable_offset = list("muzzle_x" = 45, "muzzle_y" = 19,"rail_x" = 18, "rail_y" = 24, "under_x" = 28, "under_y" = 13, "stock_x" = 8, "stock_y" = 0)
 
 	item_flags = IS_DEPLOYABLE|TWOHANDED
@@ -788,11 +790,13 @@
 	attachable_allowed = list(
 		/obj/item/attachable/at45barrel,
 		/obj/item/attachable/stock/at45stock,
+		/obj/item/attachable/motiondetector/advanced/sg,
 	)
 
 	starting_attachment_types = list(
 		/obj/item/attachable/at45barrel,
 		/obj/item/attachable/stock/at45stock,
+		/obj/item/attachable/motiondetector/advanced/sg,
 	)
 	attachable_offset = list("muzzle_x" = 56, "muzzle_y" = 16,"rail_x" = 18, "rail_y" = 24, "under_x" = 28, "under_y" = 13, "stock_x" = -11, "stock_y" = 0)
 

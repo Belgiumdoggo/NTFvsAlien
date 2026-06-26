@@ -84,6 +84,10 @@
 	. = ..()
 	desc = "Move on all fours and loosen our scales. Increases movement speed by [abs(speed_modifier)], but reduces all soft armor by [armor_modifier]. Automatically disabled after using an ability."
 
+/datum/action/ability/xeno_action/toggle_agility/update_button_icon()
+	action_icon_state = toggled ? "agility_off" : initial(action_icon_state)
+	return ..()
+
 /datum/action/ability/xeno_action/toggle_agility/action_activate()
 	GLOB.round_statistics.warrior_agility_toggles++
 	SSblackbox.record_feedback("tally", "round_statistics", 1, "warrior_agility_toggles")
@@ -155,6 +159,7 @@
 	UnregisterSignal(source, list(COMSIG_MOVABLE_POST_THROW, COMSIG_MOVABLE_IMPACT))
 	var/mob/living/living_target = source
 	living_target.Knockdown(0.5 SECONDS)
+	living_target.Immobilize(0.5 SECONDS)
 	living_target.remove_pass_flags(PASS_XENO, THROW_TRAIT)
 
 /obj/effect/temp_visual/warrior/impact
@@ -492,6 +497,10 @@
 	)
 	target_flags = ABILITY_MOB_TARGET
 
+/datum/action/ability/activable/xeno/warrior/punch/encounter
+	keybinding_signals = null
+	cooldown_duration = 30 SECONDS
+
 /datum/action/ability/activable/xeno/warrior/punch/on_cooldown_finish()
 	xeno_owner.balloon_alert(xeno_owner, "[initial(name)] ready")
 	return ..()
@@ -655,8 +664,8 @@
 	add_slowdown(slowdown_stacks)
 	adjust_stagger(stagger_stacks)
 	adjust_blurriness(slowdown_stacks)
-	apply_damage(punch_damage, BRUTE, target_limb ? target_limb : 0, MELEE, attacker = xeno)
-	apply_damage(punch_damage, STAMINA, updating_health = TRUE, attacker = xeno)
+	apply_damage(punch_damage * 0.9, BRUTE, target_limb ? target_limb : 0, MELEE, attacker = xeno)
+	apply_damage(punch_damage * 1.06, STAMINA, updating_health = TRUE, attacker = xeno)
 	var/turf_behind = get_step(src, REVERSE_DIR(get_dir(src, xeno)))
 	if(!push)
 		return

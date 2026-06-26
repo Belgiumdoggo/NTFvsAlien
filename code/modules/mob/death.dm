@@ -58,6 +58,9 @@
 
 /mob/proc/on_death()
 	SHOULD_CALL_PARENT(TRUE) // no exceptions
+	var/datum/action/ability/xeno_action/return_to_body/returning = actions_by_path[/datum/action/ability/xeno_action/return_to_body]
+	if(returning)
+		returning.action_activate()
 	client?.view_size?.reset_to_default()//just so we never get stuck with a large view somehow
 
 	hide_fullscreens()
@@ -68,7 +71,7 @@
 	drop_l_hand()
 
 	if(hud_used?.healths)
-		hud_used.healths.icon_state = "health7"
+		hud_used.healths.icon_state = "health21"
 
 	timeofdeath = world.time
 	if(mind)
@@ -77,10 +80,12 @@
 			var/turf/T = get_turf(src)
 			deadchat_broadcast(" has died at <b>[AREACOORD(T)]</b>[TURF_LINK(null, T)].", "<b>[mind.name]</b>", follow_target = src, turf_target = T, message_type = DEADCHAT_DEATHRATTLE)
 
-	if(HAS_TRAIT(src, TRAIT_SKILLS_EDITED))
-		if(src.original_skills_type)
-			set_skills(getSkillsType(src.original_skills_type))
-		REMOVE_TRAIT(src, TRAIT_SKILLS_EDITED, TRAIT_GENERIC)
+	if(isliving(src))
+		var/mob/living/living_mob = src
+		var/datum/status_effect/skill_modifier/imprint/imprint_effect = living_mob.has_status_effect(/datum/status_effect/skill_modifier/imprint)
+		if(imprint_effect)
+			imprint_effect.skill_differences.Cut()
+			qdel(imprint_effect)
 
 	GLOB.dead_mob_list |= src
 	GLOB.offered_mob_list -= src
@@ -94,16 +99,19 @@
 	if(SSticker.HasRoundStarted())
 		SSblackbox.ReportDeath(src)
 
-	//if((!SSticker.mode || CHECK_BITFIELD(SSticker.mode.round_type_flags, MODE_NO_GHOSTS)))
-	switch(faction)
-		if(FACTION_TERRAGOV)
-			overlay_fullscreen("death", /atom/movable/screen/fullscreen/dead/terra)
-		if(FACTION_SOM)
-			overlay_fullscreen("death", /atom/movable/screen/fullscreen/dead/som)
-		if(FACTION_VSD)
-			overlay_fullscreen("death", /atom/movable/screen/fullscreen/dead/vsd)
-		if(FACTION_XENO)
-			overlay_fullscreen("death", /atom/movable/screen/fullscreen/dead/xeno)
-		else
-			overlay_fullscreen("death", /atom/movable/screen/fullscreen/dead)
+	//if((!SSticker.mode || CHECK_BITFIELD(SSticker.mode.round_type_flags2, MODE_2_NO_GHOSTS_STRICT)))
+	if(isrobot(src) || issynth(src))
+		overlay_fullscreen("death", /atom/movable/screen/fullscreen/dead/robot)
+	else
+		switch(faction)
+			if(FACTION_TERRAGOV)
+				overlay_fullscreen("death", /atom/movable/screen/fullscreen/dead/terra)
+			if(FACTION_SOM)
+				overlay_fullscreen("death", /atom/movable/screen/fullscreen/dead/som)
+			if(FACTION_VSD)
+				overlay_fullscreen("death", /atom/movable/screen/fullscreen/dead/vsd)
+			if(FACTION_XENO)
+				overlay_fullscreen("death", /atom/movable/screen/fullscreen/dead/xeno)
+			else
+				overlay_fullscreen("death", /atom/movable/screen/fullscreen/dead)
 	client?.stop_sounds()

@@ -8,7 +8,6 @@
 	icon = 'icons/obj/structures/prop/mainship.dmi'
 	density = TRUE
 	anchored = TRUE
-	climbable = TRUE
 	resistance_flags = XENO_DAMAGEABLE
 	coverage = 20
 	allow_pass_flags = PASS_LOW_STRUCTURE|PASSABLE|PASS_WALKOVER
@@ -52,6 +51,9 @@
 	///Crosshair to use when this ammo is loaded
 	var/crosshair = 'icons/UI_Icons/cas_crosshairs/gun.dmi'
 
+/obj/structure/ship_ammo/Initialize(mapload)
+	. = ..()
+	AddComponent(/datum/component/climbable)
 
 /obj/structure/ship_ammo/attack_powerloader(mob/living/user, obj/item/powerloader_clamp/attached_clamp)
 	. = ..()
@@ -407,10 +409,13 @@
 
 /obj/structure/ship_ammo/cas/rocket/detonate_on(turf/impact, attackdir = NORTH)
 	impact.ceiling_debris_check(3)
-	for(var/obj/machinery/deployable/mounted/sentry/ads_system/ads in orange(GLOB.ads_intercept_range,impact))
+	for(var/obj/machinery/deployable/mounted/sentry/ads_system/ads in range(GLOB.ads_intercept_range,impact))
 		if(!COOLDOWN_FINISHED(ads, intercept_cooldown))
 			continue
 		if(ads.try_intercept(impact, src, 0.5, 5))
+			var/datum/effect_system/smoke_spread/debris/S = new
+			S.set_up(1, impact)
+			S.start()
 			qdel(src)
 			return
 	explosion(impact, devastating_explosion_range, heavy_explosion_range, light_explosion_range, explosion_cause=src)
@@ -466,10 +471,13 @@
 	var/datum/effect_system/smoke_spread/phosphorus/warcrime = new
 	warcrime.set_up(fire_range + 1, impact, 7)
 	warcrime.start()
-	for(var/obj/machinery/deployable/mounted/sentry/ads_system/ads in orange(GLOB.ads_intercept_range,impact))
+	for(var/obj/machinery/deployable/mounted/sentry/ads_system/ads in range(GLOB.ads_intercept_range,impact))
 		if(!COOLDOWN_FINISHED(ads, intercept_cooldown))
 			continue
 		if(ads.try_intercept(impact, src, 0.5, 5))
+			var/datum/effect_system/smoke_spread/debris/S = new
+			S.set_up(1, impact)
+			S.start()
 			qdel(src)
 			return
 	explosion(impact, devastating_explosion_range, heavy_explosion_range, light_explosion_range, explosion_cause=src)
@@ -494,10 +502,13 @@
 
 /obj/structure/ship_ammo/cas/rocket/banshee/detonate_on(turf/impact, attackdir = NORTH)
 	impact.ceiling_debris_check(3)
-	for(var/obj/machinery/deployable/mounted/sentry/ads_system/ads in orange(GLOB.ads_intercept_range,impact))
+	for(var/obj/machinery/deployable/mounted/sentry/ads_system/ads in range(GLOB.ads_intercept_range,impact))
 		if(!COOLDOWN_FINISHED(ads, intercept_cooldown))
 			continue
 		if(ads.try_intercept(impact, src, 0.5, 5))
+			var/datum/effect_system/smoke_spread/debris/S = new
+			S.set_up(1, impact)
+			S.start()
 			qdel(src)
 			return
 	explosion(impact, devastating_explosion_range, heavy_explosion_range, light_explosion_range, flame_range = fire_range, explosion_cause=src) //more spread out, with flames
@@ -520,10 +531,13 @@
 
 /obj/structure/ship_ammo/cas/rocket/fatty/detonate_on(turf/impact, attackdir = NORTH)
 	impact.ceiling_debris_check(2)
-	for(var/obj/machinery/deployable/mounted/sentry/ads_system/ads in orange(GLOB.ads_intercept_range,impact))
+	for(var/obj/machinery/deployable/mounted/sentry/ads_system/ads in range(GLOB.ads_intercept_range,impact))
 		if(!COOLDOWN_FINISHED(ads, intercept_cooldown))
 			continue
 		if(ads.try_intercept(impact, src, 0.5, 5))
+			var/datum/effect_system/smoke_spread/debris/S = new
+			S.set_up(1, impact)
+			S.start()
 			qdel(src)
 			return
 	explosion(impact, devastating_explosion_range, heavy_explosion_range, light_explosion_range, explosion_cause=src) //first explosion is small to trick xenos into thinking its a minirocket.
@@ -602,10 +616,13 @@
 	impact.ceiling_debris_check(2)
 	if(!ammo_count)
 		QDEL_IN(src, travelling_time) //deleted after last minirocket has fired and impacted the ground.
-	for(var/obj/machinery/deployable/mounted/sentry/ads_system/ads in orange(GLOB.ads_intercept_range,impact))
+	for(var/obj/machinery/deployable/mounted/sentry/ads_system/ads in range(GLOB.ads_intercept_range,impact))
 		if(!COOLDOWN_FINISHED(ads, intercept_cooldown))
 			continue
 		if(ads.try_intercept(impact, src, 0.5, 5))
+			var/datum/effect_system/smoke_spread/debris/S = new
+			S.set_up(1, impact)
+			S.start()
 			return
 	explosion(impact, devastating_explosion_range, heavy_explosion_range, light_explosion_range, explosion_cause=src)
 
@@ -633,11 +650,15 @@
 /obj/structure/ship_ammo/cas/minirocket/incendiary/detonate_on(turf/impact, attackdir = NORTH)
 	. = ..()
 	impact.ceiling_debris_check(2)
-	for(var/obj/machinery/deployable/mounted/sentry/ads_system/ads in orange(GLOB.ads_intercept_range,impact))
+	for(var/obj/machinery/deployable/mounted/sentry/ads_system/ads in range(GLOB.ads_intercept_range,impact))
 		if(!COOLDOWN_FINISHED(ads, intercept_cooldown))
 			continue
 		if(ads.try_intercept(impact, src, 0.5, 5))
-			return
+			var/datum/effect_system/smoke_spread/debris/S = new
+			S.set_up(1, impact)
+			S.start()
+			fire_range *= 0.5 //We want the fire to be weaker if the rocket was intercepted, to reflect the idea of a dudsplosion.
+			fire_range = round(fire_range)
 	flame_radius(fire_range, impact)
 
 /obj/structure/ship_ammo/cas/minirocket/smoke
@@ -654,14 +675,18 @@
 
 /obj/structure/ship_ammo/cas/minirocket/smoke/detonate_on(turf/impact, attackdir = NORTH)
 	impact.ceiling_debris_check(2)
-	var/datum/effect_system/smoke_spread/tactical/S = new
-	S.set_up(7, impact)// Large radius, but dissipates quickly
-	S.start()
-	for(var/obj/machinery/deployable/mounted/sentry/ads_system/ads in orange(GLOB.ads_intercept_range,impact))
+	var/datum/effect_system/smoke_spread/tactical/S
+	for(var/obj/machinery/deployable/mounted/sentry/ads_system/ads in range(GLOB.ads_intercept_range,impact))
 		if(!COOLDOWN_FINISHED(ads, intercept_cooldown))
 			continue
 		if(ads.try_intercept(impact, src, 0.5, 5))
+			S = new /datum/effect_system/smoke_spread/debris()
+			S.set_up(3, impact) //lesser smoke cloud if intercepted, to reflect the idea of a dudsplosion.
+			S.start()
 			return //shit happen anyway
+	S = new
+	S.set_up(7, impact)// Large radius, but dissipates quickly
+	S.start()
 
 /obj/structure/ship_ammo/cas/minirocket/tangle
 	name = "Tanglefoot mini rocket stack"
@@ -678,13 +703,15 @@
 /obj/structure/ship_ammo/cas/minirocket/tangle/detonate_on(turf/impact, attackdir = NORTH)
 	impact.ceiling_debris_check(2)
 	var/datum/effect_system/smoke_spread/plasmaloss/S = new
-	S.set_up(9, impact, 9)// Between grenade and mortar
-	S.start()
-	for(var/obj/machinery/deployable/mounted/sentry/ads_system/ads in orange(GLOB.ads_intercept_range,impact))
+	for(var/obj/machinery/deployable/mounted/sentry/ads_system/ads in range(GLOB.ads_intercept_range,impact))
 		if(!COOLDOWN_FINISHED(ads, intercept_cooldown))
 			continue
 		if(ads.try_intercept(impact, src, 0.5, 5))
+			S.set_up(4, impact, 4)
+			S.start()
 			return
+	S.set_up(9, impact, 9)// Between grenade and mortar
+	S.start()
 	explosion(impact, devastating_explosion_range, heavy_explosion_range, light_explosion_range, throw_range = 0, explosion_cause=src)
 
 /obj/structure/ship_ammo/cas/minirocket/illumination
@@ -705,11 +732,11 @@
 	impact.ceiling_debris_check(2)
 	if(!ammo_count)
 		QDEL_IN(src, travelling_time) //deleted after last minirocket has fired and impacted the ground.
-	for(var/obj/machinery/deployable/mounted/sentry/ads_system/ads in orange(GLOB.ads_intercept_range,impact))
+	for(var/obj/machinery/deployable/mounted/sentry/ads_system/ads in range(GLOB.ads_intercept_range,impact))
 		if(!COOLDOWN_FINISHED(ads, intercept_cooldown))
 			continue
-		if(ads.try_intercept(impact, src, 0.5, 5))
-			return
+		ads.try_intercept(impact, src, 2, 10) //longer than usual cd cause occupies systems ig
+		//just wastes ammo, what is it gonna do? shoot the flare down?
 	addtimer(CALLBACK(src, PROC_REF(drop_cas_flare), impact), 1.5 SECONDS)
 
 /obj/structure/ship_ammo/cas/minirocket/illumination/proc/drop_cas_flare(turf/impact)
@@ -740,10 +767,13 @@
 
 /obj/structure/ship_ammo/cas/bomb/detonate_on(turf/impact, attackdir = NORTH)
 	impact.ceiling_debris_check(2)
-	for(var/obj/machinery/deployable/mounted/sentry/ads_system/ads in orange(GLOB.ads_intercept_range,impact))
+	for(var/obj/machinery/deployable/mounted/sentry/ads_system/ads in range(GLOB.ads_intercept_range,impact))
 		if(!COOLDOWN_FINISHED(ads, intercept_cooldown))
 			continue
 		if(ads.try_intercept(impact, src, 0.5, 5))
+			var/datum/effect_system/smoke_spread/debris/S = new
+			S.set_up(1, impact)
+			S.start()
 			return
 	explosion(impact, devastating_explosion_range, heavy_explosion_range, light_explosion_range, explosion_cause=src)
 
@@ -803,10 +833,13 @@
 
 /obj/structure/ship_ammo/cas/bomblet/detonate_on(turf/impact, attackdir = NORTH)
 	impact.ceiling_debris_check(2)
-	for(var/obj/machinery/deployable/mounted/sentry/ads_system/ads in orange(GLOB.ads_intercept_range,impact))
+	for(var/obj/machinery/deployable/mounted/sentry/ads_system/ads in range(GLOB.ads_intercept_range,impact))
 		if(!COOLDOWN_FINISHED(ads, intercept_cooldown))
 			continue
 		if(ads.try_intercept(impact, src, 0.5, 5))
+			var/datum/effect_system/smoke_spread/debris/S = new
+			S.set_up(1, impact)
+			S.start()
 			return
 	explosion(impact, heavy_explosion_range, light_explosion_range, explosion_cause=src)
 

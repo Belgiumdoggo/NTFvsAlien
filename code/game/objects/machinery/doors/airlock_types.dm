@@ -464,6 +464,9 @@
 /obj/machinery/door/airlock/mainship/medical/glass/free_access
 	req_one_access = null
 
+/obj/machinery/door/airlock/mainship/medical/glass/NM_CEO
+	req_one_access = list(ACCESS_NM_CEO, ACCESS_NTC_CEO, ACCESS_MARINE_CMO, ACCESS_MARINE_BRIDGE)
+
 /obj/machinery/door/airlock/mainship/medical/glass/CMO
 	name = "\improper CMO's Office"
 	req_access = list(ACCESS_MARINE_CMO)
@@ -540,7 +543,7 @@
 /obj/machinery/door/airlock/mainship/generic/corporate
 	name = "Operations Officer's Office"
 	icon = 'icons/obj/doors/mainship/personaldoor.dmi'
-	req_access = list(ACCESS_NT_CORPORATE)
+	req_access = list(ACCESS_NT_CORPORATE, ACCESS_NM_CEO, ACCESS_NTC_CEO, ACCESS_MARINE_BRIDGE)
 
 /obj/machinery/door/airlock/mainship/generic/corporate/quarters
 	name = "Operations Officer's Quarters"
@@ -818,15 +821,15 @@
 /obj/machinery/door/airlock/prison
 	name = "\improper Cell Door"
 	icon = 'icons/obj/doors/prison/celldoor.dmi'
-	
+
 /obj/machinery/door/airlock/prison/cell1
 	name = "\improper Brig Cell 1 Door"
 	id = "Brig Cell 1"
-	
+
 /obj/machinery/door/airlock/prison/cell2
 	name = "\improper Brig Cell 2 Door"
 	id = "Brig Cell 2"
-	
+
 /obj/machinery/door/airlock/prison/cell3
 	name = "\improper Brig Cell 3 Door"
 	id = "Brig Cell 3"

@@ -9,6 +9,8 @@
 		span_xenonotice("We begin to twist and contort."))
 		do_jitter_animation(1000)
 	set_datum(FALSE)
+	if(hive.living_xeno_ruler == src)
+		remove_ruler_abilities()
 	var/selected_ability_type = selected_ability?.type
 
 	var/list/datum/action/ability/xeno_action/actions_already_added = mob_abilities
@@ -39,6 +41,9 @@
 			activable_ability.select()
 			break
 
+	if(hive.living_xeno_ruler == src)
+		give_ruler_abilities()
+
 	if(xeno_flags & XENO_LEADER)
 		give_rally_abilities() //Give them back their rally hive ability
 
@@ -48,6 +53,7 @@
 
 	if(upgrade == XENO_UPGRADE_PRIMO && !silent)
 		to_chat(src, span_xenoannounce(xeno_caste.primordial_message))
+		sync_hive_abilities()
 
 	generate_name() //Give them a new name now
 
@@ -68,6 +74,10 @@
 	upgrade_stored = TIER_ONE_THRESHOLD
 
 /mob/living/carbon/xenomorph/runner/melter/primordial
+	upgrade = XENO_UPGRADE_PRIMO
+	upgrade_stored = TIER_ONE_THRESHOLD
+
+/mob/living/carbon/xenomorph/runner/panther/primordial
 	upgrade = XENO_UPGRADE_PRIMO
 	upgrade_stored = TIER_ONE_THRESHOLD
 
@@ -451,3 +461,9 @@
 
 //----BEHEMOTH END----//
 //============//
+
+//================//
+//----CHIMERA START----//
+/mob/living/carbon/xenomorph/chimera/primordial
+	upgrade = XENO_UPGRADE_PRIMO
+//----CHIMERA END----//

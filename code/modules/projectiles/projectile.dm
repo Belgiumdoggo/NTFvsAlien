@@ -19,6 +19,12 @@
 
 #define DAMAGE_REDUCTION_COEFFICIENT(armor) (0.1/((armor*armor*0.0001)+0.1)) //Armor offers diminishing returns.
 
+///Multiplier applied to FF projectile damage
+/* NTF edit - full damage friendly fire
+#define PROJECTILE_FF_MULT 0.5
+*/
+#define PROJECTILE_FF_MULT 1
+
 #define PROJECTILE_HIT_CHECK(thing_to_hit, projectile, cardinal_move, uncrossing, hit_atoms) (!(thing_to_hit.resistance_flags & PROJECTILE_IMMUNE) && thing_to_hit.projectile_hit(projectile, cardinal_move, uncrossing) && !(thing_to_hit in hit_atoms))
 
 //The actual bullet objects.
@@ -111,8 +117,6 @@
 	var/y_offset
 	///Max range the projectile can travel
 	var/proj_max_range = 30
-	///A damage multiplier applied when a mob from the same faction as the projectile firer is hit
-	var/friendly_fire_multiplier = 1 // NTF edit - full damage friendly fire
 	///The "point blank" range of the projectile. Inside this range the projectile gets a bonus to hit
 	var/point_blank_range = 0
 	/// List of atoms already hit by that projectile. Will only matter for projectiles capable of passing through multiple atoms
@@ -168,8 +172,9 @@
 	if (ammo.projectile_greyscale_config && ammo.projectile_greyscale_colors)
 		set_greyscale_config(ammo.projectile_greyscale_config)
 		set_greyscale_colors(ammo.projectile_greyscale_colors)
+	else //greyscale sets icon
+		icon = ammo.icon
 
-	icon = ammo.icon
 	icon_state = ammo.icon_state
 	damage = ammo.damage + bonus_damage //Mainly for emitters.
 	penetration = ammo.penetration
@@ -712,6 +717,8 @@ So if we are on the 32th absolute pixel coordinate we are on tile 1, but if we a
 		return FALSE
 	if(!(allow_pass_flags & PASS_PROJECTILE))
 		return TRUE
+	if((proj.ammo.ammo_behavior_flags & AMMO_PASS_THROUGH_MOVABLE) && !(allow_pass_flags & PASS_LOW_STRUCTURE)) //you're just shooting straight through stuff
+		return TRUE
 	if(proj.distance_travelled <= proj.ammo.barricade_clear_distance)
 		return FALSE
 	var/hit_chance = coverage //base chance for the projectile to hit the object instead of bypassing it
@@ -723,12 +730,12 @@ So if we are on the 32th absolute pixel coordinate we are on tile 1, but if we a
 		if (uncrossing)
 			return FALSE //you don't hit the cade from behind.
 	if(proj.ammo.ammo_behavior_flags & AMMO_BETTER_COVER_RNG || proj.iff_signal) //sniper and IFF rounds are better at getting past cover
-		hit_chance *= 0.8
+		hit_chance *= 0.9
 	///50% better protection when shooting from outside accurate range.
 	if(proj.distance_travelled > proj.ammo.accurate_range)
 		hit_chance *= 1.5
 ///Accuracy over 100 increases the chance of squeezing the bullet past the structure's uncovered areas.
-	hit_chance = min(hit_chance , hit_chance + 100 - proj.accuracy)
+	hit_chance = hit_chance + (min(0, (100 - proj.accuracy))/2)
 	return prob(hit_chance)
 
 /obj/do_projectile_hit(atom/movable/projectile/proj)
@@ -784,7 +791,11 @@ So if we are on the 32th absolute pixel coordinate we are on tile 1, but if we a
 	if(proj.firer == src)
 		return FALSE
 	if(lying_angle && src != proj.original_target)
-		return FALSE
+		if(proj.firer?.faction)
+			if((GLOB.faction_to_iff[proj.firer.faction] & get_iff_signal()) || incapacitated())
+				return FALSE
+		else //normal behavior if no faction on proj
+			return FALSE
 	if((proj.ammo.ammo_behavior_flags & AMMO_XENO) && (isnestedhost(src) || stat == DEAD))
 		return FALSE
 	if(pass_flags & PASS_PROJECTILE) //he's beginning to believe
@@ -844,8 +855,8 @@ So if we are on the 32th absolute pixel coordinate we are on tile 1, but if we a
 	var/hit_roll = rand(0, 99) //Our randomly generated roll
 
 	if(hit_chance > hit_roll) //Hit
-		if(hit_roll > (hit_chance-25)) //if you hit by a small margin, you hit a random bodypart instead of what you were aiming for
-			proj.def_zone = pick(GLOB.base_miss_chance)
+		if(hit_roll > (hit_chance-50)) //if you hit by a small margin, you hit a random bodypart instead of what you were aiming for
+			proj.def_zone = BODY_ZONE_CHEST
 		return TRUE
 
 	if(!lying_angle) //Narrow miss!
@@ -955,7 +966,7 @@ So if we are on the 32th absolute pixel coordinate we are on tile 1, but if we a
 
 	//friendly fire reduces the damage of the projectile, so only applies the multiplier if a hit is confirmed
 	if(proj.firer && proj.firer.faction == faction)
-		damage *= proj.friendly_fire_multiplier
+		damage *= PROJECTILE_FF_MULT
 
 	damage = check_shields(COMBAT_PROJ_ATTACK, damage, proj.ammo.armor_type, FALSE, proj.penetration)
 	if(!damage)
@@ -1002,6 +1013,10 @@ So if we are on the 32th absolute pixel coordinate we are on tile 1, but if we a
 	return TRUE
 
 /mob/living/carbon/xenomorph/bullet_act(atom/movable/projectile/proj)
+	if(!issamexenohive(proj.shot_from) && has_status_effect(STATUS_EFFECT_NO_HEALTH_REGEN))
+		remove_status_effect(STATUS_EFFECT_NO_HEALTH_REGEN)
+		no_health_regen_grace_period = TRUE
+		addtimer(CALLBACK(src, PROC_REF(grace_period_end)), 15 SECONDS)
 	if(issamexenohive(proj.shot_from) && (isxeno(proj.shot_from) || istype(proj.shot_from, /obj/structure/xeno))) //Aliens won't be harming allied aliens.
 		return
 
@@ -1027,6 +1042,9 @@ So if we are on the 32th absolute pixel coordinate we are on tile 1, but if we a
 		use_plasma(proj.ammo.plasma_drain)
 
 	return ..()
+
+/mob/living/carbon/xenomorph/proc/grace_period_end()
+	no_health_regen_grace_period = FALSE
 
 /atom/movable/projectile/hitscan
 	///The icon of the laser beam that will be created
@@ -1493,3 +1511,4 @@ So if we are on the 32th absolute pixel coordinate we are on tile 1, but if we a
 
 #undef PROJ_ABS_PIXEL_TO_TURF
 #undef PROJ_ANIMATION_SPEED
+#undef PROJECTILE_FF_MULT

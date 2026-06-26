@@ -506,7 +506,7 @@ GLOBAL_LIST(cable_radial_layer_list)
 		balloon_alert(user, "Already busy!")
 		return TRUE
 
-	var/repair_time = 1 SECONDS
+	var/repair_time = 1.5 SECONDS
 	if(H == user)
 		repair_time *= 3
 

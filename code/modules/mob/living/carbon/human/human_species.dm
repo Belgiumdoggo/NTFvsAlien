@@ -31,6 +31,12 @@
 /mob/living/carbon/human/species/moth
 	race = "Mothellian"
 
+/mob/living/carbon/human/species/akula
+	race = "Akula"
+
+/mob/living/carbon/human/species/anthro
+	race = "Anthro"
+
 /mob/living/carbon/human/species/vatgrown
 	race = "Vat-Grown Human"
 
@@ -39,6 +45,9 @@
 
 /mob/living/carbon/human/species/vatborn
 	race = "Vatborn"
+
+/mob/living/carbon/human/species/resurgentis
+	race = "Resurgentis"
 
 /mob/living/carbon/human/species/skeleton
 	race = "Skeleton"
@@ -83,6 +92,9 @@
 
 /mob/living/carbon/human/species/robot/bravada
 	race = "Sterling Combat Robot"
+
+/mob/living/carbon/human/species/robot/synskin
+	race = "Synskin Combat Robot"
 
 /mob/living/carbon/human/species/prototype_supersoldier
 	race = "Prototype Supersoldier"

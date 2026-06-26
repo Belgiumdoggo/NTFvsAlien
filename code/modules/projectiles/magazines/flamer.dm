@@ -21,6 +21,9 @@
 /obj/item/ammo_magazine/flamer_tank/get_fueltype()
 	return fuel_type
 
+/obj/item/ammo_magazine/flamer_tank/is_refuelable()
+	return TRUE
+
 /obj/item/ammo_magazine/flamer_tank/can_refuel(atom/refueler, fuel_type, mob/user)
 	if(fuel_type != get_fueltype())
 		user?.balloon_alert(user, "wrong fuel")
@@ -142,6 +145,7 @@
 	reload_delay = 4 SECONDS
 	default_ammo = /datum/ammo/flamethrower
 	icon_state_mini = "tank_orange"
+	bonus_overlay = "c21_otank"
 	fuel_type = DEFAULT_FUEL_TYPE
 
 
@@ -155,3 +159,4 @@
 	default_ammo = /datum/ammo/flamethrower/blue
 	fuel_type = /datum/reagent/fuel/xfuel
 	icon_state_mini = "tank_blue"
+	bonus_overlay = "c21_btank"

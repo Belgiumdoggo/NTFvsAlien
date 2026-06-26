@@ -9,7 +9,8 @@
 	name = "Sovl War"
 	config_tag = "Sovl War"
 	silo_scaling = SOVL_WAR_SILO_SCALE
-	round_type_flags = MODE_ALAMO_ONLY|MODE_INFESTATION|MODE_LATE_OPENING_SHUTTER_TIMER|MODE_XENO_RULER|MODE_PSY_POINTS|MODE_PSY_POINTS_ADVANCED|MODE_HIJACK_POSSIBLE|MODE_SILO_RESPAWN|MODE_SILOS_SPAWN_MINIONS|MODE_ALLOW_XENO_QUICKBUILD|MODE_FORCE_CUSTOMSQUAD_UI
+	round_type_flags = MODE_ALAMO_ONLY|MODE_INFESTATION|MODE_LATE_OPENING_SHUTTER_TIMER|MODE_XENO_RULER|MODE_PSY_POINTS|MODE_PSY_POINTS_ADVANCED|MODE_HIJACK_POSSIBLE|MODE_SILO_RESPAWN|MODE_SILOS_SPAWN_MINIONS|MODE_ALLOW_XENO_QUICKBUILD|MODE_FORCE_CUSTOMSQUAD_UI|MODE_MUTATIONS_OBTAINABLE
+	round_type_flags2 = MODE_2_NO_ABDUCT
 	xeno_abilities_flags = ABILITY_NUCLEARWAR
 	valid_job_types = list(
 		/datum/job/terragov/command/captain = 1,
@@ -47,6 +48,7 @@
 	evo_requirements = list(
 		/datum/xeno_caste/queen = 8,
 		/datum/xeno_caste/king = 12,
+		/datum/xeno_caste/dragon = 12,
 	)
 /* NTF edit
 	restricted_castes = list(/datum/xeno_caste/wraith, /datum/xeno_caste/hivemind)
@@ -97,8 +99,10 @@
 	if(round_finished)
 		return
 	if(round_stage == INFESTATION_MARINE_CRASHING)
+		priority_announce("The hive has collapsed due to lack of rulership.", "Orphan hivemind collapse", type = ANNOUNCEMENT_PRIORITY)
 		round_finished = MODE_INFESTATION_M_MINOR
 		return
+	priority_announce("The hive has collapsed due to lack of rulership.  Marines win!", "Orphan hivemind collapse", type = ANNOUNCEMENT_PRIORITY)
 	round_finished = MODE_INFESTATION_M_MAJOR
 
 /datum/game_mode/infestation/sovl_war/get_hivemind_collapse_countdown()

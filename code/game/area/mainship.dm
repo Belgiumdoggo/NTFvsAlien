@@ -536,7 +536,7 @@
 	icon_state = "req"
 	requires_power = FALSE
 
-/area/mainship/patrol_base/hangar
+/area/mainship/patrol_base/hanger //Yes it's misspelled, but it's like that upstream too and fixing it everywhere would cause problems with updates
 	name = "NTC hangar"
 	icon_state = "hangar"
 	minimap_color = MINIMAP_AREA_LZ
@@ -559,7 +559,7 @@
 /area/mainship/patrol_base/som
 	name = "SOM Combat Patrol Base"
 
-/area/mainship/patrol_base/som/hangar
+/area/mainship/patrol_base/som/hanger //Yes it's misspelled, but it's like that upstream too and fixing it everywhere would cause problems with updates
 	name = "SOM Main hangar"
 	icon_state = "hangar"
 	minimap_color = MINIMAP_AREA_LZ
@@ -592,6 +592,12 @@
 /area/mainship/patrol_base/telecomms
 	name = "Telecommunications"
 	icon_state = "tcomms"
+
+/area/mainship/patrol_base/independent
+	name = "Independent Combat Patrol Base"
+
+/area/mainship/patrol_base/xeno
+	name = "Xeno Combat Patrol Base"
 
 /area/mainship/multiz_debug_area
 	name = "Multi-Z Debugging"
@@ -804,6 +810,15 @@
 	icon_state = "portumbilical"
 	minimap_color = MINIMAP_AREA_CAVES
 
+/area/mainship/groundhq/ntf/hallways/gardens
+	name = "Gardens"
+	icon_state = "portumbilical"
+	minimap_color = MINIMAP_AREA_CAVES
+
+/area/mainship/groundhq/ntf/crimsonveil
+	name = "Crimson Veil"
+	icon_state = "portumbilical"
+	minimap_color = MINIMAP_AREA_ENGI
 
 /area/mainship/groundhq/ntf/hallways/aft_umbilical
 	name = "Umbilical Aft"

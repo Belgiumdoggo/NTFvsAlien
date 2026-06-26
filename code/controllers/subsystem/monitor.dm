@@ -1,6 +1,6 @@
 SUBSYSTEM_DEF(monitor)
 	name = "Monitor"
-	init_order = INIT_ORDER_MONITOR
+	init_stage = INITSTAGE_EARLY
 	runlevels = RUNLEVEL_GAME
 	wait = 3 MINUTES
 	can_fire = TRUE
@@ -215,7 +215,11 @@ SUBSYSTEM_DEF(monitor)
 	clf_on_ship = 0
 	for(var/human in (GLOB.alive_human_list_faction[FACTION_TERRAGOV] | GLOB.alive_human_list_faction[FACTION_NANOTRASEN]))
 		var/turf/TU = get_turf(human)
+		if(!istype(TU))
+			continue
 		var/area/myarea = TU.loc
+		if(!myarea)
+			continue
 		if(is_ground_level(TU.z))
 			human_on_ground++
 			if(myarea.area_flags & NEAR_FOB)
@@ -224,6 +228,8 @@ SUBSYSTEM_DEF(monitor)
 			human_on_ship++
 	for(var/human in GLOB.alive_human_list_faction[FACTION_CLF])
 		var/turf/TU = get_turf(human)
+		if(!istype(TU))
+			continue
 		if(is_ground_level(TU.z))
 			human_on_ground++
 		else if(is_mainship_level(TU.z))
@@ -265,7 +271,7 @@ SUBSYSTEM_DEF(monitor)
 	var/datum/hive_status/normal/HN = GLOB.hive_datums[XENO_HIVE_NORMAL]
 	var/xeno_alive_plus_burrowed = HN.total_xenos_for_evolving()
 	var/xeno_alive_excl_burrowed = xeno_alive_plus_burrowed - burrowed
-	var/buff_needed_estimation = min(MAXIMUM_XENO_BUFF_POSSIBLE, max(1, xeno_alive_plus_burrowed/((xeno_alive_excl_burrowed + xeno_job.free_xeno_at_start)*2)))
+	var/buff_needed_estimation = min(MAXIMUM_XENO_BUFF_POSSIBLE, max(1, xeno_alive_plus_burrowed/(max(1,(xeno_alive_excl_burrowed + xeno_job.free_xeno_at_start)*2))))
 	// No need to ask admins every time
 	if(buff_needed_estimation == 1)
 		return buff_needed_estimation

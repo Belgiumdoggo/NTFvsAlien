@@ -102,7 +102,6 @@
 		/obj/item/attachable/buildasentry,
 		/obj/item/attachable/shoulder_mount,
 		/obj/item/attachable/scope/marine,
-		/obj/item/weapon/gun/shotgun/combat/masterkey,
 	)
 
 	muzzleflash_iconstate = "muzzle_flash_laser"
@@ -128,7 +127,8 @@
 	placed_overlay_iconstate = "tx7"
 
 /obj/item/weapon/gun/pistol/plasma_pistol/beginner
-	starting_attachment_types = list(/obj/item/weapon/gun/shotgun/combat/masterkey, /obj/item/attachable/reddot, /obj/item/attachable/lasersight)
+	starting_attachment_types = list(/obj/item/weapon/gun/shotgun/combat/masterkey,
+		/obj/item/weapon/gun/pistol/g22/tranq, /obj/item/attachable/reddot, /obj/item/attachable/lasersight)
 
 /obj/item/weapon/gun/pistol/plasma_pistol/can_attach(obj/item/attaching_to, mob/attacher)
 	if(!attachments_by_slot[ATTACHMENT_SLOT_RAIL])
@@ -142,6 +142,7 @@
 
 /obj/item/weapon/gun/pistol/plasma_pistol/on_detach(obj/item/attached_to, mob/user)
 	gun_features_flags &= ~(GUN_WIELDED_STABLE_FIRING_ONLY|GUN_WIELDED_FIRING_ONLY)
+	set_gun_user(user)
 	return ..()
 
 /obj/item/weapon/gun/pistol/plasma_pistol/guardsman_pistol
@@ -268,29 +269,6 @@
 	fire_delay = 0.15 SECONDS
 	damage_mult = 1.3
 
-/obj/item/weapon/gun/pistol/m1911/custom/specops
-	name = "\improper P-1911SO custom pistol"
-	desc = "A handgun that has received an unholy amount of modifications. It seems to have been lovingly taken care of and passed down for generations. Lacks an auto magazine eject feature."
-	default_ammo_type = /obj/item/ammo_magazine/pistol/m1911/ap
-	attachable_allowed = list(
-		/obj/item/attachable/reddot,
-		/obj/item/attachable/flashlight,
-		/obj/item/attachable/lasersight,
-		/obj/item/attachable/extended_barrel,
-		/obj/item/attachable/suppressor,
-		/obj/item/attachable/quickfire,
-		/obj/item/attachable/lace,
-		/obj/item/attachable/buildasentry,
-		/obj/item/attachable/shoulder_mount,
-	)
-	starting_attachment_types = list(
-		/obj/item/attachable/reddot,
-		/obj/item/attachable/lasersight,
-		/obj/item/attachable/suppressor,
-	)
-	accuracy_mult = 1.15
-	accuracy_mult_unwielded = 0.95
-
 //-------------------------------------------------------
 //P-22. Blocc
 
@@ -316,50 +294,6 @@
 	aim_slowdown = 0.2
 	fire_delay = 0.2 SECONDS
 	holstered_underlay_icon = 'ntf_modular/icons/obj/items/storage/holster.dmi'
-
-/obj/item/weapon/gun/pistol/g22/tranq
-	name = "\improper P-22 custom pistol"
-	desc = "A 20th century military firearm customized for special forces use, fires chemical loaded bullets to take down enemies nonlethally. Must be cocked manually therefore has disgusting fire rate, but custom frame allows greater accuracy."
-	icon = 'ntf_modular/icons/obj/items/guns/pistols.dmi'
-	icon_state = "g22"
-	worn_icon_state = "g22"
-	fire_animation = null //it doesnt cycle itself.
-	cock_animation = "g22_fire"
-	cock_delay = 1 SECONDS
-	caliber = CALIBER_9X19_TRANQUILIZER //codex
-	load_method = SINGLE_CASING //codex
-	max_shells = null
-	max_chamber_items = 12 //codex
-	default_ammo_type = /datum/ammo/bullet/pistol/tranq
-	allowed_ammo_types = list(/obj/item/ammo_magazine/pistol/g22tranq, /obj/item/ammo_magazine/pistol/g22)
-	attachable_offset = list("muzzle_x" = 29, "muzzle_y" = 20,"rail_x" = 10, "rail_y" = 21, "under_x" = 21, "under_y" = 15, "stock_x" = 21, "stock_y" = 17)
-	attachable_allowed = list(
-		/obj/item/attachable/suppressor,
-		/obj/item/attachable/reddot,
-		/obj/item/attachable/flashlight,
-		/obj/item/attachable/compensator,
-		/obj/item/attachable/lasersight,
-		/obj/item/attachable/extended_barrel,
-		/obj/item/attachable/heavy_barrel,
-		/obj/item/attachable/flashlight/under,
-		/obj/item/attachable/gyro,
-		/obj/item/attachable/lace,
-	)
-	starting_attachment_types = list(
-		/obj/item/attachable/reddot,
-		/obj/item/attachable/lasersight,
-		/obj/item/attachable/suppressor,
-	)
-	reciever_flags = AMMO_RECIEVER_MAGAZINES|AMMO_RECIEVER_REQUIRES_UNIQUE_ACTION|AMMO_RECIEVER_UNIQUE_ACTION_LOCKS
-	cocked_message = "You rack the pistol"
-	cock_locked_message = "The pistol is loaded! Fire it first!"
-	gun_features_flags = GUN_CAN_POINTBLANK|GUN_AMMO_COUNTER
-	fire_delay = 0.7 SECONDS //manual cock anyway, meant to be able to not get obliterated up close too badly, unlike moonbeam.
-	accuracy_mult = 1.8
-	accuracy_mult_unwielded = 1.5
-	burst_amount = 1
-	akimbo_additional_delay = 0.9
-
 
 //-------------------------------------------------------
 //DEAGLE //Deagle Brand Deagle
@@ -786,7 +720,7 @@
 	icon_state = "c96"
 	worn_icon_state = "c96"
 	caliber = CALIBER_9X19
-	max_shells = 22
+	max_shells = 17
 	fire_sound = 'sound/weapons/guns/fire/tp23.ogg'
 	dry_fire_sound = 'sound/weapons/guns/fire/vp70_empty.ogg'
 	unload_sound = 'sound/weapons/guns/interact/uzi_unload.ogg'
@@ -809,13 +743,13 @@
 	attachable_offset = list("muzzle_x" = 29, "muzzle_y" = 21,"rail_x" = 2, "rail_y" = 23, "under_x" = 22, "under_y" = 15, "stock_x" = 23, "stock_y" = 13)
 
 	fire_delay = 0.2 SECONDS
-	accuracy_mult = 1.0
-	accuracy_mult_unwielded = 0.75
-	recoil = -2
-	damage_mult = 1.2
-	aim_slowdown = 0.1
-	scatter = -1
+	accuracy_mult = 1.1
+	accuracy_mult_unwielded = 0.95
 	scatter_unwielded = 4
+	recoil = -2
+	recoil_unwielded = 0
+	akimbo_additional_delay = 1.1
+	akimbo_scatter_mod = 8
 	holstered_underlay_icon = 'ntf_modular/icons/obj/items/storage/holster.dmi'
 
 /obj/item/weapon/gun/pistol/vsd_pistol/standard
@@ -854,13 +788,15 @@
 	windup_sound = 'sound/weapons/guns/fire/t76_start.ogg'
 	fire_sound = 'sound/weapons/guns/fire/tgmc/kinetic/gun_r76.ogg'
 	fire_delay = 0.5 SECONDS
-	akimbo_additional_delay = 0.6
-	accuracy_mult_unwielded = 0.85
+	akimbo_additional_delay = 1
+	accuracy_mult_unwielded = 0.5
 	accuracy_mult = 1
-	scatter_unwielded = 5
+	scatter_unwielded = 25
 	scatter = 2
 	recoil = 4
-	recoil_unwielded = 3
+	recoil_unwielded = 12
+	burst_scatter_mult = 1.2
+	akimbo_scatter_mod = 6 //fuck you
 	holstered_underlay_icon = 'ntf_modular/icons/obj/items/storage/holster.dmi'
 
 /obj/item/weapon/gun/pistol/xmdivider/gunslinger
@@ -901,7 +837,7 @@ It is a modified Beretta 93R, and can fire three round burst or single fire. Whe
 		/obj/item/attachable/flashlight,
 		/obj/item/attachable/flashlight/under,
 		/obj/item/attachable/burstfire_assembly,
-		/obj/item/attachable/magnetic_harness,
+		/obj/item/attachable/lace,
 		/obj/item/attachable/scope,
 		/obj/item/attachable/scope/mini,
 		/obj/item/attachable/shoulder_mount,)
@@ -1028,6 +964,7 @@ It is a modified Beretta 93R, and can fire three round burst or single fire. Whe
 		/obj/item/attachable/magnetic_harness,
 		/obj/item/attachable/flashlight,
 		/obj/item/attachable/gyro,
+		/obj/item/attachable/motiondetector/advanced/pocket,
 	)
 
 	gun_features_flags = GUN_AMMO_COUNTER|GUN_IFF|GUN_SMOKE_PARTICLES
@@ -1049,4 +986,5 @@ It is a modified Beretta 93R, and can fire three round burst or single fire. Whe
 /obj/item/weapon/gun/pistol/smart_pistol/pmc
 	starting_attachment_types = list(
 		/obj/item/attachable/reddot,
+		/obj/item/attachable/motiondetector/advanced/sg,
 	)

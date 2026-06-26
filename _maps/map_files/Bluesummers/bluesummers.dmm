@@ -2987,7 +2987,7 @@
 /area/bluesummers/inside/engineering/plant)
 "cMa" = (
 /obj/structure/table/mainship,
-/obj/item/phone{
+/obj/structure/transmitter/colony_net/desk/auto_id{
 	pixel_x = -5
 	},
 /turf/open/floor/tile/darkgreen/darkgreen2{
@@ -3830,7 +3830,7 @@
 /area/bluesummers/caves/mining)
 "dvz" = (
 /obj/structure/table/mainship,
-/obj/item/phone,
+/obj/structure/transmitter/colony_net/desk/auto_id,
 /turf/open/floor/plating/mainship,
 /area/bluesummers/caves/mining/drill)
 "dvG" = (
@@ -4290,9 +4290,7 @@
 "dNj" = (
 /obj/structure/cable,
 /obj/effect/ai_node,
-/turf/open/floor/mainship/orange/corner{
-	dir = 2
-	},
+/turf/open/floor/mainship/orange/corner,
 /area/bluesummers/inside/engineering)
 "dOa" = (
 /obj/structure/bed/chair/comfy{
@@ -4488,7 +4486,7 @@
 /area/bluesummers/inside/engineering/office)
 "dWX" = (
 /obj/structure/table/mainship,
-/obj/item/phone{
+/obj/structure/transmitter/colony_net/desk/auto_id{
 	pixel_x = 10;
 	pixel_y = 11
 	},
@@ -4703,7 +4701,7 @@
 /area/bluesummers/inside/engineering)
 "ehw" = (
 /obj/structure/table/mainship,
-/obj/item/phone,
+/obj/structure/transmitter/colony_net/desk/auto_id,
 /turf/open/floor/mainship/orange{
 	dir = 4
 	},
@@ -5164,9 +5162,7 @@
 /obj/effect/turf_decal/warning_stripes/thick{
 	dir = 4
 	},
-/turf/open/floor/mainship/orange/corner{
-	dir = 2
-	},
+/turf/open/floor/mainship/orange/corner,
 /area/bluesummers/inside/engineering)
 "eGb" = (
 /turf/closed/wall/mainship,
@@ -5806,7 +5802,7 @@
 	pixel_x = 8;
 	pixel_y = 3
 	},
-/obj/item/phone,
+/obj/structure/transmitter/colony_net/desk/auto_id,
 /turf/open/floor/mainship/green/full,
 /area/bluesummers/inside/hydroponics/south)
 "fbL" = (
@@ -5918,9 +5914,7 @@
 /turf/open/floor/mainship/orange,
 /area/bluesummers/inside/engineering/office)
 "feN" = (
-/turf/open/floor/mainship/orange/corner{
-	dir = 2
-	},
+/turf/open/floor/mainship/orange/corner,
 /area/bluesummers/inside/engineering/office)
 "feT" = (
 /obj/structure/cable,
@@ -6228,14 +6222,14 @@
 /area/bluesummers/inside/luxury)
 "fur" = (
 /obj/structure/table/mainship,
-/obj/item/phone{
+/obj/structure/transmitter/colony_net/desk/auto_id{
 	pixel_x = -9
 	},
-/obj/item/phone{
+/obj/structure/transmitter/colony_net/desk/auto_id{
 	pixel_x = 1;
 	pixel_y = 11
 	},
-/obj/item/phone{
+/obj/structure/transmitter/colony_net/desk/auto_id{
 	pixel_x = 6
 	},
 /turf/open/floor/mainship/floor,
@@ -6507,6 +6501,12 @@
 /obj/structure/cable,
 /turf/open/floor/mainship/floor,
 /area/bluesummers/inside/engineering/plant/control)
+"fGE" = (
+/obj/effect/landmark/static_comms/net_one,
+/turf/open/floor/mainship/green/corner{
+	dir = 1
+	},
+/area/bluesummers/inside/luxury)
 "fGH" = (
 /obj/structure/table/wood/fancy,
 /obj/item/storage/fancy/candle_box,
@@ -7053,7 +7053,6 @@
 	},
 /area/bluesummers/caves/mining)
 "ghN" = (
-/obj/machinery/telecomms/relay/preset/telecomms,
 /turf/closed/mineral/smooth/desertdamrockwall/indestructible,
 /area/bluesummers/inside/telecomms)
 "gik" = (
@@ -7331,6 +7330,7 @@
 /area/bluesummers/inside/industrial)
 "gur" = (
 /obj/effect/ai_node,
+/obj/structure/cable,
 /turf/open/floor/plating/dmg3,
 /area/bluesummers/inside/food_processing/east)
 "gva" = (
@@ -7491,9 +7491,7 @@
 /area/bluesummers/inside/industrial)
 "gDJ" = (
 /obj/effect/ai_node,
-/turf/open/floor/mainship/orange/corner{
-	dir = 2
-	},
+/turf/open/floor/mainship/orange/corner,
 /area/bluesummers/inside/engineering)
 "gEC" = (
 /obj/effect/ai_node,
@@ -7878,6 +7876,11 @@
 /obj/machinery/light,
 /turf/open/floor/plating/plating_catwalk,
 /area/bluesummers/caves/cryostorage/south)
+"gTq" = (
+/obj/effect/ai_node,
+/obj/structure/cable,
+/turf/open/floor/plating/dmg3,
+/area/bluesummers/inside/industrial)
 "gUn" = (
 /obj/effect/spawner/random/misc/structure/closet/electrical,
 /obj/machinery/light{
@@ -7998,10 +8001,6 @@
 /obj/item/stack/sheet/metal,
 /turf/open/floor/plating/dmg1,
 /area/bluesummers/inside/engineering)
-"haL" = (
-/obj/structure/cable,
-/turf/open/floor/mainship/floor,
-/area/bluesummers/inside/luxury)
 "haY" = (
 /obj/effect/spawner/random/engineering/tool,
 /turf/open/floor/plating/plating_catwalk,
@@ -8118,9 +8117,7 @@
 /turf/open/floor/plating/mainship,
 /area/bluesummers/inside/garage)
 "hgS" = (
-/turf/open/floor/mainship/orange/corner{
-	dir = 2
-	},
+/turf/open/floor/mainship/orange/corner,
 /area/bluesummers/inside/engineering)
 "hgW" = (
 /obj/structure/rack,
@@ -8698,9 +8695,7 @@
 /area/bluesummers/inside/engineering/plant/control)
 "hBQ" = (
 /obj/effect/turf_decal/warning_stripes/thick,
-/turf/open/floor/mainship/orange/corner{
-	dir = 2
-	},
+/turf/open/floor/mainship/orange/corner,
 /area/bluesummers/inside/engineering)
 "hBX" = (
 /obj/structure/table/reinforced,
@@ -8928,7 +8923,7 @@
 /area/bluesummers/inside/recreation)
 "hNP" = (
 /obj/structure/table/mainship,
-/obj/item/phone{
+/obj/structure/transmitter/colony_net/desk/auto_id{
 	pixel_x = -4;
 	pixel_y = 5
 	},
@@ -9169,7 +9164,7 @@
 	pixel_x = 4;
 	pixel_y = -3
 	},
-/obj/item/phone{
+/obj/structure/transmitter/colony_net/desk/auto_id{
 	pixel_x = -7;
 	pixel_y = -3
 	},
@@ -9862,6 +9857,10 @@
 	},
 /turf/closed/wall/mainship/gray/outer,
 /area/bluesummers/caves/mining/drill)
+"iBR" = (
+/obj/effect/landmark/static_comms/net_two,
+/turf/open/floor/plating,
+/area/bluesummers/inside/garage)
 "iBT" = (
 /obj/structure/table/mainship,
 /obj/item/paper{
@@ -10602,7 +10601,7 @@
 	pixel_x = 8;
 	pixel_y = 6
 	},
-/obj/item/phone{
+/obj/structure/transmitter/colony_net/desk/auto_id{
 	pixel_x = -5
 	},
 /obj/structure/table/wood/fancy,
@@ -11502,9 +11501,7 @@
 /area/bluesummers/outside/southeast)
 "jOB" = (
 /obj/effect/landmark/weed_node,
-/turf/open/floor/mainship/orange/corner{
-	dir = 2
-	},
+/turf/open/floor/mainship/orange/corner,
 /area/bluesummers/inside/engineering)
 "jOH" = (
 /obj/structure/prop/mainship/vat/broken{
@@ -12072,7 +12069,6 @@
 /obj/effect/spawner/random/misc/trash,
 /obj/structure/cable,
 /obj/effect/ai_node,
-/obj/structure/cable,
 /turf/open/floor/plating,
 /area/bluesummers/caves/northeast/indoor)
 "kip" = (
@@ -12257,6 +12253,7 @@
 /area/bluesummers/caves/mining)
 "koA" = (
 /obj/effect/landmark/start/job/xenomorph,
+/obj/effect/landmark/patrol_point/xeno/xeno_11,
 /turf/open/floor/plating/ground/drought/cave,
 /area/bluesummers/caves/north)
 "koC" = (
@@ -12847,7 +12844,7 @@
 /area/bluesummers/inside/observation_deck)
 "kNn" = (
 /obj/structure/table/mainship,
-/obj/item/phone{
+/obj/structure/transmitter/colony_net/desk/auto_id{
 	pixel_y = -1;
 	pixel_x = -2
 	},
@@ -15966,7 +15963,7 @@
 /area/bluesummers/caves/mining/south)
 "neR" = (
 /obj/structure/table/mainship,
-/obj/item/phone{
+/obj/structure/transmitter/colony_net/desk/auto_id{
 	pixel_x = 6
 	},
 /turf/open/floor/tile/dark/brown2{
@@ -16292,11 +16289,6 @@
 "nsm" = (
 /turf/closed/wall/mainship,
 /area/bluesummers/inside/captains_office)
-"nsx" = (
-/obj/structure/cable,
-/obj/structure/cable,
-/turf/open/floor/plating/ground/drought,
-/area/bluesummers/outside/south)
 "nsN" = (
 /obj/structure/bed/chair,
 /turf/open/floor/mainship/floor,
@@ -17002,7 +16994,7 @@
 /area/bluesummers/inside/space_port)
 "oaX" = (
 /obj/structure/table/mainship,
-/obj/item/phone{
+/obj/structure/transmitter/colony_net/desk/auto_id{
 	pixel_x = 6
 	},
 /turf/open/floor/mainship/floor,
@@ -17205,7 +17197,7 @@
 /area/bluesummers/inside/hydroponics)
 "ohn" = (
 /obj/structure/table/mainship,
-/obj/item/phone{
+/obj/structure/transmitter/colony_net/desk/auto_id{
 	pixel_y = -13
 	},
 /obj/machinery/cell_charger,
@@ -20515,7 +20507,7 @@
 /area/bluesummers/caves/north)
 "qIP" = (
 /obj/structure/table/mainship,
-/obj/item/phone,
+/obj/structure/transmitter/colony_net/desk/auto_id,
 /obj/item/blueprints{
 	pixel_x = -6
 	},
@@ -20672,7 +20664,6 @@
 	},
 /area/bluesummers/inside/industrial)
 "qOz" = (
-/obj/structure/cable,
 /obj/structure/cable,
 /turf/open/floor/mainship/floor,
 /area/bluesummers/inside/luxury)
@@ -21790,7 +21781,7 @@
 /area/bluesummers/caves/northeast/garbledradio)
 "rKv" = (
 /obj/structure/table/mainship,
-/obj/item/phone{
+/obj/structure/transmitter/colony_net/desk/auto_id{
 	pixel_x = 6
 	},
 /turf/open/floor/plating/plating_catwalk,
@@ -22697,6 +22688,10 @@
 /obj/effect/decal/cleanable/greenglow,
 /turf/open/floor/plating/plating_catwalk,
 /area/bluesummers/caves/cryostorage/south)
+"sxo" = (
+/obj/effect/landmark/patrol_point/xeno/xeno_21,
+/turf/open/floor/plating/ground/drought,
+/area/bluesummers/inside/space_port)
 "sxq" = (
 /obj/structure/largecrate/random/mini{
 	pixel_y = 8;
@@ -22881,7 +22876,7 @@
 /area/bluesummers/caves/north)
 "sEX" = (
 /obj/structure/table/mainship,
-/obj/item/phone{
+/obj/structure/transmitter/colony_net/desk/auto_id{
 	pixel_x = 6
 	},
 /turf/open/floor/tile/dark/green2/corner{
@@ -23565,6 +23560,10 @@
 /obj/effect/landmark/weed_node,
 /turf/open/floor/plating,
 /area/bluesummers/caves/mining/south)
+"tjB" = (
+/obj/structure/cable,
+/turf/open/floor/plating/dmg1,
+/area/bluesummers/caves/northwest/garbledradio/indoor)
 "tjM" = (
 /obj/structure/bed/chair/comfy,
 /turf/open/floor/mainship/floor,
@@ -24383,7 +24382,7 @@
 	pixel_x = 4;
 	pixel_y = 10
 	},
-/obj/item/phone{
+/obj/structure/transmitter/colony_net/desk/auto_id{
 	pixel_x = 1;
 	pixel_y = -3
 	},
@@ -25545,11 +25544,6 @@
 	},
 /turf/open/floor/mainship/floor,
 /area/bluesummers/inside/hydroponics)
-"uNU" = (
-/obj/structure/cable,
-/obj/structure/cable,
-/turf/open/floor/plating/ground/drought/cave,
-/area/bluesummers/caves/northeast)
 "uNX" = (
 /obj/structure/window_frame/mainship,
 /obj/effect/spawner/random/misc/shard,
@@ -26028,7 +26022,7 @@
 "vgW" = (
 /obj/structure/table/mainship,
 /obj/item/clipboard,
-/obj/item/phone{
+/obj/structure/transmitter/colony_net/desk/auto_id{
 	pixel_x = 6
 	},
 /turf/open/floor/tile/dark/brown2/corner{
@@ -26133,7 +26127,7 @@
 /area/bluesummers/caves/northeast)
 "vok" = (
 /obj/structure/table/mainship,
-/obj/item/phone{
+/obj/structure/transmitter/colony_net/desk/auto_id{
 	pixel_x = 6
 	},
 /turf/open/floor/plating/plating_catwalk,
@@ -28534,11 +28528,6 @@
 	dir = 10
 	},
 /area/bluesummers/caves/cryostorage/bridge)
-"xAb" = (
-/obj/structure/cable,
-/obj/structure/cable,
-/turf/open/floor/plating,
-/area/bluesummers/outside/northeast)
 "xAc" = (
 /obj/effect/spawner/random/misc/shard,
 /turf/open/floor/plating,
@@ -34888,7 +34877,7 @@ viR
 hmr
 iRY
 fQB
-mZn
+gTq
 kRv
 ubI
 ubI
@@ -36469,7 +36458,7 @@ rOc
 oUk
 chz
 gHW
-sLT
+tjB
 tKb
 tvA
 tKb
@@ -41818,7 +41807,7 @@ lSo
 jbJ
 jbJ
 sAe
-wlC
+fGE
 uTJ
 nwy
 rWh
@@ -42910,7 +42899,7 @@ rOc
 rOc
 llN
 uHu
-haL
+qOz
 jbJ
 jbJ
 iUY
@@ -43472,7 +43461,7 @@ tUm
 jbJ
 enP
 iUY
-haL
+qOz
 iUY
 nwy
 dcd
@@ -43836,7 +43825,7 @@ jbJ
 jbJ
 mQj
 iUY
-haL
+qOz
 xGy
 srC
 rOc
@@ -47516,7 +47505,7 @@ bMd
 byr
 mBd
 ohZ
-ohZ
+sxo
 fUE
 ohZ
 ohZ
@@ -48207,7 +48196,7 @@ tmP
 sdA
 tmP
 tmP
-nsx
+gtc
 pqb
 lzI
 lzI
@@ -52719,7 +52708,7 @@ gYn
 qXB
 ouR
 qXB
-xAb
+rFQ
 kGi
 pQe
 cfK
@@ -53622,7 +53611,7 @@ vmQ
 vmQ
 vmQ
 vmQ
-rKZ
+lEv
 nsm
 gVo
 rIj
@@ -56846,7 +56835,7 @@ vYU
 uNj
 byx
 aey
-uNU
+aey
 aey
 aey
 vXm
@@ -58782,7 +58771,7 @@ aPB
 hbE
 eGx
 amj
-hbE
+iBR
 hbE
 hbE
 xrg

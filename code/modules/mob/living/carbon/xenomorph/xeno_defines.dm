@@ -225,6 +225,8 @@
 
 ///Add needed component to the xeno
 /datum/xeno_caste/proc/on_caste_applied(mob/xenomorph)
+	if(CHECK_BITFIELD(SSticker.mode?.round_type_flags, MODE_ENCOUNTER))
+		ADD_TRAIT(xenomorph, TRAIT_INNATE_HEALING, XENO_TRAIT)
 	for(var/trait in caste_traits)
 		ADD_TRAIT(xenomorph, trait, XENO_TRAIT)
 	xenomorph.AddComponent(/datum/component/bump_attack)
@@ -234,6 +236,8 @@
 /datum/xeno_caste/proc/on_caste_removed(mob/xenomorph)
 	xenomorph.remove_component(/datum/component/bump_attack)
 	xenomorph.UnregisterSignal(xenomorph, COMSIG_XENOMORPH_ATTACK_LIVING)
+	if(CHECK_BITFIELD(SSticker.mode?.round_type_flags, MODE_ENCOUNTER))
+		REMOVE_TRAIT(xenomorph, TRAIT_INNATE_HEALING, XENO_TRAIT)
 	for(var/trait in caste_traits)
 		REMOVE_TRAIT(xenomorph, trait, XENO_TRAIT)
 
@@ -296,7 +300,7 @@ GLOBAL_LIST_INIT(strain_list, init_glob_strain_list())
 	appearance_flags = TILE_BOUND|PIXEL_SCALE|KEEP_TOGETHER|LONG_GLIDE
 	see_infrared = TRUE
 	hud_type = /datum/hud/alien
-	hud_possible = list(HEALTH_HUD_XENO, PLASMA_HUD, PHEROMONE_HUD, XENO_RANK_HUD, QUEEN_OVERWATCH_HUD, ARMOR_SUNDER_HUD, XENO_DEBUFF_HUD, XENO_FIRE_HUD, XENO_BLESSING_HUD, XENO_EVASION_HUD)
+	hud_possible = list(HEALTH_HUD_XENO, PLASMA_HUD, PHEROMONE_HUD, XENO_RANK_HUD, QUEEN_OVERWATCH_HUD, ARMOR_SUNDER_HUD, XENO_DEBUFF_HUD, XENO_HUMAN_SHARED_HUD, XENO_FIRE_HUD, XENO_BLESSING_HUD, XENO_EVASION_HUD)
 	buckle_flags = NONE
 	faction = FACTION_XENO
 	initial_language_holder = /datum/language_holder/xeno
@@ -309,10 +313,12 @@ GLOBAL_LIST_INIT(strain_list, init_glob_strain_list())
 	///Hive datum we belong to
 	VAR_PROTECTED/datum/hive_status/hive
 	///Xeno mob specific flags
-	var/xeno_flags = XENO_DESTROY_OWN_STRUCTURES | XENO_DESTROY_WEEDS
+	var/xeno_flags = XENO_DESTROY_OWN_STRUCTURES
 
 	///State tracking of hive status toggles
 	var/status_toggle_flags = HIVE_STATUS_DEFAULTS
+	///Whether this xeno is currently opted into hive target directives.
+	var/hive_target_participation = FALSE
 	///Handles displaying the various wound states of the xeno.
 	var/atom/movable/vis_obj/xeno_wounds/wound_overlay
 	///Handles displaying the various wound states of the xeno.
@@ -331,11 +337,9 @@ GLOBAL_LIST_INIT(strain_list, init_glob_strain_list())
 	var/xeno_desc = ""
 	///Profile picture set by player
 	var/xenoprofile_pic = ""
-	///fake gender var for xeno sprite
-	var/xenogender = 1
 
 	///A mob the xeno ate
-	var/mob/living/carbon/eaten_mob
+	var/mob/living/carbon/human/eaten_mob
 	///A mob the xeno is trying to eat
 	var/mob/living/devouring_mob
 	///How much evolution they have stored
@@ -383,6 +387,8 @@ GLOBAL_LIST_INIT(strain_list, init_glob_strain_list())
 	///Naming variables
 	var/nicknumber = 0 //The number/name after the xeno type. Saved right here so it transfers between castes.
 
+	var/possessor = null //who is in control of this mob, used exclusively for possessions
+
 	///This list of inherent verbs lets us take any proc basically anywhere and add them.
 	///If they're not a xeno subtype it might crash or do weird things, like using human verb procs
 	///It should add them properly on New() and should reset/readd them on evolves
@@ -396,6 +402,14 @@ GLOBAL_LIST_INIT(strain_list, init_glob_strain_list())
 
 	/// Visual effect that appears when doing a normal attack.
 	var/attack_effect = ATTACK_EFFECT_REDSLASH
+
+	// Stun health related vars
+	/// How much stun damage a mob has
+	var/stun_health_damage = 0
+	/// When true the xeno is in the crit from stun damage
+	var/stun_health_crit = FALSE
+	/// Timer which's created when xeno is critted from stun damage
+	var/stun_health_crit_timer = null
 
 	//Charge vars
 	///Will the mob charge when moving ? You need the charge verb to change this
@@ -468,6 +482,8 @@ GLOBAL_LIST_INIT(strain_list, init_glob_strain_list())
 	var/fiery_stab = FALSE
 
 	var/preggo = FALSE
+	///grace period to health regen after being hit by a projectile while fighting a xeno
+	var/no_health_regen_grace_period = FALSE
 
 	//list of active tunnels
 	var/list/tunnels = list()

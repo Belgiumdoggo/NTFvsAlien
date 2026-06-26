@@ -61,19 +61,19 @@
 
 //The base miss chance for the different defence zones
 GLOBAL_LIST_INIT(base_miss_chance, list(
-	"head" = 10,
+	"head" = 20,
 	"chest" = 0,
 	"groin" = 5,
-	"l_leg" = 10,
-	"r_leg" = 10,
-	"l_arm" = 10,
-	"r_arm" = 10,
-	"l_hand" = 30,
-	"r_hand" = 30,
-	"l_foot" = 40,
-	"r_foot" = 40,
-	"eyes" = 20,
-	"mouth" = 15,
+	"l_leg" = 25,
+	"r_leg" = 25,
+	"l_arm" = 25,
+	"r_arm" = 25,
+	"l_hand" = 50,
+	"r_hand" = 50,
+	"l_foot" = 65,
+	"r_foot" = 65,
+	"eyes" = 200, //Rp shooting mode, miss most of your shots, works against xenos too
+	"mouth" = 40,
 ))
 
 //Used to weight organs when an organ is hit randomly (i.e. not a directed, aimed attack).
@@ -461,7 +461,7 @@ GLOBAL_LIST_INIT(organ_rel_size, list(
 /mob/living/carbon/human/proc/do_unique_action()
 	SIGNAL_HANDLER
 	. = COMSIG_KB_ACTIVATED //The return value must be a flag compatible with the signals triggering this.
-	if(incapacitated() || lying_angle)
+	if(incapacitated())
 		return
 
 	var/obj/item/active_item = get_active_held_item()
@@ -479,3 +479,8 @@ GLOBAL_LIST_INIT(organ_rel_size, list(
 ///Returns the slowdown applied to the mob when moving through liquids like water
 /mob/proc/get_liquid_slowdown()
 	return MOB_WATER_SLOWDOWN
+
+/mob/living/carbon/get_liquid_slowdown()
+	if(species.liquid_slowdown)
+		return species.liquid_slowdown
+	return ..()

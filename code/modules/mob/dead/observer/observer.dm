@@ -15,7 +15,7 @@ GLOBAL_VAR_INIT(observer_default_invisibility, INVISIBILITY_OBSERVER)
 	invisibility = INVISIBILITY_OBSERVER
 	sight = SEE_SELF
 	hud_type = /datum/hud/ghost
-	//lighting_cutoff = LIGHTING_CUTOFF_HIGH
+	lighting_cutoff = LIGHTING_CUTOFF_LOW
 	dextrous = TRUE
 	status_flags = GODMODE | INCORPOREAL
 
@@ -195,6 +195,7 @@ GLOBAL_VAR_INIT(observer_default_invisibility, INVISIBILITY_OBSERVER)
 			if("Join as Larva")
 				var/mob/living/carbon/human/original_corpse = ghost.can_reenter_corpse?.resolve()
 				if(SSticker.mode.attempt_to_join_as_larva(ghost.client) && ishuman(original_corpse))
+					log_game("Marking [logdetails(original_corpse)] as undefibbable because its ghost, [logdetails(ghost)], just became a larva.")
 					original_corpse?.set_undefibbable()
 		return
 
@@ -254,7 +255,7 @@ GLOBAL_VAR_INIT(observer_default_invisibility, INVISIBILITY_OBSERVER)
 		return FALSE
 	SEND_SIGNAL(SSdcs, COMSIG_MOB_GHOSTIZE, src, can_reenter_corpse)
 
-	if(force_lobby || ((!SSticker.mode || CHECK_BITFIELD(SSticker.mode.round_type_flags, MODE_NO_GHOSTS)) && !(client && check_rights_for(client, R_ADMIN))))
+	if(force_lobby || ((!SSticker.mode || CHECK_BITFIELD(SSticker.mode.round_type_flags2, MODE_2_NO_GHOSTS_STRICT)) && !(client && check_rights_for(client, R_ADMIN))))
 		if(client)
 			client?.screen?.Cut()
 		var/mob/new_player/new_player = new /mob/new_player()
@@ -299,6 +300,7 @@ GLOBAL_VAR_INIT(observer_default_invisibility, INVISIBILITY_OBSERVER)
 		ghost.client?.init_verbs()
 		ghost.mind?.current = ghost
 		ghost.faction = faction
+		ghost.hivenumber = get_xeno_hivenumber()
 		ghost.pose = pose
 		ghost.ooc_notes = ooc_notes
 		ghost.ooc_notes_likes = ooc_notes_likes
@@ -322,6 +324,7 @@ GLOBAL_VAR_INIT(observer_default_invisibility, INVISIBILITY_OBSERVER)
 
 	if(!can_reenter_corpse && ishuman(src) && src.stat == DEAD)
 		var/mob/living/carbon/human/H = src
+		log_game("Marking [logdetails(H)] as undefibbable because ghostize was called on them with can_reenter_corpse set to FALSE.")
 		H.set_undefibbable()
 	mind = null
 
@@ -342,6 +345,7 @@ GLOBAL_VAR_INIT(observer_default_invisibility, INVISIBILITY_OBSERVER)
 	if(!. || can_reenter_corpse || aghosting)
 		return
 	var/mob/ghost = .
+	ghost.lighting_cutoff = LIGHTING_CUTOFF_MEDIUM //xeno ghosts can see in dark a bit.
 	if(tier != XENO_TIER_MINION)
 		GLOB.key_to_time_of_xeno_death[ghost.key] = world.time //If you ghost as a xeno that is not a minion, sets respawn timer
 
@@ -691,7 +695,12 @@ GLOBAL_VAR_INIT(observer_default_invisibility, INVISIBILITY_OBSERVER)
 	set category = "Ghost"
 	set name = "View Game Manifest"
 
-	var/dat = GLOB.datacore.get_manifest(ooc = TRUE)
+	var/viewfaction = faction
+	if(viewfaction == FACTION_XENO)
+		var/datum/hive_status/hive = GLOB.hive_datums[get_xeno_hivenumber()]
+		if(istype(hive))
+			viewfaction = hive.allied_factions[1]
+	var/dat = GLOB.datacore.get_manifest(FALSE, TRUE, viewfaction)
 
 	var/datum/browser/popup = new(src, "manifest", "<div align='center'>Game Manifest</div>", 370, 420)
 	popup.set_content(dat)
@@ -754,6 +763,7 @@ GLOBAL_VAR_INIT(observer_default_invisibility, INVISIBILITY_OBSERVER)
 	if(!isnull(can_reenter_corpse) && tgui_alert(usr, "Are you sure? You won't be able to get revived.", "Confirmation", list("Yes", "No")) == "Yes")
 		var/mob/living/carbon/human/human_current = can_reenter_corpse?.resolve()
 		if(ishuman(human_current))
+			log_game("Marking [logdetails(human_current)] as undefibbable because its ghost, [logdetails(src)], used the Do Not Revive verb.")
 			human_current.set_undefibbable(TRUE)
 		can_reenter_corpse = null
 		to_chat(usr, span_boldwarning("You can no longer be revived."))
@@ -816,6 +826,7 @@ GLOBAL_VAR_INIT(observer_default_invisibility, INVISIBILITY_OBSERVER)
 
 	var/mob/living/carbon/human/original_corpse = can_reenter_corpse?.resolve()
 	if(ishuman(original_corpse))
+		log_game("Marking [logdetails(original_corpse)] as undefibbable because its ghost, [logdetails(src)], is joining Valhalla.")
 		original_corpse?.set_undefibbable(TRUE)
 
 	if(choice == "Xenomorph")

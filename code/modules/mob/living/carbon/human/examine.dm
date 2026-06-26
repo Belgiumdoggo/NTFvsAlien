@@ -35,6 +35,11 @@
 	var/msg = ""
 
 	msg += "<span class='infoplain'>"
+	if(HAS_TRAIT(src, TRAIT_CULTIST))
+		if(isxeno(user) && user.get_xeno_hivenumber() == XENO_HIVE_NORMAL)
+			msg += "[t_He] has friendly pheromones... [t_He] is in service of the queen.\n"
+		else if(HAS_TRAIT(user, TRAIT_CULTIST))
+			msg += "You can recognize [t_him] from your cult, \a [job.title].\n"
 	msg += separator_hr("Outfit")
 
 	//uniform
@@ -295,6 +300,10 @@
 		msg += "[t_He] look[p_s()] a little soaked.\n"
 	if(on_fire)
 		msg += "[span_boldwarning("[t_He] [t_is] on fire!")]\n"
+	if(has_status_effect(STATUS_EFFECT_AMBROSIA_RESIDUE))
+		msg += "[span_warning("A glossy amber resin clings to [t_his] recently mended wounds.")]\n"
+	if(has_status_effect(STATUS_EFFECT_AMBROSIA_BONE_MEND))
+		msg += "[span_warning("Thin amber threads shift beneath [t_his] skin, slowly knitting damaged bones.")]\n"
 
 	var/list/wound_flavor_text = list() //List mapping each limb's display_name to its wound description
 	var/list/is_destroyed = list()
@@ -572,11 +581,21 @@
 			embryocount ++
 			if(!implanted)
 				break
+		var/grownlarvacount
+		for(var/mob/living/carbon/xenomorph/larva/grownlarva in contents)
+			grownlarvacount ++
+			if(!grownlarva)
+				break
 		msg += separator_hr("Xeno Info")
 		if(species.species_flags & IS_SYNTHETIC)
 			msg += "[span_xenowarning("You sense [t_he] [t_is] not organic.")]\n"
+		if(!(SSticker.mode.round_type_flags2 & MODE_2_CHILL_RULES))
+			if(getCloneLoss() >= 30)
+				msg += "<span style='color: red;'>You sense that even though [t_he] [t_is] suitable for carrying larva, they are unable to grow in this host due irrepairable damage!</span>\n"
 		if(status_flags & XENO_HOST)
-			msg += "[t_He] [t_is] impregnated with [embryocount] larva(s) and [t_he] [t_is][reagents.get_reagent_amount(/datum/reagent/consumable/larvajelly) > 0 ? "" : " not"] inoculated with Larval Accelerant.\n"
+			msg += "[t_He] [t_is] impregnated with [embryocount] embryo(s) and [t_he] [t_is][reagents.get_reagent_amount(/datum/reagent/consumable/larvajelly) > 0 ? "" : " not"] inoculated with Larval Accelerant.\n"
+			if(grownlarvacount)
+				msg += "[t_He] [t_has] [grownlarvacount] grown larvas inside, waiting to come out."
 			if(reagents.get_reagent_amount(/datum/reagent/medicine/tricordrazine))
 				msg += "[reagents.get_reagent_amount(/datum/reagent/medicine/tricordrazine)] doses of Tricordrazine [t_is] still inside the infected host, healing this one slowly.\n"
 			if(reagents.get_reagent_amount(/datum/reagent/medicine/inaprovaline))
@@ -600,7 +619,7 @@
 		if(reagents.get_reagent_amount(/datum/reagent/toxin/xeno_sanguinal))
 			msg += "Sanguinal([reagents.get_reagent_amount(/datum/reagent/toxin/xeno_sanguinal)]u): Causes brute damage and bleeding from the brute damage. Does additional damage types in the presence of other xeno-based toxins. Toxin damage for Neuro, Stamina damage for Hemodile, and Burn damage for Transvitox.\n"
 		if(reagents.get_reagent_amount(/datum/reagent/toxin/xeno_aphrotoxin))
-			msg += "Aphrotoxin([reagents.get_reagent_amount(/datum/reagent/toxin/xeno_aphrotoxin)]u): A strong aphrodisiac and larval growth toxin, will cause legs to go weak and boost larva growth.\n"
+			msg += "Aphrotoxin([reagents.get_reagent_amount(/datum/reagent/toxin/xeno_aphrotoxin)]u): A strong aphrodisiac, will cause legs to go weak and increase arousal.\n"
 		if(embryocount < 1)
 			if(reagents.get_reagent_amount(/datum/reagent/consumable/larvajelly))
 				msg += "Growth toxin: Makes the little ones grow faster while affected, but the host has no little ones inside..\n"

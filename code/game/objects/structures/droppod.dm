@@ -24,7 +24,7 @@ GLOBAL_DATUM(droppod_reservation, /datum/turf_reservation/transit/droppod)
 	max_integrity = 75
 	atom_flags = PREVENT_CONTENTS_EXPLOSION
 	coverage = 75
-	buckle_flags = CAN_BUCKLE|BUCKLE_PREVENTS_PULL
+	buckle_flags = CAN_BUCKLE
 	light_range = 1
 	light_power = 0.5
 	light_color = LIGHT_COLOR_EMISSIVE_GREEN
@@ -49,6 +49,7 @@ GLOBAL_DATUM(droppod_reservation, /datum/turf_reservation/transit/droppod)
 	var/respawns = FALSE
 	///was this pod intercepted and damaged
 	var/explosive_entry = FALSE
+	var/launchable_empty = FALSE
 
 /obj/structure/droppod/Initialize(mapload)
 	. = ..()
@@ -56,7 +57,7 @@ GLOBAL_DATUM(droppod_reservation, /datum/turf_reservation/transit/droppod)
 	interaction_actions += new /datum/action/innate/set_drop_target(src)
 	interaction_actions += new /datum/action/innate/launch_droppod(src)
 	RegisterSignals(SSdcs, list(COMSIG_GLOB_DROPSHIP_HIJACKED, COMSIG_GLOB_CAMPAIGN_MISSION_ENDED, COMSIG_GLOB_CAMPAIGN_DISABLE_DROPPODS), PROC_REF(disable_launching))
-	RegisterSignal(SSdcs, COMSIG_GLOB_GAMESTATE_GROUNDSIDE, PROC_REF(allow_drop))
+	RegisterSignals(SSdcs, list(COMSIG_GLOB_GAMESTATE_GROUNDSIDE, COMSIG_GLOB_CAMPAIGN_ENABLE_DROPPODS), PROC_REF(allow_drop))
 	RegisterSignal(SSdcs, COMSIG_GLOB_CAMPAIGN_MISSION_LOADED, PROC_REF(change_targeted_z))
 	//testing only
 	/* NTF edit
@@ -212,7 +213,7 @@ GLOBAL_DATUM(droppod_reservation, /datum/turf_reservation/transit/droppod)
 
 ///attempts to launch the drop pod at it's currently set coordinates. commanded_drop is TRUE when the drop is being requested by a command drop pod
 /obj/structure/droppod/proc/start_launch_pod(mob/user, commanded_drop = FALSE)
-	if(!(LAZYLEN(buckled_mobs) || LAZYLEN(contents)))
+	if(!(LAZYLEN(buckled_mobs) || LAZYLEN(contents)) && !launchable_empty)
 		return
 	if((SSticker?.mode?.round_type_flags & MODE_ALAMO_ONLY) && !(SSmapping.level_trait(z, ZTRAIT_ANTAG_MAIN_SHIP)))
 		to_chat(user, span_warning("Drop pods are not usable in this operation."))
@@ -318,7 +319,7 @@ GLOBAL_DATUM(droppod_reservation, /datum/turf_reservation/transit/droppod)
 /obj/structure/droppod/proc/finish_drop(mob/user, turf/reservedturf)
 	GLOB.droppod_reservation.taken_turfs -= reservedturf
 	var/turf/targetturf = locate(target_x, target_y, target_z)
-	for(var/obj/machinery/deployable/mounted/sentry/ads_system/ads in orange(GLOB.ads_intercept_range,reservedturf))
+	for(var/obj/machinery/deployable/mounted/sentry/ads_system/ads in range(GLOB.ads_intercept_range,targetturf))
 		if(!COOLDOWN_FINISHED(ads, intercept_cooldown))
 			continue
 		if(ads.try_intercept(reservedturf, src, 1, 10))
@@ -544,13 +545,15 @@ GLOBAL_DATUM(droppod_reservation, /datum/turf_reservation/transit/droppod)
 	desc = "A menacing metal hunk of steel that is used by the NTC for quick tactical redeployment. This one carries a self deploying sentry system."
 	icon_state = "sentrypod"
 	light_color = LIGHT_COLOR_EMISSIVE_RED
+	launchable_empty = TRUE
 
-/obj/structure/droppod/nonmob/turret_pod/Initialize(mapload)
-	. = ..()
+/obj/structure/droppod/nonmob/turret_pod/completedrop(mob/user)
 	new /obj/item/weapon/gun/sentry/pod_sentry(src)
 	if(!LAZYLEN(contents))
-		CRASH("Sentry pod spawned without a sentry!")
+		CRASH("Sentry pod landed without a sentry!")
 	load_package(contents[1])
+	. = ..()
+	qdel(src)
 
 /obj/structure/droppod/nonmob/mech_pod
 	name = "\improper NTC Zeus mech drop pod"

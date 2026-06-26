@@ -105,11 +105,14 @@
 			DEATHTIME_MESSAGE(usr)
 			return
 
+	if(tgui_alert(usr, "This will return you to the lobby so you can rejoin.  You will not be able to reclone.  Are you sure you wish to continue?", "Return to lobby", list("Yes", "No")) != "Yes")
+		return
 	var/mob/living/carbon/human/humancorpse = src
 	var/mob/dead/observer/ghost = src
 	if(isobserver(ghost))
 		humancorpse = ghost.can_reenter_corpse?.resolve()
 	if(ishuman(humancorpse) && humancorpse.mind == mind)
+		log_game("Marking [logdetails(humancorpse)] as undefibbable because it[isobserver(ghost) ? "'s ghost, [logdetails(ghost)]," : ""] is using the Respawn verb.")
 		humancorpse.set_undefibbable()
 	to_chat(usr, span_notice("You can respawn now, enjoy your new life!<br><b>Make sure to play a different character, and please roleplay correctly.</b>"))
 	GLOB.round_statistics.total_human_respawns++
@@ -181,22 +184,23 @@
 	// List of base choosable factions, taken job is a subtype of these.
 	var/list/static/base_faction_list = list(
 		/datum/job/clf,
-		/datum/job/freelancer,
 		/datum/job/pmc,
-		/datum/job/special_forces,
 		/datum/job/icc,
 		/datum/job/vsd,
+		/datum/job/survivor,
 	)
 
 	// List of HvH factions - these are handled differently, using the quick loadout outfits.
 	var/list/static/hvh_faction_list = list(/datum/job/som, /datum/job/terragov)
 	// List of rare factions, not common because they're funny in moderation / stronk.
-	var/list/static/rare_faction_list = list(/datum/job/sectoid, /datum/job/imperial, /datum/job/skeleton, /datum/job/erp, /datum/job/retired)
+	var/list/static/rare_faction_list = list(/datum/job/sectoid, /datum/job/imperial, /datum/job/skeleton, /datum/job/erp, /datum/job/retired, /datum/job/special_forces, /datum/job/freelancer)
 
 
-	var/total_list = base_faction_list + hvh_faction_list
+	var/total_list = hvh_faction_list
+	if(prob(40))
+		total_list = base_faction_list
 
-	if(prob(7))
+	if(prob(3))
 		total_list = rare_faction_list
 		if(prob(2))
 			total_list = list(/datum/job/deathsquad) // JACKPOT
@@ -211,19 +215,19 @@
 		switch(rand(100))
 			if(1 to 40)
 				// Standard
-				possible_outfits = is_som ? subtypesof(/datum/outfit/quick/som/marine) : subtypesof(/datum/outfit/quick/tgmc/marine)
+				possible_outfits = is_som ? subtypesof(/datum/outfit/quick/som/marine) :  (subtypesof(/datum/outfit/quick/tgmc/marine) + subtypesof(/datum/outfit/quick/beginner/marine))
 				job_type = is_som ? SSjob.GetJobType(/datum/job/som/squad/standard) : SSjob.GetJobType(/datum/job/terragov/squad/standard)
 			if(41 to 55)
 				// Engineer
-				possible_outfits = is_som ? subtypesof(/datum/outfit/quick/som/engineer) : subtypesof(/datum/outfit/quick/tgmc/engineer)
+				possible_outfits = is_som ? subtypesof(/datum/outfit/quick/som/engineer) : (subtypesof(/datum/outfit/quick/tgmc/engineer) + subtypesof(/datum/outfit/quick/beginner/engineer))
 				job_type = is_som ? SSjob.GetJobType(/datum/job/som/squad/engineer) : SSjob.GetJobType(/datum/job/terragov/squad/engineer)
 			if(56 to 70)
 				// Corpsman
-				possible_outfits = is_som ? subtypesof(/datum/outfit/quick/som/medic) : subtypesof(/datum/outfit/quick/tgmc/corpsman)
+				possible_outfits = is_som ? subtypesof(/datum/outfit/quick/som/medic) : (subtypesof(/datum/outfit/quick/tgmc/corpsman) + subtypesof(/datum/outfit/quick/beginner/corpsman))
 				job_type = is_som ? SSjob.GetJobType(/datum/job/som/squad/medic) : SSjob.GetJobType(/datum/job/terragov/squad/corpsman)
 			if(70 to 85)
 				// Specialist
-				possible_outfits = is_som ? subtypesof(/datum/outfit/quick/som/veteran) : subtypesof(/datum/outfit/quick/tgmc/smartgunner)
+				possible_outfits = is_som ? subtypesof(/datum/outfit/quick/som/veteran) : (subtypesof(/datum/outfit/quick/tgmc/smartgunner) + subtypesof(/datum/outfit/quick/beginner/smartgunner))
 				job_type = is_som ? SSjob.GetJobType(/datum/job/som/squad/veteran) : SSjob.GetJobType(/datum/job/terragov/squad/smartgunner)
 			else
 				// Squad Leader

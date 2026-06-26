@@ -64,7 +64,6 @@
 /datum/ammo/bullet/revolver/heavy/incen
 	name = "incendiary heavy revolver bullet"
 	ammo_behavior_flags = AMMO_INCENDIARY|AMMO_BALLISTIC
-	damage_type = BURN
 	penetration = 15
 
 /datum/ammo/bullet/revolver/heavy/ap
@@ -81,9 +80,9 @@
 
 /datum/ammo/bullet/revolver/t76/on_hit_mob(mob/target_mob, atom/movable/projectile/proj)
 	if(ishuman(target_mob))
-		staggerstun(target_mob, proj, paralyze = 0, stun = 1 SECONDS, knockback = 1)
+		staggerstun(target_mob, proj, paralyze = 0, stun = 0, stagger = 2 SECONDS, slowdown = 1, knockback = 1)
 	else
-		staggerstun(target_mob, proj, paralyze = 2 SECONDS, knockback = 1)
+		staggerstun(target_mob, proj, paralyze = 2 SECONDS, stagger = 2 SECONDS, slowdown = 1, knockback = 1)
 
 /datum/ammo/bullet/revolver/highimpact
 	name = "high-impact revolver bullet"
@@ -95,7 +94,7 @@
 
 /datum/ammo/bullet/revolver/highimpact/on_hit_mob(mob/target_mob, atom/movable/projectile/proj)
 	if(ishuman(target_mob))
-		staggerstun(target_mob, proj, paralyze = 0, stun = 1 SECONDS, stagger = 2 SECONDS, slowdown = 1, knockback = 1)
+		staggerstun(target_mob, proj, paralyze = 0, stun = 0, stagger = 2 SECONDS, slowdown = 1, knockback = 1)
 	else
 		staggerstun(target_mob, proj, paralyze = 2 SECONDS, stagger = 2 SECONDS, slowdown = 1, knockback = 1)
 

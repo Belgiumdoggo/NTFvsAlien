@@ -83,8 +83,8 @@
 	if(active)
 		return
 
+	log_bomber(user, "primed", src)
 	if(user?.client)
-		log_bomber(user, "primed", src)
 		var/datum/personal_statistics/personal_statistics = GLOB.personal_statistics_list[user.ckey]
 		personal_statistics.grenades_primed ++
 		personal_statistics.mission_grenades_primed ++
@@ -115,8 +115,9 @@
 			idiot.visible_message(span_danger("[idiot]'s hand is blown into tiny pieces by [src]!"),
 			span_userdanger("You feel incredible pain and stupidity as [src] blows your hand up."))
 			idiot.emote("scream")
-			var/datum/personal_statistics/personal_statistics = GLOB.personal_statistics_list[idiot.ckey]
-			personal_statistics.grenade_hand_delimbs ++
+			if(idiot.ckey)
+				var/datum/personal_statistics/personal_statistics = GLOB.personal_statistics_list[idiot.ckey]
+				personal_statistics.grenade_hand_delimbs ++
 	explosion(loc, light_impact_range = src.light_impact_range, weak_impact_range = src.weak_impact_range, explosion_cause=src)
 	qdel(src)
 

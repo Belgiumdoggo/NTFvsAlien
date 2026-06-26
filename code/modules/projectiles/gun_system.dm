@@ -476,6 +476,7 @@
 		COMSIG_KB_UNLOADGUN,
 		COMSIG_KB_GUN_SAFETY,
 		COMSIG_KB_UNIQUEACTION,
+		COMSIG_KB_UNIQUEACTION_UNDER,
 		COMSIG_KB_AUTOEJECT,
 		COMSIG_QDELETING,
 		COMSIG_RANGED_ACCURACY_MOD_CHANGED,
@@ -517,6 +518,7 @@
 		RegisterSignal(gun_user, COMSIG_MOB_MOUSEDRAG, PROC_REF(change_target))
 	else
 		RegisterSignal(gun_user, COMSIG_KB_UNIQUEACTION, PROC_REF(unique_action))
+	RegisterSignal(gun_user, COMSIG_KB_UNIQUEACTION_UNDER, PROC_REF(unique_action_under))
 	RegisterSignal(gun_user, COMSIG_QDELETING, PROC_REF(clean_gun_user))
 	RegisterSignals(gun_user, list(COMSIG_MOB_MOUSEUP, COMSIG_ITEM_ZOOM), PROC_REF(stop_fire))
 	RegisterSignal(gun_user, COMSIG_ITEM_UNZOOM, PROC_REF(on_unzoom))
@@ -1149,6 +1151,7 @@
 		user.apply_damage(200, OXY)
 		if(ishuman(user) && user == M)
 			var/mob/living/carbon/human/HM = user
+			log_game("Marking [logdetails(HM)] as undefibbable because they blew their own brains out.")
 			HM.set_undefibbable(TRUE) //can't be defibbed back from self inflicted gunshot to head
 		user.death()
 
@@ -1742,8 +1745,10 @@
 
 ///Checks if the gun can be fired
 /obj/item/weapon/gun/proc/able_to_fire(mob/user)
-	if(!user || user.incapacitated()  || user.lying_angle || !isturf(user.loc))
-		return
+	if(!user || user.incapacitated() || !isturf(user.loc))
+		return FALSE
+	if(!bipod_check(user))
+		return FALSE
 	if(rounds - rounds_per_shot < 0 && rounds)
 		to_chat(user, span_warning("There's not enough rounds left to fire."))
 		return FALSE
@@ -1760,7 +1765,9 @@
 		to_chat(user, span_warning("Your armor does not allow you to use this firearm!"))
 		return FALSE
 	if(HAS_TRAIT(src, TRAIT_GUN_SAFETY))
+		balloon_alert(user, "Safety is on!")
 		to_chat(user, span_warning("The safety is on!"))
+		playsound(user, dry_fire_sound, 25, 1, 5)
 		return FALSE
 	if(CHECK_BITFIELD(gun_features_flags, GUN_WIELDED_FIRING_ONLY)) //If we're not holding the weapon with both hands when we should.
 		if(!master_gun && !CHECK_BITFIELD(item_flags, WIELDED))
@@ -1846,6 +1853,8 @@
 		var/mob/living/living_firer = firer
 		if(living_firer.IsStaggered())
 			projectile_to_fire.damage *= STAGGER_DAMAGE_MULTIPLIER
+			projectile_to_fire.accuracy *= STAGGER_ACCURACY_MULTIPLIER
+			projectile_to_fire.point_blank_range = 0 //no point blank bonus when staggered
 
 ///Sets the projectile accuracy and scatter
 /obj/item/weapon/gun/proc/setup_bullet_accuracy()

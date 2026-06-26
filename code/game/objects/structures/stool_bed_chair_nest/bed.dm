@@ -12,7 +12,7 @@
 	desc = "A mattress seated on a rectangular metallic frame. This is used to support a lying person in a comfortable manner, notably for regular sleep. Ancient technology, but still useful."
 	icon_state = "bed"
 	icon = 'icons/obj/objects.dmi'
-	buckle_flags = CAN_BUCKLE|BUCKLE_PREVENTS_PULL
+	buckle_flags = CAN_BUCKLE
 	buckle_lying = 90
 	allow_pass_flags = PASS_LOW_STRUCTURE|PASSABLE
 	resistance_flags = XENO_DAMAGEABLE
@@ -126,8 +126,8 @@
 	. = ..()
 	if(!buckled_bodybag || buckled_bodybag.Move(loc, movement_dir, glide_size))
 		return TRUE
-	forceMove(buckled_bodybag.loc)
-	return FALSE
+	buckled_bodybag.forceMove(loc) //this should generally only happen in the bed itself is forcemoved, such as a shuttle
+	return TRUE
 
 /obj/structure/bed/roller/CanAllowThrough(atom/movable/mover, turf/target)
 	if(mover == buckled_bodybag)
@@ -147,7 +147,7 @@
 		balloon_alert(user, "brakes off")
 		anchored = FALSE
 
-/obj/structure/bed/MouseDrop_T(atom/dropping, mob/user)
+/obj/structure/bed/MouseDrop_T(atom/dropping, mob/user, params)
 	if(accepts_bodybag && !buckled_bodybag && !LAZYLEN(buckled_mobs) && istype(dropping,/obj/structure/closet/bodybag) && ishuman(user))
 		var/obj/structure/closet/bodybag/B = dropping
 		if(!B.roller_buckled && !B.anchored)
@@ -351,6 +351,8 @@ GLOBAL_LIST_EMPTY(activated_medevac_stretchers)
 
 /obj/structure/bed/medevac_stretcher/attack_alien(mob/living/carbon/xenomorph/xeno_attacker, damage_amount = xeno_attacker.xeno_caste.melee_damage * xeno_attacker.xeno_melee_damage_modifier, damage_type = BRUTE, armor_type = MELEE, effects = TRUE, armor_penetration = xeno_attacker.xeno_caste.melee_ap, isrightclick = FALSE)
 	if(xeno_attacker.status_flags & INCORPOREAL)
+		return FALSE
+	if(xeno_attacker.handcuffed)
 		return FALSE
 	if(buckled_bodybag)
 		unbuckle_bodybag()

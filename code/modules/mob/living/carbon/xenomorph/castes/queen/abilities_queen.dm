@@ -100,6 +100,8 @@
 	var/implanted_embryos = 0
 	for(var/obj/item/alien_embryo/implanted in A.contents)
 		implanted_embryos++
+	for(var/mob/living/carbon/xenomorph/larva/implanted in A.contents)
+		implanted_embryos++
 	if(implanted_embryos >= MAX_LARVA_PREGNANCIES)
 		if(X.a_intent == INTENT_HARM)
 			to_chat(X, span_warning("This host is already full of young ones... But you ignore it against your better judgement! Gripping the host tight, you continue..."))
@@ -126,6 +128,10 @@
 	if(A.stat == DEAD)
 		to_chat(owner, span_warning("Why would we sully our loins mating with the dead? Get a lesser being to do it for us..."))
 		return FALSE
+	if(implanted_embryos >= (MAX_LARVA_PREGNANCIES*2))
+		if(A.status_flags & GODMODE)
+			to_chat(owner, span_warning("We can't do any more of that while they are in this state."))
+			return FALSE
 	if(X.on_fire)
 		if(!silent)
 			to_chat(X, span_warning("We feel as if exposing our genitals while on fire is a bad idea..."))
@@ -137,7 +143,7 @@
 /datum/action/ability/activable/xeno/impregnatequeen/use_ability(mob/living/A)
 	var/channel = SSsounds.random_available_channel()
 	var/mob/living/carbon/xenomorph/X = owner
-	var/victimhole = "[A.gender == MALE ? "ass" : "pussy"]"
+	var/victimhole = "[A.gender == MALE ? HOLE_ASS : HOLE_VAGINA]"
 	if(ishuman(A))
 		switch(X.a_intent)
 			if(INTENT_HARM)
@@ -151,6 +157,8 @@
 	to_chat(owner, span_warning("We will impregnate this host shortly. Remain in proximity."))
 	var/implanted_embryos = 0
 	for(var/obj/item/alien_embryo/implanted in A.contents)
+		implanted_embryos++
+	for(var/mob/living/carbon/xenomorph/larva/implanted in A.contents)
 		implanted_embryos++
 	if(implanted_embryos >= MAX_LARVA_PREGNANCIES)
 		to_chat(owner, span_danger("This Host's belly looks like they are about to burst!.."))
@@ -171,13 +179,15 @@
 		A.emote("scream")
 		A.apply_damage((damageperlarva/damagescaledivisor)*implanted_embryos, BRUTE, BODY_ZONE_PRECISE_GROIN, updating_health = TRUE) //Too many larvae!
 		A.apply_damage(1*implanted_embryos, CLONE, BODY_ZONE_PRECISE_GROIN, updating_health = TRUE) //ripping that womb
-		if(ismonkey(A))
+		if(ismonkey(A) || HAS_TRAIT(A, TRAIT_FRAIL_LARVABURSTS))
 			A.apply_damage(50, BRUTE, BODY_ZONE_PRECISE_GROIN, updating_health = TRUE) //They CERTAINLY aren't fitting in a monkey.
 			A.apply_damage(10*implanted_embryos, CLONE, BODY_ZONE_PRECISE_GROIN, updating_health = TRUE)
 			if(prob(50))
 				owner.visible_message(span_danger("[X] causes [A] to blow up in a gorey mess!"), span_danger("We make [A] explode into a gorey mess!"), span_warning("You hear a gorey explosion."), 5, A)
 				for(var/obj/item/alien_embryo/implanted in A.contents)
 					new /obj/item/alien_embryo(A.loc)
+				for(var/mob/living/carbon/xenomorph/larva/implanted in A.contents)
+					new /mob/living/carbon/xenomorph/larva(A.loc)
 				explosion(A.loc,0,0,0,1,1,0,1)
 				A.gib()
 		if(A.stat == CONSCIOUS)
@@ -185,29 +195,21 @@
 			if(implanted_embryos >= (MAX_LARVA_PREGNANCIES*2))
 				for(var/D in damagetypes)
 					A.apply_damage((damageperlarva/damagescaledivisor)*implanted_embryos, D, BODY_ZONE_PRECISE_GROIN, updating_health = TRUE) //It'll get worse!
-					A.apply_damage(1, CLONE, BODY_ZONE_PRECISE_GROIN, updating_health = TRUE) //REALLY ripping that womb
+				A.apply_damage(3, CLONE, BODY_ZONE_PRECISE_GROIN, updating_health = TRUE) //REALLY ripping that womb
 	if(prob(chancebunch)) //Queen has a higher chance to lay in batches.
-		for(var/lcount=0, lcount<larvalbunch, lcount++)
-			var/obj/item/alien_embryo/larba = new(A)
-			larba.hivenumber = X.get_xeno_hivenumber()
-			larba.emerge_target_flavor = victimhole
+		implant_embryo(A, victimhole, 2, source = X, override_limit = MAX_LARVA_PREGNANCIES*2)
 		to_chat(owner, span_danger("You lay multiple larva at once!"))
 		to_chat(A, span_danger("You feel multiple larva being inserted at once!"))
-		if(ismonkey(A))
+		if(ismonkey(A) || HAS_TRAIT(A, TRAIT_FRAIL_LARVABURSTS))
 			A.apply_damage(larvalbunch*10, CLONE, BODY_ZONE_PRECISE_GROIN, updating_health = TRUE)
 	else
-		var/obj/item/alien_embryo/embryo = new(A)
-		embryo.hivenumber = X.get_xeno_hivenumber()
-		embryo.emerge_target_flavor = victimhole
-		GLOB.round_statistics.now_pregnant++
-		SSblackbox.record_feedback("tally", "round_statistics", 1, "now_pregnant") //Only counts once to give Xenomorphs a fair chance.
-		var/datum/personal_statistics/personal_statistics = GLOB.personal_statistics_list[X.ckey]
-		personal_statistics.impregnations++
-
+		implant_embryo(A, victimhole, source = X, override_limit = MAX_LARVA_PREGNANCIES*2)
 	if(A.stat == DEAD)
 		owner.visible_message(span_danger("[X] causes [A]'s belly to blow up in a gorey mess!"), span_danger("We make [A]'s belly explode into a gorey mess!"), span_warning("You hear a gorey explosion."), 5, A)
 		for(var/obj/item/alien_embryo/implanted in A.contents)
 			new /obj/item/alien_embryo(A.loc)
+		for(var/mob/living/carbon/xenomorph/larva/implanted in A.contents)
+			new /mob/living/carbon/xenomorph/larva(A.loc)
 		explosion(A.loc,0,0,0,1,1,0,1)
 
 	add_cooldown()
@@ -288,7 +290,7 @@
 				if(!xeno_owner.issamexenohive(affected_xeno))
 					continue
 				// Gives the benefit of Hivelord's Healing Infusion but it is halved in power (lower duration and less ticks of healing).
-				affected_xeno.apply_status_effect(/datum/status_effect/healing_infusion, HIVELORD_HEALING_INFUSION_DURATION / 2, HIVELORD_HEALING_INFUSION_TICKS / 2)
+				affected_xeno.apply_status_effect(STATUS_EFFECT_HEALING_INFUSION, HIVELORD_HEALING_INFUSION_DURATION / 2, HIVELORD_HEALING_INFUSION_TICKS / 2)
 
 			playsound(xeno_owner.loc, 'sound/voice/alien/queen_heal_screech.ogg', 75, 0)
 			xeno_owner.visible_message(span_xenouserdanger("\The [xeno_owner] emits an ear-splitting guttural roar!"))
@@ -300,7 +302,7 @@
 				if(!xeno_owner.issamexenohive(affected_xeno) || !(affected_xeno.xeno_caste.can_flags & CASTE_CAN_BE_GIVEN_PLASMA))
 					continue
 				// Gives the benefit of eatting powerfruit, but everything is halved (less plasma immediately restored, less plasma regen given, shorter duration).
-				affected_xeno.apply_status_effect(/datum/status_effect/plasma_surge, affected_xeno.xeno_caste.plasma_max / 2, 0.5, 30 SECONDS)
+				affected_xeno.apply_status_effect(STATUS_EFFECT_PLASMA_SURGE, affected_xeno.xeno_caste.plasma_max / 2, 0.5, 30 SECONDS)
 
 			playsound(xeno_owner.loc, 'sound/voice/alien/queen_plasma_screech.ogg', 75, 0)
 			xeno_owner.visible_message(span_xenouserdanger("\The [xeno_owner] emits an ear-splitting guttural roar!"))
@@ -322,9 +324,11 @@
 			speedy_xenomorphs += affected_xeno
 		timer_id = addtimer(CALLBACK(src, PROC_REF(revoke_movespeed_modifier)), 4 SECONDS, TIMER_STOPPABLE|TIMER_UNIQUE)
 
-/datum/action/ability/activable/xeno/screech/succeed_activate(ability_cost_override)
-	. = ..()
-	addtimer(CALLBACK(xeno_owner, TYPE_PROC_REF(/mob/living/carbon, apply_status_effect), /datum/status_effect/shatter, 20 SECONDS), 10 SECONDS)
+/// Commented out armor shatter after screech.
+
+//datum/action/ability/activable/xeno/screech/succeed_activate(ability_cost_override)
+	//. = ..()
+	//addtimer(CALLBACK(xeno_owner, TYPE_PROC_REF(/mob/living/carbon, apply_status_effect), /datum/status_effect/shatter, 20 SECONDS), 10 SECONDS)
 
 /datum/action/ability/activable/xeno/screech/alternate_action_activate()
 	var/mob/living/carbon/xenomorph/queen/xeno_owner = owner
@@ -623,12 +627,11 @@
 		return FALSE
 	if(!do_mob(owner, target, 1 SECONDS, BUSY_ICON_FRIENDLY, BUSY_ICON_MEDICAL))
 		return FALSE
-	target.visible_message(span_xenowarning("\the [owner] vomits healing resin over [target], mending their wounds!"))
 	if(!can_use_ability(target, TRUE))
 		return FALSE
 
 	if(!hivemind_heal)
-		target.visible_message(span_xenowarning("\the [owner] vomits acid over [target], mending their wounds!"))
+		target.visible_message(span_xenowarning("\the [owner] healing resin over [target], mending their wounds!"))
 	else
 		owner.visible_message(span_xenowarning("A faint psychic aura is suddenly emitted from \the [owner]!"), \
 		span_xenowarning("We cure [target] with the power of our mind!"))

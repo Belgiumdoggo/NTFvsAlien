@@ -250,12 +250,17 @@ WEAPONS
 /datum/supply_packs/weapons/tx54_airburst
 	name = "GL-54 airburst grenade magazine"
 	contains = list(/obj/item/ammo_magazine/rifle/tx54)
-	cost = 20
+	cost = 25
+
+/datum/supply_packs/weapons/tx54_he
+	name = "GL-54 HE grenade magazine"
+	contains = list(/obj/item/ammo_magazine/rifle/tx54/he)
+	cost = 120
 
 /datum/supply_packs/weapons/tx54_incendiary
 	name = "GL-54 incendiary grenade magazine"
 	contains = list(/obj/item/ammo_magazine/rifle/tx54/incendiary)
-	cost = 60
+	cost = 75
 
 /datum/supply_packs/weapons/tx54_smoke
 	name = "GL-54 tactical smoke grenade magazine"
@@ -271,6 +276,16 @@ WEAPONS
 	name = "GL-54 tanglefoot grenade magazine"
 	contains = list(/obj/item/ammo_magazine/rifle/tx54/smoke/tangle)
 	cost = 48
+
+/datum/supply_packs/weapons/tx54_smoke/acid
+	name = "GL-54 acid smoke grenade magazine"
+	contains = list(/obj/item/ammo_magazine/rifle/tx54/smoke/acid)
+	cost = 120
+
+/datum/supply_packs/weapons/tx54_razor
+	name = "GL-54 razorburn grenade magazine"
+	contains = list(/obj/item/ammo_magazine/rifle/tx54/razor)
+	cost = 180
 
 /datum/supply_packs/weapons/tx55
 	name = "AR-55 OICW Rifle"
@@ -323,6 +338,7 @@ WEAPONS
 	name = "PB-12 pepperball gun"
 	contains = list(/obj/item/weapon/gun/rifle/pepperball)
 	cost = 100
+	available_against_xeno_only = TRUE
 
 /datum/supply_packs/weapons/pepperball/mag
 	name = "PB-12 pepperball gun magazine (x1)"
@@ -625,22 +641,7 @@ WEAPONS
 	contains = list(/obj/item/ammo_magazine/pistol/standard_pistol/smart_pistol)
 	cost = 10
 
-/datum/supply_packs/weapons/moonbeam_ammo
-	name = "Moonbeam NL sniper rifle tranq magazine"
-	contains = list(/obj/item/ammo_magazine/rifle/chamberedrifle/tranq)
-	cost = 30
-
-/datum/supply_packs/weapons/dragoon
-	name = "Dragoon Mk1 Rapid Engagement Rifle"
-	contains = list(/obj/item/weapon/gun/rifle/dragoon)
-	cost = 650
-
-/datum/supply_packs/weapons/dragoon_ammo
-	name = "Dragoon Mk1 RER stripper clip"
-	contains = list(/obj/item/ammo_magazine/rifle/boltclip/dragoon)
-	cost = 20
-
-/datum/supply_packs/weapons/dragoon_ammo_pox
-	name = "Dragoon Mk1 RER poxomelanin rounds stripper clip"
-	contains = list(/obj/item/ammo_magazine/rifle/boltclip/dragoon/pox)
-	cost = 100
+/datum/supply_packs/weapons/sledgehammer
+	name = "Sledgehammer"
+	contains = list(/obj/item/weapon/twohanded/sledgehammer)
+	cost = 50

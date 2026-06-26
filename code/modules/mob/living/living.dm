@@ -354,6 +354,10 @@
 			//the puller can always swap with its victim if on grab intent
 			if(L.pulledby == src && a_intent == INTENT_GRAB)
 				mob_swap_mode = SWAPPING
+			if(isxeno(L))
+				var/mob/living/carbon/xenomorph/xeno = L
+				if(xeno.handcuffed)
+					mob_swap_mode = SWAPPING
 			//restrained people act if they were on 'help' intent to prevent a person being pulled from being seperated from their puller
 			else if((L.restrained() || L.a_intent == INTENT_HELP) && (restrained() || a_intent == INTENT_HELP) && L.move_force < MOVE_FORCE_VERY_STRONG)
 				mob_swap_mode = SWAPPING
@@ -364,7 +368,7 @@
 			/* If we're moving diagonally, but the mob isn't on the diagonal destination turf and the destination turf is enterable we have no reason to shuffle/push them
 			 * However we also do not want mobs of smaller move forces being able to pass us diagonally if our move resist is larger, unless they're the same faction as us
 			*/
-			if(moving_diagonally && (get_dir(src, L) in GLOB.cardinals) && (L.faction == faction || L.move_resist <= move_force) && get_step(src, dir).Enter(src, loc))
+			if(moving_diagonally && (get_dir(src, L) in GLOB.cardinals) && (L.faction == faction || L.get_move_resist() <= move_force) && get_step(src, dir).Enter(src, loc))
 				mob_swap_mode = PHASING
 			if(mob_swap_mode)
 				//switch our position with L
@@ -414,10 +418,10 @@
 		return
 	if(moving_diagonally) // No pushing in diagonal move
 		return
-	if(!client)
-		return
 	var/mob/mob_to_push = AM
 	if(istype(mob_to_push) && mob_to_push.lying_angle)
+		return
+	if(!client && istype(mob_to_push) && mob_to_push.client && !prob(10))
 		return
 	now_pushing = TRUE
 	var/dir_to_target = get_dir(src, AM)
@@ -432,20 +436,19 @@
 		dir_to_target = dir
 
 	var/push_anchored = FALSE
-	if((AM.move_resist * MOVE_FORCE_CRUSH_RATIO) <= force)
+	if((AM.get_move_resist() * MOVE_FORCE_CRUSH_RATIO) <= force)
 		if(move_crush(AM, move_force, dir_to_target))
 			push_anchored = TRUE
-	if((AM.move_resist * MOVE_FORCE_FORCEPUSH_RATIO) <= force) //trigger move_crush and/or force_push regardless of if we can push it normally
+	if((AM.get_move_resist() * MOVE_FORCE_FORCEPUSH_RATIO) <= force) //trigger move_crush and/or force_push regardless of if we can push it normally
 		if(force_push(AM, move_force, dir_to_target, push_anchored))
 			push_anchored = TRUE
 	if(ismob(AM))
 		var/atom/movable/mob_buckle = mob_to_push.buckled
-		// If we can't pull them because of what they're buckled to, make sure we can push the thing they're buckled to instead.
-		// If neither are true, we're not pushing anymore.
-		if(mob_buckle && (mob_buckle.buckle_flags & BUCKLE_PREVENTS_PULL || (force < (mob_buckle.move_resist * MOVE_FORCE_PUSH_RATIO))))
+		//If they're buckled to something, we need to be able to push that instead
+		if(mob_buckle && (force < (mob_buckle.get_move_resist() * MOVE_FORCE_PUSH_RATIO)))
 			now_pushing = FALSE
 			return
-	if((AM.anchored && !push_anchored) || (force < (AM.move_resist * MOVE_FORCE_PUSH_RATIO)))
+	if((AM.anchored && !push_anchored) || (force < (AM.get_move_resist() * MOVE_FORCE_PUSH_RATIO)))
 		now_pushing = FALSE
 		return
 
@@ -555,6 +558,7 @@
 	GLOB.huds[DATA_HUD_XENO_INFECTION].remove_from_hud(src)
 	GLOB.huds[DATA_HUD_XENO_REAGENTS].remove_from_hud(src)
 	GLOB.huds[DATA_HUD_XENO_DEBUFF].remove_from_hud(src)
+	GLOB.huds[DATA_HUD_XENO_HUMAN_SHARED].remove_from_hud(src)
 	GLOB.huds[DATA_HUD_XENO_HEART].remove_from_hud(src)
 
 	smokecloaked = TRUE
@@ -570,6 +574,7 @@
 	GLOB.huds[DATA_HUD_XENO_INFECTION].add_to_hud(src)
 	GLOB.huds[DATA_HUD_XENO_REAGENTS].add_to_hud(src)
 	GLOB.huds[DATA_HUD_XENO_DEBUFF].add_to_hud(src)
+	GLOB.huds[DATA_HUD_XENO_HUMAN_SHARED].add_to_hud(src)
 	GLOB.huds[DATA_HUD_XENO_HEART].add_to_hud(src)
 
 	smokecloaked = FALSE
@@ -917,7 +922,6 @@ below 100 is not dizzy
 	SEND_SIGNAL(src, COMSIG_LIVING_SET_LYING_ANGLE)
 	if(lying_angle)
 		density = FALSE
-		drop_all_held_items()
 		if(layer == initial(layer)) //to avoid things like hiding larvas.
 			layer = LYING_MOB_LAYER //so mob lying always appear behind standing mobs
 	else
@@ -935,6 +939,7 @@ below 100 is not dizzy
 			ADD_TRAIT(src, TRAIT_IMMOBILE, STAT_TRAIT)
 			ADD_TRAIT(src, TRAIT_FLOORED, STAT_TRAIT)
 		if(DEAD)
+			REMOVE_TRAIT(src, TRAIT_NON_FLAMMABLE, STAT_TRAIT)
 			on_revive()
 	switch(stat)
 		if(CONSCIOUS) //From unconscious to conscious.
@@ -942,6 +947,8 @@ below 100 is not dizzy
 			REMOVE_TRAIT(src, TRAIT_FLOORED, STAT_TRAIT)
 		if(DEAD)
 			on_death()
+			ADD_TRAIT(src, TRAIT_NON_FLAMMABLE, STAT_TRAIT)
+			ExtinguishMob()
 
 
 /mob/living/setGrabState(newstate)

@@ -22,23 +22,11 @@
 	var/in_use_lights = FALSE
 	var/internal_light = TRUE //Whether it can light up when an AI views it
 
-
 /obj/machinery/camera/Initialize(mapload, newDir)
 	. = ..()
 	icon_state = "camera"
 
-	if(newDir)
-		setDir(newDir)
-
-	switch(dir)
-		if(NORTH)
-			pixel_y = -16
-		if(SOUTH)
-			pixel_y = 16
-		if(EAST)
-			pixel_x = -16
-		if(WEST)
-			pixel_x = 16
+	setDir(newDir ? newDir : dir)
 
 	if(length(network) == 1 && network[1] == "marinemainship" && is_ground_level(z))
 		network = list("colony")
@@ -86,6 +74,22 @@
 		. += span_info("Its maintenance panel is currently open.")
 		if(!status && powered())
 			. += span_info("It can reactivated with a <b>screwdriver</b>.")
+
+/obj/machinery/camera/setDir(newdir)
+	. = ..()
+	switch(dir)
+		if(NORTH)
+			pixel_z = -16
+			pixel_w = 0
+		if(SOUTH)
+			pixel_z = 32
+			pixel_w = 0
+		if(EAST)
+			pixel_z = 0
+			pixel_w = -24
+		if(WEST)
+			pixel_z = 0
+			pixel_w = 24
 
 
 /obj/machinery/camera/proc/camera_ui_data()
@@ -177,6 +181,8 @@
 
 /obj/machinery/camera/attack_alien(mob/living/carbon/xenomorph/xeno_attacker, damage_amount = xeno_attacker.xeno_caste.melee_damage * xeno_attacker.xeno_melee_damage_modifier, damage_type = BRUTE, armor_type = MELEE, effects = TRUE, armor_penetration = xeno_attacker.xeno_caste.melee_ap, isrightclick = FALSE)
 	if(xeno_attacker.status_flags & INCORPOREAL)
+		return FALSE
+	if(xeno_attacker.handcuffed)
 		return FALSE
 
 	if(obj_integrity <= 0)
@@ -459,3 +465,21 @@
 /obj/machinery/camera/autoname/thunderdome/hidden/update_appearance(updates)
 	SHOULD_CALL_PARENT(FALSE)
 	return
+
+//ntf
+/obj/machinery/camera/projectile_hit(atom/movable/projectile/proj, cardinal_move, uncrossing)
+	. = ..()
+	if(powered())
+		if(!CHECK_BITFIELD(machine_stat, PANEL_OPEN))
+			ENABLE_BITFIELD(machine_stat, PANEL_OPEN)
+			update_icon()
+			visible_message(span_danger("\The [src]'s cover swings open, exposing the wires!"))
+			return
+
+		var/datum/effect_system/spark_spread/sparks = new
+		sparks.set_up(2, 0, src)
+		sparks.attach(src)
+		sparks.start()
+
+		deactivate()
+		visible_message(span_danger("\The [src]'s wires snap apart in a rain of sparks!"))

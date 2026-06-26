@@ -80,9 +80,12 @@
 			return
 	if(ismob(A))
 		var/mob/M = A
+		if(reagents.has_reagent(/datum/reagent/medicalnanites) && M != user)
+			user.balloon_alert(user, "nanites must be self-administered!")
+			return
 		if(!M.can_inject(user, TRUE, user.zone_selected, TRUE))
 			return
-		if(M.faction != user.faction && !M.incapacitated())
+		if(user != M && (M.faction != user.faction || M.a_intent != INTENT_HELP) && !M.incapacitated())
 			user.visible_message(span_notice("[user] attempts to inject [M] with [src]."),
 			span_notice("You attempt to inject [M] with [src]."))
 			if(!do_after(user, SKILL_TASK_VERY_EASY, NONE, A, BUSY_ICON_HOSTILE) || (!in_range(A, user) || !user.Adjacent(A)))
@@ -117,6 +120,9 @@
 	if(!in_range(A, user) || !user.Adjacent(A)) //So we arent drawing reagent from a container behind a window
 		return FALSE
 	can_draw_reagent(A, user, TRUE) //Always draws reagents on right click
+
+/obj/item/reagent_containers/hypospray/is_refuelable()
+	return FALSE
 
 ///If it's possible to draw from something. Will draw_blood() when targetting a carbon, or draw_reagent() when targetting a non-carbon
 /obj/item/reagent_containers/hypospray/proc/can_draw_reagent(atom/A, mob/living/user)

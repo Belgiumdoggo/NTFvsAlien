@@ -38,12 +38,12 @@ These act as a respawn mechanic growning a body and offering it up to ghosts.
 	screen_overlay = "body_scannerconsole_emissive"
 	density = FALSE
 	idle_power_usage = 50
-	resistance_flags = RESIST_ALL // For now, we should work out how we want xenos to counter this
-	light_color = LIGHT_COLOR_EMISSIVE_GREEN
+	resistance_flags = RESIST_ALL
 	dir = EAST
-
+	///Linked cloner tube
 	var/obj/machinery/cloning/vats/linked_machine
-	var/obj/item/radio/headset/mainship/mcom/radio //God forgive me
+	///Linked radio
+	var/obj/item/radio/headset/mainship/mcom/radio
 
 /obj/machinery/computer/cloning_console/vats/Initialize(mapload)
 	. = ..()
@@ -77,8 +77,12 @@ These act as a respawn mechanic growning a body and offering it up to ghosts.
 		visible_message("[icon2html(src, viewers(src))] <span><b>[src]</b> beeps as its boots up and connects to \the [linked_machine].</span>")
 		return TRUE
 
-	if(linked_machine.occupant || linked_machine.timerid)
+	if(linked_machine.timerid)
 		visible_message("[icon2html(src, viewers(src))] <span><b>[src]</b> beeps in error, 'Already processing clone'.</span>")
+		return TRUE
+
+	if(linked_machine.occupant)
+		linked_machine.eject_user()
 		return TRUE
 
 	if(!linked_machine.beaker || linked_machine.beaker.reagents.total_volume < linked_machine.biomass_required)
@@ -88,7 +92,6 @@ These act as a respawn mechanic growning a body and offering it up to ghosts.
 
 	linked_machine.grow_human()
 
-
 /obj/machinery/cloning/vats
 	name = "clone vat"
 	icon = 'icons/obj/machines/cloning.dmi'
@@ -96,8 +99,8 @@ These act as a respawn mechanic growning a body and offering it up to ghosts.
 	use_power = IDLE_POWER_USE
 	idle_power_usage = 3000
 	active_power_usage = 30000
-	light_range = 2
-	light_power = 0.5
+	light_range = 3
+	light_power = 2
 	light_color = LIGHT_COLOR_EMISSIVE_GREEN
 	layer = ABOVE_MOB_LAYER
 
@@ -112,13 +115,13 @@ These act as a respawn mechanic growning a body and offering it up to ghosts.
 	/// Amount of biomass required to start growing and the amount of reagents that gets removed on successful grow
 	var/biomass_required = 40
 	/// The amount of times it takes for the clone to pop out
-	var/grow_timer = 15 MINUTES
+	var/grow_timer = 10 MINUTES
 
 
 /obj/machinery/cloning/vats/Initialize(mapload)
 	. = ..()
 	beaker = new /obj/item/reagent_containers/glass/beaker/biomass
-	update_icon()
+	update_appearance(UPDATE_ICON)
 
 
 /obj/machinery/cloning/vats/Destroy()
@@ -167,7 +170,7 @@ These act as a respawn mechanic growning a body and offering it up to ghosts.
 	user.put_in_hands(beaker)
 	beaker = null
 
-	update_icon()
+	update_appearance(UPDATE_ICON)
 
 	return TRUE
 
@@ -192,7 +195,7 @@ These act as a respawn mechanic growning a body and offering it up to ghosts.
 		if(!user.transferItemToLoc(hit_by, src))
 			return
 
-		update_icon()
+		update_appearance(UPDATE_ICON)
 
 		return TRUE
 
@@ -209,9 +212,9 @@ These act as a respawn mechanic growning a body and offering it up to ghosts.
 		. += span_notice("It looks like there is a human in there!")
 		return
 
-/obj/machinery/cloning/vats/update_icon()
+/obj/machinery/cloning/vats/update_icon(updates=ALL)
 	. = ..()
-	if(occupant || timerid)
+	if(occupant || timerid || clamp(round(beaker?.reagents.total_volume / biomass_required, 0.25) * 100, 0, 100))
 		set_light(initial(light_range))
 	else
 		set_light(0)
@@ -224,7 +227,10 @@ These act as a respawn mechanic growning a body and offering it up to ghosts.
 	if(occupant || timerid)
 		icon_state = "cell_growing"
 		return
-	var/amount = clamp(round(beaker.reagents.total_volume / biomass_required, 0.25) * 100, 0, 100)
+	else if(occupant && !timerid)
+		icon_state = "cell_grown"
+		return
+	var/amount = clamp(round(beaker?.reagents.total_volume / biomass_required, 0.25) * 100, 0, 100)
 	icon_state = "cell_[amount]"
 
 /obj/machinery/cloning/vats/update_overlays()
@@ -246,7 +252,7 @@ These act as a respawn mechanic growning a body and offering it up to ghosts.
 
 	visible_message("[icon2html(src, viewers(src))] <span><b>[src]</b> whirls as it starts to create a new clone.</span>")
 	timerid = addtimer(CALLBACK(src, PROC_REF(finish_growing_human)), grow_timer, TIMER_STOPPABLE)
-	update_icon()
+	update_appearance(UPDATE_ICON)
 
 /// Spawn the human, add them to the SSD mob list, delete the timer
 /obj/machinery/cloning/vats/proc/finish_growing_human()
@@ -255,6 +261,7 @@ These act as a respawn mechanic growning a body and offering it up to ghosts.
 	var/datum/job/job_instance = SSjob.GetJobType(/datum/job/terragov/squad/vatgrown)
 	occupant.apply_assigned_role_to_spawn(job_instance)
 	occupant.set_species("Early Vat-Grown Human")
+	occupant.randomize_appearance()
 	occupant.fully_replace_character_name(occupant.real_name, occupant.species.random_name(occupant.gender))
 	occupant.disabilities |= (BLIND & DEAF)
 	occupant.set_blindness(10) // Temp fix until blindness is fixed.
@@ -267,6 +274,7 @@ These act as a respawn mechanic growning a body and offering it up to ghosts.
 	// Cleanup the timers
 	deltimer(timerid)
 	timerid = null
+	update_icon_state()
 
 /// Pop the grown human out
 /obj/machinery/cloning/vats/proc/eject_user(silent = FALSE)
@@ -285,11 +293,13 @@ These act as a respawn mechanic growning a body and offering it up to ghosts.
 You remember nothing of your past life.
 
 You are weak, best rest up and get your strength before fighting.</span>"})
-	occupant.vomit()
+	occupant.set_resting(TRUE)
 	linked_console.radio.talk_into(src, "<b>New clone: [occupant] has been grown in [src] at: [get_area(src)].</b>", RADIO_CHANNEL_MEDICAL)
 	linked_console.radio.talk_into(src, "<b>New clone: [occupant] has been grown in [src] at: [get_area(src)]. Please move the fresh clone to a squad using the squad distribution console.</b>", RADIO_CHANNEL_COMMAND)
 	occupant = null
-	update_icon()
+	deltimer(timerid)
+	timerid = null
+	update_appearance(UPDATE_ICON)
 
 /obj/machinery/cloning/vats/apc
 	grow_timer = 8 MINUTES

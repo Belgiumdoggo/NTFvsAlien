@@ -13,7 +13,7 @@
 	integrity_failure = 0.5
 	allow_pass_flags = PASSABLE
 	coverage = 30	//It's just a bike, not hard to shoot over
-	buckle_flags = CAN_BUCKLE|BUCKLE_PREVENTS_PULL|BUCKLE_NEEDS_HAND
+	buckle_flags = CAN_BUCKLE|BUCKLE_NEEDS_HAND
 	attachments_by_slot = list(ATTACHMENT_SLOT_STORAGE)
 	attachments_allowed = list(/obj/item/vehicle_module/storage/motorbike)
 	starting_attachments = list(/obj/item/vehicle_module/storage/motorbike)
@@ -68,11 +68,11 @@
 		return FALSE
 	if(!COOLDOWN_FINISHED(src, rev_cooldown))
 		return FALSE
-	if(fuel_count < 5)
+	if(fuel_count < 0.3)
 		return FALSE
 	COOLDOWN_START(src, rev_cooldown, 3 SECONDS)
 	to_chat(user, span_notice("You rev the [src]'s engine."))
-	fuel_count -= 5
+	fuel_count -= 0.3
 	playsound(src, pick(rev_sounds), 50, TRUE, falloff = 3)
 	return TRUE
 
@@ -117,7 +117,7 @@
 				canmove = FALSE
 				playsound(src, pick(rev_sounds), 40, TRUE, falloff = 3)
 				balloon_alert(user, "Your [name] struggles on sticky resin!")
-				fuel_count -= 2
+				fuel_count -= 0.3
 				if(prob(25))
 					var/datum/effect_system/smoke_spread/smoke = new
 					smoke.set_up(0, src)
@@ -127,11 +127,11 @@
 				return FALSE
 	return ..()
 
-/obj/vehicle/ridden/motorbike/Moved(atom/old_loc, movement_dir, forced, list/old_locs)
+/obj/vehicle/ridden/motorbike/relaydrive(mob/living/user, direction)
 	. = ..()
-	if(!LAZYLEN(buckled_mobs)) // dont use fuel or make noise unless we're being used
+	if(!.)
 		return
-	fuel_count--
+	fuel_count -= 0.1
 	if(fuel_count == LOW_FUEL_LEFT_MESSAGE)
 		for(var/mob/rider AS in buckled_mobs)
 			balloon_alert(rider, "[fuel_count/fuel_max*100]% fuel left")

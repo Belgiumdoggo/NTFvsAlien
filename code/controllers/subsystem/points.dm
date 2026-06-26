@@ -85,6 +85,11 @@ SUBSYSTEM_DEF(points)
 ///Add amount of strategic psy points to the selected hive only if the gamemode support psypoints
 /datum/controller/subsystem/points/proc/add_strategic_psy_points(hivenumber, amount)
 	if(!CHECK_BITFIELD(SSticker.mode.round_type_flags, MODE_PSY_POINTS))
+		//convert to amount/300 job points, or amount/2400 burrowed larva.
+		//Fractional job points are already used in some places so this should be fine
+		var/datum/job/xenomorph/xeno_job = SSjob.GetJobType(GLOB.hivenumber_to_job_type[hivenumber])
+		xeno_job.add_job_points(amount/300)
+		GLOB.round_statistics.larva_from_converted_psypoints += amount/(300*xeno_job.job_points_needed)
 		return
 	xeno_strategic_points_by_hive[hivenumber] += amount
 
@@ -96,7 +101,12 @@ SUBSYSTEM_DEF(points)
 
 /// Add amount of biomass to the selected hive only if the gamemode support biomass.
 /datum/controller/subsystem/points/proc/add_biomass_points(hivenumber, amount)
-	if(!CHECK_BITFIELD(SSticker.mode.round_type_flags, MODE_BIOMASS_POINTS))
+	if(!CHECK_BITFIELD(SSticker.mode.round_type_flags, MODE_MUTATIONS_OBTAINABLE))
+		//convert to amount/190 job points, or amount/1520 burrowed larva.
+		//Fractional job points are already used in some places so this should be fine
+		var/datum/job/xenomorph/xeno_job = SSjob.GetJobType(GLOB.hivenumber_to_job_type[hivenumber])
+		xeno_job.add_job_points(amount/190)
+		GLOB.round_statistics.larva_from_converted_biomass += amount/(190*xeno_job.job_points_needed)
 		return
 	xeno_biomass_points_by_hive[hivenumber] = min(xeno_biomass_points_by_hive[hivenumber] + amount, MUTATION_BIOMASS_MAXIMUM)
 
@@ -108,6 +118,16 @@ SUBSYSTEM_DEF(points)
 	if(cost > supply_points[user.faction])
 		return
 	var/obj/docking_port/mobile/supply_shuttle = SSshuttle.getShuttle(SHUTTLE_SUPPLY)
+	if(O.faction == FACTION_SOM)
+		supply_shuttle = SSshuttle.getShuttle(SHUTTLE_SOM_SUPPLY)
+	if(O.faction == FACTION_CLF)
+		supply_shuttle = SSshuttle.getShuttle("supplyclf")
+	if(O.faction == FACTION_VSD)
+		supply_shuttle = SSshuttle.getShuttle("supplykz")
+	if(O.faction == FACTION_ICC)
+		supply_shuttle = SSshuttle.getShuttle("supplyicc")
+	if(O.faction == FACTION_NEUTRAL)
+		supply_shuttle = SSshuttle.getShuttle("supplycolony")
 	if(length(shoppinglist[O.faction]) >= supply_shuttle.return_number_of_turfs())
 		return
 	requestlist -= "[O.id]"
@@ -210,7 +230,7 @@ SUBSYSTEM_DEF(points)
 		stack_trace("adding [faction] to supply_points via add_supply_points without new_faction set")
 		message_admins("added new faction \"[faction]\" to supply points list.  This is okay if you meant to do that but might be a bug.  This faction will now be eligible to recive points from supply point increase events.")
 	var/startingsupplypoints = supply_points[faction]
-	if(startingsupplypoints > HUMAN_FACTION_ABSOLUTE_MAX_POINTS)
+	if(startingsupplypoints >= HUMAN_FACTION_ABSOLUTE_MAX_POINTS)
 		return
 	var/simplenewamount1 = startingsupplypoints + amount
 	var/countoverflowfrom = max(HUMAN_FACTION_MAX_POINTS, startingsupplypoints)
@@ -235,7 +255,7 @@ SUBSYSTEM_DEF(points)
 		stack_trace("adding [faction] to dropship_points via add_dropship_points without new_faction set")
 		message_admins("added new faction \"[faction]\" to dropship points list.  This is okay if you meant to do that but might be a bug.")
 	var/startingdropshippoints = dropship_points[faction]
-	if(startingdropshippoints > HUMAN_FACTION_ABSOLUTE_MAX_DROPSHIP_POINTS)
+	if(startingdropshippoints >= HUMAN_FACTION_ABSOLUTE_MAX_DROPSHIP_POINTS)
 		return
 	var/simplenewamount1 = startingdropshippoints + amount
 	var/countoverflowfrom = max(HUMAN_FACTION_MAX_DROPSHIP_POINTS, startingdropshippoints)

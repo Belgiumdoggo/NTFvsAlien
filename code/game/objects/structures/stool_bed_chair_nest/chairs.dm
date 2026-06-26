@@ -21,6 +21,8 @@
 	max_integrity = 20
 	layer = BELOW_TABLE_LAYER
 	var/propelled = 0 //Check for fire-extinguisher-driven chairs
+	///Whether this chair can be rotated via verb
+	var/can_rotate = TRUE //this only exists because spriters don't add directional sprites to all chair types, which allows for exploits.
 
 //directional variants mostly used for random spawners
 /obj/structure/bed/chair/east
@@ -74,6 +76,8 @@
 	set category = "IC.Object"
 	set src in view(0)
 
+	if(!can_rotate)
+		return FALSE
 	var/mob/living/carbon/user = usr
 
 	if(!istype(user) || !isturf(user.loc) || user.incapacitated())
@@ -167,6 +171,8 @@
 	desc = "It looks comfy."
 	icon_state = "sofamiddle"
 	resistance_flags = XENO_DAMAGEABLE
+	can_rotate = FALSE
+
 /obj/structure/bed/chair/sofa/left
 	icon_state = "sofaend_left"
 
@@ -283,16 +289,15 @@
 
 /obj/structure/bed/chair/office/light
 	icon_state = "officechair_white"
-	anchored = FALSE
 
 /obj/structure/bed/chair/office/dark
 	icon_state = "officechair_dark"
-	anchored = FALSE
 
 /obj/structure/bed/chair/dropship
 	name = "dropship chair"
 	desc = "Holds you in place during high altitude drops."
 	icon_state = "shuttle_chair"
+	can_rotate = FALSE
 	/// Handles the chair buckle bars overlay
 	var/image/chairbar = null
 	buildstacktype = 0
@@ -372,6 +377,8 @@
 /obj/structure/bed/chair/dropship/passenger/attack_alien(mob/living/carbon/xenomorph/xeno_attacker, damage_amount = xeno_attacker.xeno_caste.melee_damage * xeno_attacker.xeno_melee_damage_modifier, damage_type = BRUTE, armor_type = MELEE, effects = TRUE, armor_penetration = xeno_attacker.xeno_caste.melee_ap, isrightclick = FALSE)
 	if(xeno_attacker.status_flags & INCORPOREAL)
 		return FALSE
+	if(xeno_attacker.handcuffed)
+		return FALSE
 	if(chair_state != DROPSHIP_CHAIR_BROKEN)
 		xeno_attacker.visible_message(span_warning("[xeno_attacker] smashes \the [src], shearing the bolts!"),
 		span_warning("We smash \the [src], shearing the bolts!"))
@@ -437,6 +444,8 @@
 
 /obj/structure/bed/chair/dropship/doublewide/attack_alien(mob/living/carbon/xenomorph/X, damage_amount = X.xeno_caste.melee_damage, damage_type = BRUTE, damage_flag = "", effects = TRUE, armor_penetration = 0, isrightclick = FALSE)
 	if(X.status_flags & INCORPOREAL)
+		return FALSE
+	if(X.handcuffed)
 		return FALSE
 	if(LAZYLEN(buckled_mobs))
 		unbuckle_all_mobs(TRUE)
@@ -560,3 +569,4 @@
 	buildstacktype = null
 	resistance_flags = UNACIDABLE
 	dir = WEST
+	can_rotate = FALSE

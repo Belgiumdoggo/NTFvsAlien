@@ -1,111 +1,6 @@
 /datum/action/ability/activable/xeno/psydrain/free
 	ability_cost = 0
 
-/////////////////////////////////
-// Devour
-/////////////////////////////////
-/datum/action/ability/activable/xeno/devour
-	name = "Abduct"
-	action_icon = 'ntf_modular/icons/Xeno/actions.dmi'
-	action_icon_state = "abduct"
-	desc = "Abduct your victim to be able to carry it faster."
-	desc = "Abduct your victim to be able to carry it around."
-	use_state_flags = ABILITY_USE_STAGGERED|ABILITY_USE_FORTIFIED|ABILITY_USE_CRESTED //can't use while staggered, defender fortified or crest down
-	ability_cost = 0
-	target_flags = ABILITY_MOB_TARGET
-	keybinding_signals = list(
-		KEYBINDING_NORMAL = COMSIG_XENOABILITY_DEVOUR,
-	)
-
-/datum/action/ability/activable/xeno/devour/can_use_ability(atom/target, silent, override_flags)
-	. = ..()
-	if(!.)
-		return
-	if(!ismob(target))
-		if(!silent)
-			to_chat(owner, span_warning("That wouldn't taste very good."))
-		return FALSE
-	var/mob/living/carbon/human/victim = target
-	if(owner.status_flags & INCORPOREAL)
-		if(!silent)
-			to_chat(owner, span_warning("Can't do while in flight!"))
-		return FALSE
-	if(owner.do_actions) //can't use if busy
-		return FALSE
-	if(!owner.Adjacent(victim)) //checks if owner next to target
-		return FALSE
-	if(HAS_TRAIT(victim, TRAIT_TIME_SHIFTED))
-		to_chat(owner, span_warning("They are anchored in time!"))
-		return FALSE
-	if(victim.buckled)
-		if(!silent)
-			to_chat(owner, span_warning("[victim] is buckled to something."))
-		return FALSE
-	var/mob/living/carbon/xenomorph/owner_xeno = owner
-	if(owner_xeno.eaten_mob)
-		if(!silent)
-			to_chat(owner_xeno, span_warning("You have already swallowed one."))
-		return FALSE
-	if(owner_xeno.on_fire)
-		if(!silent)
-			to_chat(owner_xeno, span_warning("We're too busy being on fire to do this!"))
-		return FALSE
-	for(var/obj/effect/forcefield/fog in range(1, owner_xeno))
-		if(!silent)
-			to_chat(owner_xeno, span_warning("We are too close to the fog."))
-		return FALSE
-
-/datum/action/ability/activable/xeno/devour/action_activate()
-	. = ..()
-	var/mob/living/carbon/xenomorph/owner_xeno = owner
-	var/mob/living/carbon/human/victim = owner_xeno.eaten_mob
-	if(!victim)
-		return
-
-	var/channel = SSsounds.random_available_channel()
-	playsound(owner_xeno, 'sound/vore/escape.ogg', 40, channel = channel)
-	if(!do_after(owner_xeno, GORGER_REGURGITATE_DELAY, FALSE, null, BUSY_ICON_DANGER))
-		to_chat(owner, span_warning("We moved too soon!"))
-		owner_xeno.stop_sound_channel(channel)
-		return
-	owner_xeno.eject_victim()
-	log_combat(owner_xeno, victim, "released", addition="from being devoured")
-	REMOVE_TRAIT(victim, TRAIT_STASIS, TRAIT_STASIS)
-
-/datum/action/ability/activable/xeno/devour/use_ability(atom/target)
-	var/mob/living/carbon/human/victim = target
-	var/mob/living/carbon/xenomorph/owner_xeno = owner
-	owner_xeno.face_atom(victim)
-	owner_xeno.visible_message(span_danger("[owner_xeno] starts to pick up [victim] from the ground!"), span_danger("We start to pick up [victim] off the ground!"), null, 5)
-	log_combat(owner_xeno, victim, "started to devour")
-	var/channel = SSsounds.random_available_channel()
-	var/devour_delay = GORGER_DEVOUR_DELAY
-	if((HAS_TRAIT(victim, TRAIT_UNDEFIBBABLE) || !victim.client) && !isxeno(victim))
-		devour_delay = GORGER_DEVOUR_DELAY*3
-	if(isxenogorger(owner_xeno)) //gorgers balling anyway, kidnappers.
-		devour_delay = GORGER_DEVOUR_DELAY
-	playsound(owner_xeno, 'sound/vore/struggle.ogg', 40, channel = channel)
-	owner_xeno.devouring_mob = victim
-	if(!do_after(owner_xeno, devour_delay, FALSE, victim, BUSY_ICON_DANGER, extra_checks = CALLBACK(owner, TYPE_PROC_REF(/mob, break_do_after_checks), list("health" = owner_xeno.health))))
-		owner_xeno.devouring_mob = null
-		to_chat(owner, span_warning("We stop picking up \the [victim]. They probably were filthy anyway."))
-		owner_xeno.stop_sound_channel(channel)
-		return
-	owner_xeno.devouring_mob = null
-	log_combat(owner_xeno, victim, "devoured")
-	owner.visible_message(span_warning("[owner_xeno] abducts [victim]!"), span_warning("We abduct [victim]!"), null, 5)
-	ADD_TRAIT(victim, TRAIT_STASIS, TRAIT_STASIS)
-	victim.forceMove(owner_xeno)
-	owner_xeno.eaten_mob = victim
-	if(ishuman(victim))
-		var/obj/item/radio/headset/mainship/headset = victim.wear_ear
-		if(istype(headset))
-			headset.disable_locator(40 SECONDS)
-	add_cooldown()
-
-/datum/action/ability/activable/xeno/devour/ai_should_use(atom/target)
-	return FALSE
-
 // ***************************************
 // *********** Drain blood
 // ***************************************
@@ -430,7 +325,7 @@
 	if(!attached_armor)
 		attached_armor = getArmor(armor_amount, armor_amount, armor_amount, armor_amount, armor_amount, armor_amount, armor_amount, armor_amount)
 		xeno_owner.soft_armor = xeno_owner.soft_armor.attachArmor(attached_armor)
-	xeno_owner.move_resist = movement_resistance
+	xeno_owner.set_move_resist(movement_resistance)
 	target.balloon_alert(xeno_owner, "link successful")
 	xeno_owner.balloon_alert(target, "linked to [xeno_owner]")
 	if(required_rest)
@@ -468,7 +363,7 @@
 	if(attached_armor)
 		xeno_owner.soft_armor = xeno_owner.soft_armor.detachArmor(attached_armor)
 		attached_armor = null
-	xeno_owner.move_resist = initial(xeno_owner.move_resist)
+	xeno_owner.set_move_resist(xeno_owner.get_initial_move_resist())
 	if(required_rest)
 		UnregisterSignal(xeno_owner, COMSIG_XENOMORPH_UNREST)
 	var/datum/action/ability/activable/xeno/drain/drain_ability = xeno_owner.actions_by_path[/datum/action/ability/activable/xeno/drain]

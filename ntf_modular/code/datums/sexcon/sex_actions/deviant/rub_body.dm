@@ -1,7 +1,7 @@
 /datum/sex_action/rub_body
 	name = "Rub their body"
 	check_same_tile = FALSE
-	heal_sex = FALSE
+	heal_sex = TRUE // Massage therapy
 
 /datum/sex_action/rub_body/shows_on_menu(mob/living/carbon/user, mob/living/carbon/target)
 	if(user == target)
@@ -11,6 +11,8 @@
 /datum/sex_action/rub_body/can_perform(mob/living/carbon/user, mob/living/carbon/target)
 	if(user == target)
 		return FALSE
+
+
 	return TRUE
 
 /datum/sex_action/rub_body/on_start(mob/living/carbon/user, mob/living/carbon/target)
@@ -26,7 +28,6 @@
 	target.sexcon.handle_passive_ejaculation(user)
 
 /datum/sex_action/rub_body/on_finish(mob/living/carbon/user, mob/living/carbon/target)
-	..()
 	user.visible_message(span_warning("[user] stops rubbing [target]'s body ..."))
 
 /datum/sex_action/rub_body/is_finished(mob/living/carbon/human/user, mob/living/carbon/human/target)

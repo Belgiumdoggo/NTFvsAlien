@@ -654,7 +654,7 @@
 	glasses = /obj/item/clothing/glasses/sunglasses/fake
 	mask = /obj/item/clothing/mask/gas/vsd
 	suit_store = /obj/item/weapon/gun/clf_heavyrifle
-	back = /obj/item/shotgunbox/clf_heavyrifle
+	back = /obj/item/big_ammo_box/shotgun/clf_heavyrifle
 	l_pocket = /obj/item/storage/pouch/grenade
 	ears = /obj/item/radio/headset/mainship/vsd
 
@@ -989,3 +989,15 @@
 
 	H.equip_to_slot_or_del(new /obj/item/ammo_magazine/rifle/vsd_mg, SLOT_IN_L_POUCH)
 	H.equip_to_slot_or_del(new /obj/item/ammo_magazine/rifle/vsd_mg, SLOT_IN_L_POUCH)
+
+/datum/job/vsd/escort
+	title = "KZ Combat Escort"
+	paygrade = "KZ4"
+	skills_type = /datum/skills/specialist/escort
+	outfit = /datum/outfit/job/vsd/leader/one
+	multiple_outfits = FALSE
+	outfits = list(
+		/datum/outfit/job/vsd/leader/one,
+		/datum/outfit/job/vsd/leader/two,
+		/datum/outfit/job/vsd/leader/upp_three,
+	)

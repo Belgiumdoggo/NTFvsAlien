@@ -1,7 +1,7 @@
 //non lethal edition of SR-127, meant to be slightly better.
 /obj/item/weapon/gun/rifle/chambered/nonlethal
 	name = "\improper NTC 'Moonbeam' NL sniper rifle"
-	desc = "A light framed custom made bolt action rifle used by the NTC Specops, featuring a night vision scope... It is only able to fire non lethal rounds designed for it. In cases you wanna be an asshole. Through careful aim allows fire support from behind allies. It can have more types of attachments than standard sniper rifles. Uses 8.6×70mm magazines. Can also shoot regular ammo."
+	desc = "A light framed custom made bolt action rifle used by the NTC Specops, featuring a night vision scope and integrated IFF system... It is only able to fire non lethal rounds designed for it. In cases you wanna be an asshole. Through careful aim allows fire support from behind allies. It can have more types of attachments than standard sniper rifles. Uses 8.6×70mm magazines. Can also shoot regular ammo."
 	icon = 'ntf_modular/icons/obj/items/guns/marksman64.dmi'
 	gun_crosshair = 'icons/UI_Icons/gun_crosshairs/sniper.dmi'
 	inhand_x_dimension = 64
@@ -16,6 +16,7 @@
 	icon_state = "moonbeam"
 	cock_animation = "moonbeam_cock"
 	caliber = CALIBER_86X70 //codex
+	gun_features_flags = GUN_WIELDED_FIRING_ONLY|GUN_AMMO_COUNTER|GUN_SMOKE_PARTICLES|GUN_IFF
 	default_ammo_type = /obj/item/ammo_magazine/rifle/chamberedrifle/tranq
 	wield_delay = 0.6 SECONDS //0.8 with stock
 	cock_delay = 0.5 SECONDS
@@ -46,23 +47,27 @@
 		/obj/item/attachable/flashlight,
 		/obj/item/attachable/magnetic_harness,
 		/obj/item/attachable/flashlight/under,
-		/obj/item/attachable/motiondetector,
 		/obj/item/weapon/gun/pistol/plasma_pistol,
 		/obj/item/weapon/gun/flamer/mini_flamer,
 		/obj/item/weapon/gun/rifle/pepperball/pepperball_mini,
 	)
 
+	starting_attachment_types = list(
+	)
+
 	attachable_offset = list("muzzle_x" = 40, "muzzle_y" = 19,"rail_x" = 10, "rail_y" = 25, "under_x" = 33, "under_y" = 16, "stock_x" = 8, "stock_y" = 12)
 
-	starting_attachment_types = list(
-		/obj/item/attachable/scope/nightvision,
-		/obj/item/attachable/stock/tl127stock/moonbeam,
-		/obj/item/attachable/suppressor,
-	)
 	allowed_ammo_types = list(
 		/obj/item/ammo_magazine/rifle/chamberedrifle/tranq,
 		/obj/item/ammo_magazine/rifle/chamberedrifle,
 		/obj/item/ammo_magazine/rifle/chamberedrifle/flak,
+		/obj/item/ammo_magazine/rifle/chamberedrifle/bluescreen,
+	)
+
+/obj/item/weapon/gun/rifle/chambered/nonlethal/fitted
+	starting_attachment_types = list(
+		/obj/item/attachable/scope/nightvision,
+		/obj/item/attachable/stock/tl127stock/moonbeam,
 	)
 
 /obj/item/attachable/stock/tl127stock/moonbeam
@@ -87,22 +92,79 @@
 	max_rounds = 10
 	bonus_overlay = "moonbeam_tranq"
 
+/obj/item/ammo_magazine/rifle/chamberedrifle/bluescreen
+	name = "Moonbeam NL sniper rifle bluescreen magazine"
+	desc = "A box magazine filled with 8.6x70mm bluescreen rifle rounds for the Moonbeam, blunt rounds with an electric payload, effective for capturing nonorganic personnel, works on organics too... hardly"
+	caliber = CALIBER_86X70
+	icon_state = "moonbeam_bs"
+	icon_state_mini = "mag_moonbeam_bs"
+	icon = 'ntf_modular/icons/obj/items/ammo/sniper.dmi'
+	default_ammo = /datum/ammo/bullet/sniper/pfc/bluescreen
+	max_rounds = 10
+	bonus_overlay = "moonbeam_bs"
+
 /datum/ammo/bullet/sniper/pfc/nl
 	name = "high caliber tranq rifle bullet"
 	hud_state = "sniper_heavy"
-	damage_type = STAMINA
-	plasma_drain = 30
-	ammo_behavior_flags = AMMO_BALLISTIC|AMMO_SNIPER
-	damage = 120
-	penetration = 30
-	sundering = 3.5
-	damage_falloff = 0.25
+	damage = 50
+	damage_falloff = 0.1
 	shrapnel_chance = 2
 
 /datum/ammo/bullet/sniper/pfc/nl/on_hit_mob(mob/target_mob, atom/movable/projectile/proj)
-	if(iscarbon(target_mob))
+	if(iscarbon(target_mob) && !isxeno(target_mob))
 		var/mob/living/carbon/carbon_victim = target_mob
-		carbon_victim.reagents.add_reagent(/datum/reagent/toxin/sleeptoxin, rand(9,12), no_overdose = TRUE)
+		carbon_victim.reagents.add_reagent(/datum/reagent/toxin/sleeptoxin, rand(8,10), no_overdose = TRUE)
+		carbon_victim.add_slowdown(0.2,1)
+	else if(isxeno(target_mob))
+		var/mob/living/carbon/xenomorph/xtarg = target_mob
+		xtarg.use_stun_health(proj.damage * (xtarg.xeno_caste.max_health/200))
+		xtarg.add_slowdown(0.2,1)
+
+/datum/ammo/bullet/sniper/pfc/bluescreen
+	name = "high caliber bluescreen rifle bullet"
+	hud_state = "sniper_heavy"
+	damage = 50
+	damage_falloff = 0.1
+	shrapnel_chance = 1
+
+/datum/ammo/bullet/sniper/pfc/bluescreen/on_hit_mob(mob/target_mob, atom/movable/projectile/proj)
+	. = ..()
+	//no emp on robot they had enough
+	do_sparks(3, TRUE, target_mob)
+	if(!ishuman(target_mob))
+		return
+	var/mob/living/carbon/human/human_victim = target_mob
+	if(human_victim.species.species_flags & ROBOTIC_LIMBS)
+		human_victim.adjustStaminaLoss(proj.damage)
+		human_victim.add_slowdown(0.2,1)
+		human_victim.AdjustStun(0.2 SECONDS)
+		if(human_victim.getStaminaLoss() > 20)
+			human_victim.overlay_fullscreen_timer(human_victim.getStaminaLoss(), 10, "glitch", /atom/movable/screen/fullscreen/robot_glitch)
+		if((human_victim.getStaminaLoss() >= human_victim.maxHealth*2) && !human_victim.IsUnconscious())
+			human_victim.ParalyzeNoChain(15 SECONDS) //fake unconscious basically
+			human_victim.AdjustMute(15 SECONDS)
+			human_victim.overlay_fullscreen_timer(15 SECONDS, 10, "bluescreen", /atom/movable/screen/fullscreen/dead/robot)
+			human_victim.visible_message(span_warning("[human_victim] shudders violently whilst spitting out error text before collapsing, flailing on the ground randomly."), span_blue("You are bluescreening, but you should be able to recover from this by rebooting automatically in about 15s."), span_notice("You hear a clanker glitching."))
+	else
+		if(prob(50))
+			empulse(target_mob.loc, 0,0,0,1)
+		human_victim.adjustStaminaLoss(proj.damage/2)
+		human_victim.AdjustStun(0.1 SECONDS)
+		human_victim.jitter(3)
+		human_victim.add_slowdown(0.1,1)
+		human_victim.visible_message(span_warning("[human_victim] shakes with an electric shock!"), span_warning("You feel lightning mess up your nerves, locking your body!"), span_notice("You hear a clanker glitching."))
+
+/datum/ammo/bullet/sniper/pfc/bluescreen/on_hit_obj(obj/target_obj, atom/movable/projectile/proj)
+	. = ..()
+	if(prob(50))
+		empulse(target_obj.loc, 0,0,0,1)
+	do_sparks(3, TRUE, target_obj)
+
+/datum/ammo/bullet/sniper/pfc/bluescreen/on_hit_turf(turf/target_turf, atom/movable/projectile/proj)
+	. = ..()
+	if(prob(50))
+		empulse(target_turf, 0,0,0,1)
+	do_sparks(3, TRUE, target_turf)
 
 /obj/item/ammo_magazine/packet/p86x70mm/tranq
 	name = "box of 8.6x70mm tranq"
@@ -147,6 +209,8 @@
 		/obj/item/ammo_magazine/rifle/nt_halter/laser,
 		/obj/item/ammo_magazine/rifle/nt_halter/laser/extended,
 		/obj/item/ammo_magazine/rifle/nt_halter/laser/drum,
+		/obj/item/ammo_magazine/rifle/nt_halter/rubber,
+		/obj/item/ammo_magazine/rifle/nt_halter/rubber/extended,
 	)
 	attachable_allowed = list(
 		/obj/item/attachable/reddot,
@@ -170,6 +234,7 @@
 		/obj/item/attachable/scope/mini,
 		/obj/item/weapon/gun/pistol/plasma_pistol,
 		/obj/item/weapon/gun/shotgun/combat/masterkey,
+		/obj/item/weapon/gun/pistol/g22/tranq,
 		/obj/item/weapon/gun/flamer/mini_flamer,
 		/obj/item/weapon/gun/grenade_launcher/underslung,
 		/obj/item/attachable/motiondetector,
@@ -182,17 +247,16 @@
 	gun_features_flags = GUN_CAN_POINTBLANK|GUN_AMMO_COUNTER|GUN_SMOKE_PARTICLES
 	gun_firemode_list = list(GUN_FIREMODE_AUTOMATIC) //no twink ass firemodes, like god intended
 	attachable_offset = list("muzzle_x" = 51, "muzzle_y" = 19,"rail_x" = 25, "rail_y" = 23, "under_x" = 35, "under_y" = 13, "stock_x" = 0, "stock_y" = 13)
-	fire_delay = 0.15 SECONDS
+	fire_delay = 0.2 SECONDS
 	burst_amount = 1
-	burst_delay = 0.10 SECONDS
-	accuracy_mult = 1
+	burst_delay = 0.15 SECONDS
 	wield_delay = 0.7 SECONDS
 	actions_types = list(/datum/action/item_action/aim_mode)
 	aim_slowdown = 0.4
 	akimbo_scatter_mod = 24
 	akimbo_additional_delay = 0.8
 	aim_speed_modifier = 3
-	scatter = 0
+	scatter = -1
 	scatter_unwielded = 18
 	accuracy_mult_unwielded = 0.8
 
@@ -203,24 +267,26 @@
 	attachable_offset = list("muzzle_x" = 39, "muzzle_y" = 19,"rail_x" = 19, "rail_y" = 23, "under_x" = 29, "under_y" = 13, "stock_x" = 0, "stock_y" = 13)
 	icon_state = "haltercqb"
 	worn_icon_state = "haltercqb"
-	fire_delay = 0.125 SECONDS
+	fire_delay = 0.15 SECONDS
 	aim_speed_modifier = 2.5
 	aim_slowdown = 0.3
-	scatter = 9
+	scatter = 8
 	accuracy_mult = 0.9
 	scatter_unwielded = 14
 	wield_delay = 0.4 SECONDS
-	damage_falloff_mult = 0.8
+	damage_falloff_mult = 1
 	akimbo_additional_delay = 1.5
+	damage_mult = 0.9
 
 /obj/item/weapon/gun/rifle/nt_halter/cqb/elite
 	name = "\improper NT 'Halter-CQB-E' carbine"
 	desc = "A custom variant of Halter series though not obvious from the outside, Chambered in 7.62x38mm. This one is retrofitted with custom, expensive materials and modifications that allow it to be more accurate with longer effective range yet be even lighter."
 	accuracy_mult = 1
-	scatter = 7
+	scatter = 6
 	aim_speed_modifier = 2
 	wield_delay = 0.3 SECONDS
 	damage_falloff_mult = 0.7
+	damage_mult = 1
 
 //standard mag
 /obj/item/ammo_magazine/rifle/nt_halter
@@ -248,11 +314,11 @@
 	aim_speed_mod = 0.2
 	wield_delay_mod = 0.2 SECONDS
 
-//extended mag
+//drum mag
 /obj/item/ammo_magazine/rifle/nt_halter/drum
 	name = "\improper NT 'Halter' drum magazine (7.62x38mm)"
 	desc = "An drum magazine filled with 7.62x38mm rifle rounds for the Halter series of firearms."
-	max_rounds = 100
+	max_rounds = 80
 	icon_state = "halter_drum"
 	bonus_overlay = "halter_drum"
 	aim_speed_mod = 0.3
@@ -260,40 +326,49 @@
 
 //emp mag
 /obj/item/ammo_magazine/rifle/nt_halter/charged
-	name = "\improper NT 'Halter' charged magazine (7.62x38mm Charged)"
-	desc = "A magazine filled with specialized 7.62x38mm rifle rounds to deliver a supercharged blast but loses overall power, for the Halter series of firearms. Inconsistent effect per bullet unfortuantely."
+	name = "\improper NT 'Halter' taser magazine (7.62x38mm Taser)"
+	desc = "A magazine filled with specialized 7.62x38mm rifle rounds to deliver a powerful shock ontop of blunt force, for the Halter series of firearms."
 	icon_state = "halter_charged"
 	bonus_overlay = "halter_charged"
+	max_rounds = 24
 	default_ammo = /datum/ammo/bullet/rifle/heavy/halter/charged
 
 /datum/ammo/bullet/rifle/heavy/halter/charged
-	name = "charged heavy rifle bullet"
+	name = "heavy shocking rifle bullet"
 	hud_state = "rifle_ap"
 	damage = 20
 	penetration = 5
+	damage_type = BRUTE
 	sundering = 2
 	shrapnel_chance = 2
 	bullet_color = COLOR_BRIGHT_BLUE
-	var/emp_chance = 10 //spin the wheel WOOOOO
+	var/emp_chance = 15
 
 /datum/ammo/bullet/rifle/heavy/halter/charged/on_hit_mob(mob/target_mob, atom/movable/projectile/proj)
 	. = ..()
-	if(prob(emp_chance))
-		do_sparks(3, TRUE, target_mob)
-		empulse(target_mob, 0, 0, 0, 1)
-		staggerstun(target_mob, proj, stagger = 1 SECONDS, slowdown = 1)
-
-/datum/ammo/bullet/rifle/heavy/halter/charged/on_hit_obj(obj/target_obj, atom/movable/projectile/proj)
-	. = ..()
-	if(prob(emp_chance))
-		do_sparks(3, TRUE, target_obj)
-		empulse(target_obj, 0, 0, 0, 1)
-
-/datum/ammo/bullet/rifle/heavy/halter/charged/on_hit_turf(turf/target_turf, atom/movable/projectile/proj)
-	. = ..()
-	if(prob(emp_chance))
-		do_sparks(3, TRUE, target_turf)
-		empulse(target_turf, 0, 0, 0, 1)
+	do_sparks(3, TRUE, target_mob)
+	if(!ishuman(target_mob))
+		return
+	var/mob/living/carbon/human/human_victim = target_mob
+	if(human_victim.species.species_flags & ROBOTIC_LIMBS)
+		human_victim.adjustStaminaLoss(proj.damage)
+		human_victim.add_slowdown(0.2,1)
+		human_victim.AdjustStun(0.1 SECONDS)
+		if(human_victim.getStaminaLoss() > 20)
+			human_victim.overlay_fullscreen_timer(human_victim.getStaminaLoss(), 10, "glitch", /atom/movable/screen/fullscreen/robot_glitch)
+		if((human_victim.getStaminaLoss() >= human_victim.maxHealth*2) && !human_victim.IsUnconscious())
+			human_victim.ParalyzeNoChain(15 SECONDS) //fake unconscious basically
+			human_victim.AdjustMute(15 SECONDS)
+			human_victim.overlay_fullscreen_timer(15 SECONDS, 10, "bluescreen", /atom/movable/screen/fullscreen/dead/robot)
+			human_victim.visible_message(span_warning("[human_victim] shudders violently whilst spitting out error text before collapsing, flailing on the ground randomly."), span_blue("You are bluescreening, but you should be able to recover from this by rebooting automatically in about 15s."), span_notice("You hear a clanker glitching."))
+	else
+		if(prob(emp_chance))
+			empulse(target_mob.loc, 0,0,0,1)
+		human_victim.adjustStaminaLoss(proj.damage/2)
+		human_victim.AdjustStun(0.1 SECONDS)
+		human_victim.jitter(3)
+		human_victim.add_slowdown(0.1,1)
+		human_victim.visible_message(span_warning("[human_victim] shakes with an electric shock!"), span_warning("You feel lightning mess up your nerves, locking your body!"), span_notice("You hear a clanker glitching."))
 
 //smart mag
 /obj/item/ammo_magazine/rifle/nt_halter/smart
@@ -303,13 +378,11 @@
 	bonus_overlay = "halter_smart"
 	default_ammo = /datum/ammo/bullet/rifle/heavy/halter/smart
 
+//this just suck so imma let it be same as regular bullets, cause its also paid and you got aim mode which is good on this.
 /datum/ammo/bullet/rifle/heavy/halter/smart
 	name = "smart heavy rifle bullet"
 	hud_state = "rifle_ap"
 	ammo_behavior_flags = AMMO_BALLISTIC|AMMO_IFF
-	damage = 20
-	penetration = 5
-	sundering = 1.15
 	bullet_color = COLOR_BLUE_GRAY
 
 //foxfire mag
@@ -318,13 +391,25 @@
 	desc = "A magazine filled with specialized 7.62x38mm AP-I rifle rounds that pierce armor and ignite targets, for the Halter series of firearms."
 	icon_state = "halter_foxfire"
 	bonus_overlay = "halter_foxfire"
-	default_ammo = /datum/ammo/bullet/rifle/ap/foxfire
+	default_ammo = /datum/ammo/bullet/rifle/heavy/ap/foxfire
 
-/datum/ammo/bullet/rifle/ap/foxfire
-	name = "foxfire rifle bullet"
+/datum/ammo/bullet/rifle/heavy/ap/foxfire
+	name = "armor-piercing foxfire heavy rifle bullet"
 	hud_state = "rifle_ap"
-	ammo_behavior_flags = AMMO_BALLISTIC|AMMO_INCENDIARY
+	//bit less crazy than actual heavy ap
+	damage = 20
+	penetration = 15
+	sundering = 3
 	bullet_color = COLOR_RED_LIGHT
+	//incendiary was too op for the rof so we make it less likely by using a weaker deflag
+	///Deflagrate AOE damage
+	var/deflag_damage = 10
+	///Multiplier for deflagrate chance
+	var/deflagrate_mult = 0.7
+
+/datum/ammo/bullet/rifle/heavy/ap/foxfire/on_hit_mob(mob/target_mob, atom/movable/projectile/proj)
+	deflagrate(target_mob, proj, deflag_damage, deflagrate_mult)
+
 
 //laser mag
 /obj/item/ammo_magazine/rifle/nt_halter/laser
@@ -346,7 +431,7 @@
 	desc = "An extended magazine filled with 7.62x38mm laser emitter rounds for the Halter series of firearms."
 	max_rounds = 50
 	icon_state = "halter_laser_ex"
-	bonus_overlay = "halter_laser_drum"
+	bonus_overlay = "halter_laser_ex"
 
 //extended mag
 /obj/item/ammo_magazine/rifle/nt_halter/laser/drum
@@ -355,6 +440,22 @@
 	max_rounds = 100
 	icon_state = "halter_laser_drum"
 	bonus_overlay = "halter_laser_drum"
+
+//rubber mags
+/obj/item/ammo_magazine/rifle/nt_halter/rubber
+	name = "\improper NT 'Halter' rubber magazine (7.62x38mm rub)"
+	desc = "A magazine filled with 7.62x38mm rubber rifle rounds for the Halter series of firearms."
+	icon_state = "halter_rub"
+	icon = 'ntf_modular/icons/obj/items/ammo/rifle.dmi'
+	bonus_overlay = "halter_rub_mag"
+	default_ammo = /datum/ammo/bullet/rifle/heavy/rubber
+
+/obj/item/ammo_magazine/rifle/nt_halter/rubber/extended
+	name = "\improper NT 'Halter' extended rubber magazine (7.62x38mm rub)"
+	desc = "An extended magazine filled with 7.62x38mm rubber rounds for the Halter series of firearms."
+	max_rounds = 50
+	icon_state = "halter_rub_ex"
+	bonus_overlay = "halter_rub_ex"
 
 //im not making a sprite for this im lazy
 /obj/item/ammo_magazine/packet/halter
@@ -365,6 +466,23 @@
 	default_ammo = /datum/ammo/bullet/rifle/heavy/halter
 	current_rounds = 120
 	max_rounds = 120
+	color = COLOR_MAROON
+
+/obj/item/ammo_magazine/packet/halter/rubber
+	name = "box of 7.62x38mm rub"
+	desc = "A box containing 120 rounds of 7.62x38mm rub."
+	caliber = CALIBER_762X38
+	icon_state = "7.62"
+	default_ammo = /datum/ammo/bullet/rifle/heavy/rubber
+	current_rounds = 120
+	max_rounds = 120
+	color = COLOR_BRIGHT_BLUE
+
+/obj/item/ammo_magazine/packet/halter/laser
+	name = "box of 7.62x38mm LE"
+	desc = "A box containing 120 rounds of 7.62x38mm Laser Emitters."
+	default_ammo = /datum/ammo/energy/lasgun/halter
+	color = COLOR_RED
 
 /obj/item/storage/box/visual/magazine/compact/halter_assaultrifle
 	name = "Halter magazine box"
@@ -385,3 +503,115 @@
 /obj/item/storage/box/visual/magazine/compact/halter_assaultrifle_laser/full
 	spawn_number = 30
 	spawn_type = /obj/item/ammo_magazine/rifle/nt_halter/laser
+
+//dragoon bs
+//The Dragoon rapid engagement rifle.
+/obj/item/weapon/gun/rifle/dragoon
+	name = "\improper Dragoon Mk1 Rapid Engagement Rifle"
+	desc = "The Dragoon Rapid Engagement rifle is a powerful, above-average capacity and agile rifle designed to be used in situations requiring frequent relocation and short engagements. Triangular casings allow it to hold a greater amount of ammo compared to similar rifles. Unfortunately it has not seen widespread adoption due to the lack of detachable magazine and a complex, delicate feeding mechanism that requires users to put additional care into every reload, lest the newly-loaded cartridges end up pushed right back up into the stripper clip. Fires an exotic 9.8x22mm cartridge with great penetration capabilities."
+	icon = 'icons/obj/items/guns/marksman64.dmi'
+	icon_state = "dragoon"
+	worn_icon_state = "l11"
+	inhand_x_dimension = 64
+	inhand_y_dimension = 32
+	worn_icon_list = list(
+		slot_l_hand_str = 'icons/mob/inhands/guns/marksman_left_64.dmi',
+		slot_r_hand_str = 'icons/mob/inhands/guns/marksman_right_64.dmi',
+	)
+	gun_crosshair = 'icons/UI_Icons/gun_crosshairs/sniper.dmi'
+	fire_sound = 'sound/weapons/guns/fire/mp38_1.ogg'
+	dry_fire_sound = 'sound/weapons/guns/fire/sniper_empty.ogg'
+	unload_sound = 'sound/weapons/guns/interact/c99_unload.ogg'
+	reload_sound = 'sound/weapons/guns/interact/ml12_reload.ogg'
+	empty_sound = null
+	caliber = CALIBER_98x22 //codex
+	max_chamber_items = 10 //codex
+	default_ammo_type = /datum/ammo/bullet/dragoon
+	allowed_ammo_types = list(
+		/obj/item/ammo_magazine/rifle/boltclip/dragoon,
+		/obj/item/ammo_magazine/rifle/boltclip/dragoon/pox
+	)
+	attachable_allowed = list(
+		/obj/item/attachable/magnetic_harness,
+		/obj/item/attachable/suppressor/unremovable/invisible,
+		/obj/item/attachable/stock/dragoon,
+		/obj/item/attachable/angledgrip,
+		/obj/item/attachable/verticalgrip,
+		/obj/item/attachable/motiondetector,
+		/obj/item/attachable/scope/mini,
+		/obj/item/attachable/flashlight,
+		/obj/item/attachable/foldable/bipod
+	)
+	starting_attachment_types = list(/obj/item/attachable/suppressor/unremovable/invisible, /obj/item/attachable/stock/dragoon)
+
+	gun_features_flags = GUN_WIELDED_FIRING_ONLY|GUN_AMMO_COUNTER|GUN_SMOKE_PARTICLES
+	reciever_flags = AMMO_RECIEVER_HANDFULS|AMMO_RECIEVER_MULTICLIP
+
+	gun_firemode_list = list(GUN_FIREMODE_SEMIAUTO)
+	attachable_offset = list("muzzle_x" = 32, "muzzle_y" = 17,"rail_x" = 22, "rail_y" = 18, "under_x" = 32, "under_y" = 14, "stock_x" = 20, "stock_y" = 14)
+	actions_types = list(/datum/action/item_action/aim_mode)
+	aim_fire_delay = 1.25 SECONDS
+
+	burst_amount = 0
+	fire_delay = 0.5 SECONDS
+	accuracy_mult = 1.15
+	accuracy_mult_unwielded = 0.75
+	scatter = 0
+	scatter_unwielded = 25
+	recoil = 0
+	recoil_unwielded = 4
+	aim_slowdown = 0.60
+	movement_acc_penalty_mult = 3
+
+/datum/ammo/bullet/dragoon
+	name = "exotic rifle bullet"
+	damage_falloff = 0.5
+	ammo_behavior_flags = AMMO_BALLISTIC|AMMO_SNIPER
+	accurate_range = 20
+	shell_speed = 4
+	max_range = 30
+	handful_amount = 4
+	damage = 45
+	penetration = 17.5
+	sundering = 2
+	accurate_range_min = 4
+
+/datum/ammo/bullet/dragoon/flathead
+	name = "flathead exotic rifle bullet"
+	handful_amount = 4
+	damage_type = STAMINA
+	damage = 45
+	penetration = 15
+	sundering = 20
+
+/datum/ammo/bullet/dragoon/pox
+	name = "green-tipped exotic rifle bullet"
+	damage = 30
+	penetration = 10
+	sundering = 3
+
+/datum/ammo/bullet/dragoon/pox/on_hit_mob(mob/target_mob, atom/movable/projectile/proj)
+	if(iscarbon(target_mob))
+		var/mob/living/carbon/carbon_victim = target_mob
+		carbon_victim.reagents.add_reagent(/datum/reagent/toxin/poxomelanin, 4, no_overdose = FALSE)
+
+//mg27-e
+/obj/item/weapon/gun/standard_mmg/machinegunner/spec
+	name = "\improper MG-27-E medium machinegun"
+	desc = "The MG-27-E is the home improved version of the olden MG-27, it sports lighter post-factory components and a soulsteel rifle shield that must be installed and uninstalled between deployments, allowing it to take a lot of punishment while deployed and work as if a shield for the gunner, it can be shot without being deployed in a pinch but It's impossible to utilize the gun and the bullet shield together due the weight while undeployed, therefore it is uninstalled while taking the weapon in hand. It uses 10x27mm boxes."
+	icon = 'ntf_modular/icons/obj/machines/deployable/mounted_machinegun.dmi'
+	icon_state = "t27e"
+	worn_icon_state = "t27e"
+	worn_icon_list = list(
+		slot_l_hand_str = 'ntf_modular/icons/mob/inhands/guns/machineguns_left_1.dmi',
+		slot_r_hand_str = 'ntf_modular/icons/mob/inhands/guns/machineguns_right_1.dmi',
+	)
+	scatter = 8
+	deployed_scatter_change = -50
+	wield_delay = 1.8 SECONDS
+	soft_armor = list(MELEE = 30, BULLET = 80, LASER = 80, ENERGY = 70, BOMB = 60, BIO = 100, FIRE = 0, ACID = 0)
+	max_integrity = 500
+	deployable_item = /obj/machinery/deployable/mounted/shielded
+
+/obj/machinery/deployable/mounted/shielded
+	allow_pass_flags = PASS_AIR|PASS_LOW_STRUCTURE

@@ -86,6 +86,9 @@
 	H.update_inv_l_hand()
 	H.update_inv_r_hand()
 
+/obj/item/weapon/energy/sword/surgery_tool_check()
+	return active
+
 ///Handles all the state switch stuff
 /obj/item/weapon/energy/sword/proc/switch_state(datum/source, mob/living/user)
 	SIGNAL_HANDLER
@@ -155,6 +158,7 @@
 
 /obj/item/weapon/energy/sword/ntc
 	name = "NTC Energy blade"
+	icon = 'ntf_modular/icons/obj/items/weapons/energy.dmi'
 	icon_state = "sword"
 	desc = "A NTC energy sword, it should cut through anything."
 	force_activated = 50

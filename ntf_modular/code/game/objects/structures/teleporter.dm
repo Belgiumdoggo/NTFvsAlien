@@ -94,6 +94,8 @@ GLOBAL_LIST_INIT(remotely_linked_teleporter_pairs, list())
 	. = ..()
 	log_combat(proj.firer, src, "shot", proj, " linked teleporter is \[[logdetails(linked_teleporter)]\]")
 
+GLOBAL_LIST_EMPTY(indestructible_teleporters)
+
 /obj/item/teleporter_kit/indestructible
 	name = "\improper ASRS Reinforced Bluespace teleporter"
 	resistance_flags = RESIST_ALL
@@ -101,6 +103,11 @@ GLOBAL_LIST_INIT(remotely_linked_teleporter_pairs, list())
 /obj/item/teleporter_kit/indestructible/Initialize(mapload)
 	. = ..()
 	name = "\improper ASRS Reinforced Bluespace teleporter #[self_tele_tag]"
+	GLOB.indestructible_teleporters += src
+
+/obj/item/teleporter_kit/indestructible/Destroy()
+	. = ..()
+	GLOB.indestructible_teleporters -= src
 
 /obj/item/teleporter_kit/indestructible/toggle_deployment_flag(deployed)
 	. = ..()
@@ -122,3 +129,17 @@ GLOBAL_LIST_INIT(remotely_linked_teleporter_pairs, list())
 	teleporter_b.set_linked_teleporter(teleporter_a)
 	log_combat(src,teleporter_a,"linked",object=teleporter_b)
 	qdel(src)
+
+/obj/machinery/deployable/teleporter/attack_alien(mob/living/carbon/xenomorph/xeno_attacker, damage_amount = xeno_attacker.xeno_caste.melee_damage * xeno_attacker.xeno_melee_damage_modifier, damage_type = BRUTE, armor_type = MELEE, effects = TRUE, armor_penetration = xeno_attacker.xeno_caste.melee_ap, isrightclick = FALSE)
+	attack_hand(xeno_attacker)
+
+/obj/item/teleporter_kit/proc/can_deploy_here(mob/user, turf/location)
+	var/area/area_to_check = get_area(location)
+	if(istype(area_to_check, /area/interior/tank) || istype(area_to_check, /area/interior/apc)) //inside tank or APC
+		balloon_alert(user, "unsuitable area!")
+		return FALSE
+	return TRUE
+
+/obj/machinery/deployable/teleporter/AIShiftClick()
+	. = ..()
+	attempt_teleport(usr)

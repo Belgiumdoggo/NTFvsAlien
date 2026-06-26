@@ -24,6 +24,7 @@
 	force = 55
 	attack_speed = 15
 	attack_verb = list("stabs", "thrusts", "smashes", "thumps", "bashes", "attacks", "clubs", "spears", "jabs", "tears", "gores")
+	hitsound = SFX_SWING_HIT
 	sharp = IS_SHARP_ITEM_BIG
 	throw_speed = 1
 	throw_range = 2
@@ -281,8 +282,3 @@
 	desc = "A flag bearing the symbol of the "+ FACTION_NANOTRASEN + ". It flutters in the breeze heroically. This one looks ready to be planted into the ground."
 	icon_state = "flag_tgmc"
 	faction = FACTION_NANOTRASEN
-	filtercolor = list( 1  , -2.6 , 1  , 0,
-					   -2.4,  0.6 , 0  , 0,
-						2  ,  1.45, 0.4, 0,
-						0  ,  0   , 0  , 1,
-						0  ,  0   , 0  , 0)

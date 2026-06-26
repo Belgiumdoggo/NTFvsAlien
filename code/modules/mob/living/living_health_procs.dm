@@ -74,9 +74,9 @@
 		return FALSE	//godmode
 
 	var/stamina_loss_adjustment = staminaloss + amount
-	var/health_limit = maxHealth * 2
-	if(stamina_loss_adjustment > health_limit) //If we exceed maxHealth * 2 stamina damage, get hardstunned for 15 seconds, instead of taking oxygen damage.
-		apply_effect(15 SECONDS, EFFECT_PARALYZE)
+	var/health_limit = maxHealth * STAMINA_LOSS_LIMIT_MULTIPLIER
+	if(stamina_loss_adjustment > health_limit) //If we exceed maxHealth * STAMINA_LOSS_LIMIT_MULTIPLIER stamina damage, get hardstunned for 15 seconds, instead of taking oxygen damage.
+		ParalyzeNoChain(15 SECONDS)
 
 	staminaloss = clamp(stamina_loss_adjustment, -max_stamina, health_limit)
 
@@ -97,11 +97,13 @@
 	if(staminaloss < max(health * 1.5,0) || !(COOLDOWN_FINISHED(src, last_stamina_exhaustion))) //If we're on cooldown for stamina exhaustion, don't bother
 		return
 
+	/*
 	if(feedback)
 		visible_message(span_warning("\The [src] slumps to the ground, too weak to continue fighting."),
 			span_warning("You slump to the ground, you're too exhausted to keep going..."))
 
 	ParalyzeNoChain(1 SECONDS) //Short stun
+	*/
 	adjust_stagger(STAMINA_EXHAUSTION_STAGGER_DURATION)
 	add_slowdown(STAMINA_EXHAUSTION_DEBUFF_STACKS)
 	adjust_blurriness(STAMINA_EXHAUSTION_DEBUFF_STACKS)
@@ -299,6 +301,8 @@
 	remove_all_status_effect()
 	ExtinguishMob()
 	fire_stacks = 0
+	if(admin_revive)
+		sexcon?.set_arousal(0)
 
 	// shut down ongoing problems
 	bodytemperature = get_standard_bodytemperature()
@@ -394,6 +398,7 @@
 
 /mob/living/carbon/xenomorph/revive(admin_revive = FALSE)
 	set_plasma(xeno_caste.plasma_max)
+	set_stun_health(0)
 	sunder = 0
 	if(stat == DEAD)
 		hive?.on_xeno_revive(src)
@@ -423,13 +428,16 @@
 	do_jitter_animation(1000)
 	if(!client)
 		if(should_offer_to_ghost)
-			offer_mob()
+			if(!iszombie(src) && !should_zombify)
+				offer_mob()
 			addtimer(CALLBACK(src, PROC_REF(finish_revive_to_crit), FALSE, should_zombify), 10 SECONDS)
 			return
 	if(should_zombify)
 		if(!iszombie(src))
 			set_species("Strong zombie")
 		AddComponent(/datum/component/ai_controller, /datum/ai_behavior/xeno/zombie/patrolling)
+		if(client)
+			GLOB.possessed_sentient_zombie_list += src
 	heal_limbs(-health)
 	set_stat(CONSCIOUS)
 	overlay_fullscreen_timer(0.5 SECONDS, 10, "roundstart1", /atom/movable/screen/fullscreen/black)

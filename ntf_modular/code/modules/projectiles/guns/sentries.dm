@@ -2,7 +2,7 @@
 /obj/item/weapon/gun/rifle/drone
 	name = "theoritical drone"
 	desc = "what da heeell"
-	var/det_time = 1 SECONDS
+	var/det_time = 2 SECONDS
 	///The sound made when activated
 	var/arm_sound = 'sound/weapons/armbomb.ogg'
 
@@ -23,10 +23,10 @@
 	starting_attachment_types = list()
 	attachable_allowed = list()
 	turret_range = 11 //shit accuracy anyway
-	w_class = WEIGHT_CLASS_NORMAL //same as copes
+	w_class = WEIGHT_CLASS_NORMAL
 	faction = FACTION_TERRAGOV
 
-	soft_armor = list(MELEE = 0, BULLET = 30, LASER = 30, ENERGY = 30, BOMB = 30, BIO = 100, FIRE = 100, ACID = 30)
+	soft_armor = list(MELEE = 0, BULLET = 40, LASER = 40, ENERGY = 40, BOMB = 30, BIO = 100, FIRE = 100, ACID = 10)
 
 	gun_features_flags = GUN_AMMO_COUNTER|GUN_DEPLOYED_FIRE_ONLY|GUN_WIELDED_FIRING_ONLY|GUN_AMMO_COUNT_BY_SHOTS_REMAINING|GUN_IFF|GUN_SMOKE_PARTICLES
 	reciever_flags = AMMO_RECIEVER_MAGAZINES|AMMO_RECIEVER_DO_NOT_EJECT_HANDFULS|AMMO_RECIEVER_CYCLE_ONLY_BEFORE_FIRE
@@ -38,8 +38,8 @@
 	rounds_per_shot = 2
 	scatter = 10
 	throw_range = 4
-	fire_delay = 0.1 SECONDS
-	accuracy_mult = 0.8
+	fire_delay = 0.15 SECONDS
+	accuracy_mult = 0.7
 	ammo_datum_type = /datum/ammo/bullet/rifle/nut
 	default_ammo_type = /obj/item/ammo_magazine/rifle/nut_ammo
 	allowed_ammo_types = list(/obj/item/ammo_magazine/rifle/nut_ammo)
@@ -56,6 +56,7 @@
 /datum/ammo/bullet/rifle/nut
 	damage = 10
 	penetration = 5
+	accurate_range_min = 2
 
 /obj/item/weapon/gun/rifle/drone/attack_self(mob/user)
 	if(active)
@@ -144,6 +145,13 @@
 	atom_flags = BUMP_ATTACKABLE
 	var/movement_delay = 0.7 SECONDS
 
+/obj/machinery/deployable/mounted/sentry/nut/tail_stab_act(mob/living/carbon/xenomorph/xeno, damage, target_zone, penetration, structure_damage_multiplier, stab_description, disorientamount, can_hit_turf)
+	if(!(CHECK_BITFIELD(machine_stat, KNOCKED_DOWN)))
+		knock_down()
+		take_damage(10, BRUTE, MELEE, TRUE, get_dir(src, xeno), xeno.xeno_caste.melee_ap, xeno)
+		return TRUE
+	return ..()
+
 /obj/machinery/deployable/mounted/sentry/nut/lava_act()
 	return
 
@@ -179,7 +187,8 @@
 				return
 			notice = "<b>ALERT! [src] detected Hostile/Unknown: [mob.name] at: [AREACOORD_NO_Z(src)].</b>"
 			last_alert = world.time
-			walk_towards(src, get_adjacent_open_turfs(mob), movement_delay, 1)
+			if(!(CHECK_BITFIELD(machine_stat, KNOCKED_DOWN)))
+				walk_towards(src, get_adjacent_open_turfs(mob), movement_delay, 1)
 			/*
 			if(HAS_TRAIT(src, TRAIT_WARPED_INVISIBLE))
 				playsound(loc, 'sound/effects/pred_cloakoff.ogg', 25, TRUE)
@@ -191,7 +200,8 @@
 			var/atom/target = get_target()
 			if(target)
 				notice = "<b>ALERT! [src] at [AREACOORD_NO_Z(src)] attempting to kamikaze [target.name] due running out of ammo.</b>"
-				walk_towards(src, target, movement_delay, 1) //suicide bomb les go
+				if(!(CHECK_BITFIELD(machine_stat, KNOCKED_DOWN)))
+					walk_towards(src, target, movement_delay, 1) //suicide bomb les go
 				addtimer(CALLBACK(src, PROC_REF(self_destruct)), 3 SECONDS, TIMER_STOPPABLE)
 				last_damage_alert = world.time
 			else
@@ -244,14 +254,11 @@ GLOBAL_VAR_INIT(ads_intercept_range, 9)
 //Air defense system
 /obj/machinery/deployable/mounted/sentry/ads_system
 	name = "Archercorp 'ACADS01' Air Defense Sentry"
-	desc = "An air defense sentry developed to protect bases and shuttles against air strikes and alike. Even when manually controlled this only shoots into the air and cannot hit ground targets. Uses about 10 rounds per shell shot down. Alt + RClick to briefly display it's range. "
-	use_power = TRUE
+	desc = "An air defense sentry developed to protect bases and shuttles against air strikes and alike. Even when manually controlled this only shoots into the air and cannot hit ground targets. Uses about varying amounts of rounds per shell or grenade shot down. Grenades are not far up in the air and tiny therefore it can shoot them down only in half the range. Alt + RClick to briefly display it's range."
 	range = 0
 	var/intercept_cooldown = 0
 	var/rocket_intercept_cooldown = 0
 	var/preview_cooldown = 0
-
-/obj/effect/overlay/blinking_laser/marine/lines/nowarning
 
 /obj/machinery/deployable/mounted/sentry/ads_system/AltRightClick(mob/user)
 	. = ..()
@@ -260,8 +267,12 @@ GLOBAL_VAR_INIT(ads_intercept_range, 9)
 		return
 	COOLDOWN_START(src, preview_cooldown, 4 SECONDS)
 	balloon_alert_to_viewers("showing range now.")
-	for(var/turf/aroundplace in orange(GLOB.ads_intercept_range, loc))
-		QDEL_IN(new /obj/effect/overlay/blinking_laser/marine/pod_warning(aroundplace), 3 SECONDS)
+	for(var/turf/aroundplace in range(GLOB.ads_intercept_range, loc))
+		QDEL_IN(new /obj/effect/overlay/blinking_laser/ads_range(aroundplace), 3 SECONDS)
+	for(var/turf/aroundplace in range(GLOB.ads_intercept_range/2, loc))
+		for(var/obj/effect/overlay/blinking_laser/ads_range/otheroverlay in aroundplace.contents)
+			qdel(otheroverlay)
+		QDEL_IN(new /obj/effect/overlay/blinking_laser/ads_grenade_range(aroundplace), 3 SECONDS)
 
 //this will make it not shoot people etc, this is barely a sentry but we want ammo things so
 /obj/machinery/deployable/mounted/sentry/ads_system/process()
@@ -277,15 +288,15 @@ GLOBAL_VAR_INIT(ads_intercept_range, 9)
 	COOLDOWN_START(src, intercept_cooldown, the_cooldown)
 	var/obj/item/weapon/gun/gun = get_internal_item()
 	if(gun.rounds <= 0)
-		radio.talk_into(src, "<b>ALERT! [src] failed to shoot down a [proj.name]! due depleted ammo at: [AREACOORD_NO_Z(src)].</b>")
+		radio.talk_into(src, "<b>ALERT! [src] failed to shoot a [proj.name]! due depleted ammo at: [AREACOORD_NO_Z(src)].</b>")
 		return FALSE
 	face_atom(target_turf)
 	gun.set_target(target_turf)
 	addtimer(CALLBACK(src, PROC_REF(firing_loop), target_turf, fired_times), 1) //so it works detached from the proc and doesnt delay.
-	if(prob(10))
+	if(prob(3))
 		radio.talk_into(src, "<b>ALERT! [src] missed a [proj.name]! at: [AREACOORD_NO_Z(src)].</b>")
 		return FALSE
-	radio.talk_into(src, "<b>ALERT! [src] has shot down a [proj.name] at: [AREACOORD_NO_Z(src)].</b>")
+	radio.talk_into(src, "<b>ALERT! [src] has shot a [proj.name] at: [AREACOORD_NO_Z(src)].</b>")
 	playsound(loc, SFX_EXPLOSION_SMALL_DISTANT, 50, 1, falloff = 5)
 	return TRUE
 
@@ -301,7 +312,7 @@ GLOBAL_VAR_INIT(ads_intercept_range, 9)
 
 /obj/item/weapon/gun/sentry/ads_system
 	name = "\improper Archercorp ACADS01 Air Defense Sentry"
-	desc = "A deployable air defense sentry requiring 100 rounds drum of special flak ammunition."
+	desc = "An air defense sentry developed to protect bases and shuttles against air strikes and alike. Even when manually controlled this only shoots into the air and cannot hit ground targets. Uses about varying amounts of rounds per shell or grenade shot down. Grenades are not far up in the air and tiny therefore it can shoot them down only in half the range. Alt + RClick to briefly display it's range."
 	icon = 'ntf_modular/icons/obj/machines/deployable/point-defense/point_defense.dmi'
 	icon_state = "pointdef"
 	burst_amount = 5
@@ -357,3 +368,24 @@ GLOBAL_VAR_INIT(ads_intercept_range, 9)
 	max_rounds = 100
 	default_ammo = /datum/ammo/bullet/turret/air_defense
 
+/obj/item/explosive/grenade/throw_impact(atom/hit_atom, speed, bounce)
+	for(var/obj/machinery/deployable/mounted/sentry/ads_system/ads in range(GLOB.ads_intercept_range/2,hit_atom))
+		if(!COOLDOWN_FINISHED(ads, intercept_cooldown))
+			continue
+		if(ads.try_intercept(hit_atom,src, 0.1, 3))
+			qdel(src)
+			return
+	. = ..()
+
+//effects for showing range, everyone can see.
+/obj/effect/overlay/blinking_laser/ads_range
+	name = "ads range"
+	layer = WALL_OBJ_LAYER
+	icon = 'ntf_modular/icons/effects/lases.dmi'
+	icon_state = "ads_range"
+
+/obj/effect/overlay/blinking_laser/ads_grenade_range
+	name = "ads grenade range"
+	layer = WALL_OBJ_LAYER
+	icon = 'ntf_modular/icons/effects/lases.dmi'
+	icon_state = "ads_grenade_range"

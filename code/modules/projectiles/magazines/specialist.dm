@@ -438,8 +438,6 @@
 /obj/item/ammo_magazine/rifle/pepperball/pepperball_mini
 	name = "small pepperball canister (SAN balls)"
 	desc = "A small canister for use with the miniature pepperball gun."
-	icon = 'icons/obj/items/ammo/misc.dmi'
-	icon_state = "pepperball_mini"
 	default_ammo = /datum/ammo/bullet/pepperball/pepperball_mini
 	max_rounds = 20
 	w_class = WEIGHT_CLASS_SMALL
@@ -536,7 +534,7 @@
 	icon = 'icons/obj/items/ammo/machinegun.dmi'
 	icon_state = "at32"
 	default_ammo = /datum/ammo/bullet/auto_cannon
-	max_rounds = 40
+	max_rounds = 30
 	reload_delay = 25
 	icon_state_mini = "mag_dmr"
 
@@ -546,7 +544,7 @@
 	caliber = CALIBER_20
 	icon_state = "at32_he"
 	default_ammo = /datum/ammo/bullet/auto_cannon/flak
-	max_rounds = 40
+	max_rounds = 30
 	reload_delay = 25
 	icon_state_mini = "mag_dmr"
 
@@ -556,6 +554,6 @@
 	caliber = CALIBER_20
 	icon_state = "at32_at"
 	default_ammo = /datum/ammo/bullet/auto_cannon/anti_tank
-	max_rounds = 40
+	max_rounds = 30
 	reload_delay = 25
 	icon_state_mini = "mag_dmr"

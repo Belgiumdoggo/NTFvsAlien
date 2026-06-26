@@ -51,7 +51,7 @@
 	accurate_range = 15
 	damage_type = STAMINA
 	armor_type = BIO
-	damage = 40
+	damage = 57
 	penetration = 0
 	shrapnel_chance = 0
 	///percentage of xenos total plasma to drain when hit by a pepperball
@@ -62,11 +62,10 @@
 /datum/ammo/bullet/pepperball/on_hit_mob(mob/target_mob, atom/movable/projectile/proj)
 	if(isxeno(target_mob))
 		var/mob/living/carbon/xenomorph/X = target_mob
-		if(!(X.xeno_caste.caste_flags & CASTE_PLASMADRAIN_IMMUNE))
-			X.use_plasma(drain_multiplier * X.xeno_caste.plasma_max * X.xeno_caste.plasma_regen_limit)
+		X.use_stun_health(drain_multiplier * X.xeno_caste.max_health)
 
 /datum/ammo/bullet/pepperball/pepperball_mini
-	damage = 30
+	damage = 42
 	drain_multiplier = 0.02
 	plasma_drain = 15
 
@@ -94,18 +93,20 @@
 	ammo_behavior_flags = AMMO_INCENDIARY|AMMO_FLAME|AMMO_TARGET_TURF
 	armor_type = FIRE
 	max_range = 7
-	damage = 31
+	damage = 6
 	damage_falloff = 0
 	incendiary_strength = 30 //Firestacks cap at 20, but that's after armor.
 	bullet_color = LIGHT_COLOR_FIRE
 	var/fire_color = "red"
-	var/burntime = 17
-	var/burnlevel = 31
+	///Duration of the flame in 2 second ticks
+	var/burn_time = FLAMER_STANDARD_BURN_DURATION
+	///Intensity of the flame
+	var/burn_level = 31
 
 /datum/ammo/flamethrower/drop_flame(turf/T)
 	if(!istype(T))
 		return
-	T.ignite(burntime, burnlevel, fire_color)
+	T.ignite(burn_time, burn_level, fire_color)
 
 /datum/ammo/flamethrower/on_hit_mob(mob/target_mob, atom/movable/projectile/proj)
 	drop_flame(get_turf(target_mob))
@@ -137,8 +138,8 @@
 	hud_state = "flame_blue"
 	max_range = 7
 	fire_color = "blue"
-	burntime = 40
-	burnlevel = 46
+	burn_time = 40
+	burn_level = 46
 	bullet_color = COLOR_NAVY
 
 /datum/ammo/flamethrower/armored_spray // armored vehicle flamer that sprays a visual continual flame
@@ -147,7 +148,7 @@
 	max_range = 7
 	shell_speed = 0.3
 	damage = 6
-	burntime = 0.3 SECONDS
+	burn_time = 0.3 SECONDS
 
 /datum/ammo/flamethrower/sentry // is also a spray
 	name = "spraying flames"
@@ -155,7 +156,7 @@
 	max_range = 7
 	shell_speed = 0.3
 	damage = 6
-	burntime = 0.3 SECONDS
+	burn_time = 0.3 SECONDS
 
 /datum/ammo/water
 	name = "water"
@@ -218,20 +219,20 @@
 	max_range = 10
 
 /datum/ammo/grenade_container/on_hit_mob(mob/target_mob, atom/movable/projectile/proj)
-	drop_nade(get_turf(target_mob))
+	drop_nade(get_turf(target_mob), proj)
 
 /datum/ammo/grenade_container/on_hit_obj(obj/target_obj, atom/movable/projectile/proj)
-	drop_nade(target_obj.density ? get_step_towards(target_obj, proj) : target_obj.loc)
+	drop_nade(target_obj.density ? get_step_towards(target_obj, proj) : target_obj.loc, proj)
 
 /datum/ammo/grenade_container/on_hit_turf(turf/target_turf, atom/movable/projectile/proj)
-	drop_nade(target_turf.density ? get_step_towards(target_turf, proj) : target_turf)
+	drop_nade(target_turf.density ? get_step_towards(target_turf, proj) : target_turf, proj)
 
 /datum/ammo/grenade_container/do_at_max_range(turf/target_turf, atom/movable/projectile/proj)
-	drop_nade(target_turf.density ? get_step_towards(target_turf, proj) : target_turf)
+	drop_nade(target_turf.density ? get_step_towards(target_turf, proj) : target_turf, proj)
 
-/datum/ammo/grenade_container/drop_nade(turf/T)
-	var/obj/item/explosive/grenade/G = new nade_type(T)
-	G.visible_message(span_warning("\A [G] lands on [T]!"))
+/datum/ammo/grenade_container/drop_nade(turf/target_turf, atom/movable/projectile/proj)
+	var/obj/item/explosive/grenade/G = new nade_type(target_turf)
+	G.visible_message(span_warning("\A [G] lands on [target_turf]!"))
 	G.det_time = 10
 	G.activate()
 

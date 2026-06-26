@@ -49,6 +49,7 @@ The Grenade Launchers
 		/obj/item/explosive/grenade/smokebomb/drain,
 		/obj/item/explosive/grenade/smokebomb/antigas,
 		/obj/item/explosive/grenade/smokebomb/neuro,
+		/obj/item/explosive/grenade/smokebomb/neuro/alt,
 		/obj/item/explosive/grenade/smokebomb/acid,
 		/obj/item/explosive/grenade/smokebomb/satrapine,
 		/obj/item/explosive/grenade/smokebomb/aphrotoxin,
@@ -72,6 +73,7 @@ The Grenade Launchers
 		/obj/item/explosive/grenade/bullet/laser,
 		/obj/item/explosive/grenade/bullet/hefa,
 		/obj/item/explosive/grenade/emp,
+		/obj/item/explosive/grenade/cagenade,
 	)
 	reciever_flags = NONE
 
@@ -168,8 +170,8 @@ The Grenade Launchers
 	desc = "A weapon-mounted, reloadable, two-shot grenade launcher."
 	icon = 'icons/obj/items/guns/attachments/gun.dmi'
 	icon_state = "grenade"
-	max_shells = 2 //codex
-	max_chamber_items = 1
+	max_shells = 1 //codex
+	max_chamber_items = 0
 	fire_delay = 1 SECONDS
 	fire_sound = 'sound/weapons/guns/fire/underbarrel_grenadelauncher.ogg'
 	attachable_offset = list("muzzle_x" = 33, "muzzle_y" = 18,"rail_x" = 14, "rail_y" = 22, "under_x" = 19, "under_y" = 14, "stock_x" = 19, "stock_y" = 14)
@@ -198,10 +200,12 @@ The Grenade Launchers
 		/obj/item/explosive/grenade/smokebomb/drain,
 		/obj/item/explosive/grenade/smokebomb/antigas,
 		/obj/item/explosive/grenade/smokebomb/neuro,
+		/obj/item/explosive/grenade/smokebomb/neuro/alt,
 		/obj/item/explosive/grenade/smokebomb/aphrotoxin,
 		/obj/item/explosive/grenade/smokebomb/sleep,
 		/obj/item/explosive/grenade/smokebomb/acid,
 		/obj/item/explosive/grenade/smokebomb/satrapine,
+		/obj/item/explosive/grenade/chem_grenade/metalfoam,
 		/obj/item/explosive/grenade/phosphorus,
 		/obj/item/explosive/grenade/phosphorus/upp,
 		/obj/item/explosive/grenade/flare,
@@ -254,6 +258,7 @@ The Grenade Launchers
 	aim_slowdown = 1
 	gun_features_flags = GUN_AMMO_COUNTER|GUN_SMOKE_PARTICLES
 	attachable_allowed = list(
+		/obj/item/attachable/scope/mini,
 		/obj/item/attachable/magnetic_harness,
 		/obj/item/attachable/flashlight,
 	)
@@ -261,6 +266,7 @@ The Grenade Launchers
 	fire_delay = 1.05 SECONDS
 	max_chamber_items = 0
 	max_range = 10
+	w_class = WEIGHT_CLASS_NORMAL //this is pretty much useless so put it in your bag, maybe slightly less useless.
 
 
 /obj/item/weapon/gun/grenade_launcher/single_shot/riot

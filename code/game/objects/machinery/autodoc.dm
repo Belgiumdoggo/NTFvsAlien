@@ -29,7 +29,7 @@
 #define SURGERY_PROCEDURE_EXTERNAL_DIALYSIS 15
 #define SURGERY_PROCEDURE_EXTERNAL_BLOOD 16
 
-#define UNNEEDED_DELAY 10 SECONDS // How long to waste if someone queues an unneeded surgery.
+#define UNNEEDED_DELAY 5 SECONDS // How long to waste if someone queues an unneeded surgery.
 
 //Autodoc
 /obj/machinery/autodoc
@@ -238,6 +238,8 @@
 		return
 	if(xeno_attacker.status_flags & INCORPOREAL || xeno_attacker.do_actions)
 		return
+	if(xeno_attacker.handcuffed)
+		return
 	visible_message(span_warning("[xeno_attacker] begins to pry the [src]'s cover!"), 3)
 	playsound(src,'sound/effects/metal_creaking.ogg', 25, 1)
 	if(!do_after(xeno_attacker, 2 SECONDS))
@@ -266,7 +268,7 @@
 	try_entering(user, grabbed_mob)
 	return TRUE
 
-/obj/machinery/autodoc/MouseDrop_T(atom/dropping, mob/user)
+/obj/machinery/autodoc/MouseDrop_T(atom/dropping, mob/user, params)
 	. = ..()
 	if(!ishuman(dropping) || !ishuman(user))
 		return
@@ -841,13 +843,13 @@
 						if(embyro)
 							for(embyro in occupant)
 								loop_in_time(HEMOSTAT_REMOVE_MAX_DURATION)
-								occupant.visible_message(span_warning("[src] defty extracts a wriggling parasite from [occupant]'s ribcage!"))
+								occupant.visible_message(span_warning("[src] defty extracts a wriggling parasite from [occupant]'s [embyro?.target_hole]!"))
 								var/mob/living/carbon/xenomorph/larva/live_larva = locate() in occupant // The larva was fully grown, ready to burst.
 								if(live_larva)
 									live_larva.forceMove(get_turf(src))
 								else
 									embyro.forceMove(occupant.loc)
-									occupant.status_flags &= ~XENO_HOST
+									//occupant.status_flags &= ~XENO_HOST //this is handled by /obj/item/alien_embryo/process()
 								qdel(embyro)
 					if(length(limb_ref.implants))
 						for(var/obj/item/implant AS in limb_ref.implants)

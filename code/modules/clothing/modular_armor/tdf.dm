@@ -24,6 +24,8 @@
 		/obj/item/armor_module/module/mimir_environment_protection/mark1,
 		/obj/item/armor_module/module/hlin_explosive_armor,
 		/obj/item/armor_module/module/eshield,
+		/obj/item/armor_module/module/eshield/absorbant/energy,
+		/obj/item/armor_module/module/eshield/absorbant/ballistic,
 		/obj/item/armor_module/module/eshield/overclocked,
 		/obj/item/armor_module/module/mirage,
 		/obj/item/armor_module/module/armorlock,
@@ -48,11 +50,13 @@
 	allowed_uniform_type = /obj/item/clothing/under
 	starting_attachments = list(/obj/item/armor_module/storage/helmet)
 
+/*
 /obj/item/clothing/suit/modular/tdf/hodgrenades
 	starting_attachments = list(
 		/obj/item/armor_module/module/ballistic_armor,
 		/obj/item/armor_module/storage/grenade,
 	)
+*/
 
 /obj/item/clothing/suit/modular/tdf/engineer
 	starting_attachments = list(
@@ -202,11 +206,13 @@
 		/obj/item/armor_module/storage/engineering,
 	)
 
+/*
 /obj/item/clothing/suit/modular/tdf/heavy/grenadier //Literally grenades
 	starting_attachments = list(
 		/obj/item/armor_module/module/ballistic_armor,
 		/obj/item/armor_module/storage/grenade,
 	)
+*/
 
 /obj/item/clothing/suit/modular/tdf/heavy/surt
 	starting_attachments = list(
@@ -313,7 +319,9 @@
 	visorless_offset_y = 0
 
 /obj/item/clothing/head/modular/tdf/hod
-	starting_attachments = list(/obj/item/armor_module/storage/helmet, /obj/item/armor_module/module/hod_head)
+	starting_attachments = list(/obj/item/armor_module/storage/helmet,
+	// /obj/item/armor_module/module/hod_head
+	)
 
 /obj/item/clothing/head/modular/tdf/freyr
 	starting_attachments = list(/obj/item/armor_module/storage/helmet, /obj/item/armor_module/module/artemis)

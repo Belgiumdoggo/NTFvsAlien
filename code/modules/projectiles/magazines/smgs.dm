@@ -70,7 +70,7 @@
 	default_ammo = /datum/ammo/bullet/smg/heavy
 	caliber = CALIBER_41AE
 	icon_state = "t45"
-	max_rounds = 55
+	max_rounds = 65
 	w_class = WEIGHT_CLASS_SMALL
 	icon_state_mini = "mag_heavy_smg"
 	bonus_overlay = "t45_mag"
@@ -169,6 +169,7 @@
 	name = "\improper GAL9 extended magazine (9mm)"
 	icon_state = "uzi_ext"
 	max_rounds = 50
+	w_class = WEIGHT_CLASS_SMALL
 	bonus_overlay = "uzi_ex"
 	icon_state_mini = "mag_smg_dark"
 
@@ -258,7 +259,7 @@
 	caliber = CALIBER_46X30
 	icon_state = "l40"
 	icon_state_mini = "mag_smg_dark"
-	default_ammo = /datum/ammo/bullet/smg/ap/hv
+	default_ammo = /datum/ammo/bullet/smg/ap
 	max_rounds = 45
 	w_class = WEIGHT_CLASS_SMALL
 
@@ -267,8 +268,8 @@
 
 /obj/item/ammo_magazine/smg/vsd_pdw
 	name = "\improper C17 drum mag (.45 ACP)"
-	desc = "An Armor-Piercing .45 ACP caseless submachinegun magazine."
-	default_ammo = /datum/ammo/bullet/smg/ap/hv
+	desc = "A .45 ACP caseless submachinegun magazine."
+	default_ammo = /datum/ammo/bullet/smg
 	caliber = CALIBER_45ACP
 	icon_state = "ppsh_ext"
 	max_rounds = 55

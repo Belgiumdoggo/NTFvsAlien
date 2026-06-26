@@ -133,6 +133,17 @@
 
 /obj/effect/landmark/distress_item
 
+/obj/effect/landmark/valhalla_weed_node
+	name = "valhalla xeno weed node spawn landmark"
+	icon = 'icons/Xeno/weeds.dmi'
+	icon_state = "weednode0"
+
+/obj/effect/landmark/valhalla_weed_node/Initialize(mapload)
+	var/weed_type = pickweight(GLOB.weed_prob_list)
+	new weed_type(loc)
+	. = ..()
+	return INITIALIZE_HINT_QDEL
+
 /obj/effect/landmark/weed_node
 	name = "xeno weed node spawn landmark"
 	icon = 'icons/Xeno/weeds.dmi'
@@ -170,6 +181,16 @@
 
 /obj/effect/landmark/xeno_silo_spawn/Initialize(mapload)
 	GLOB.xeno_resin_silo_turfs += loc
+	. = ..()
+	return INITIALIZE_HINT_QDEL
+
+/obj/effect/landmark/encounter_silo_spawn
+	name = "encounter xeno silo spawn landmark"
+	icon = 'icons/Xeno/resin_silo.dmi'
+	icon_state = "weed_silo"
+
+/obj/effect/landmark/encounter_silo_spawn/Initialize(mapload)
+	GLOB.xeno_encounter_resin_silo_turfs += loc
 	. = ..()
 	return INITIALIZE_HINT_QDEL
 
@@ -212,6 +233,15 @@
 	GLOB.zombie_spawner_turfs += loc
 	..()
 	return INITIALIZE_HINT_QDEL
+
+/obj/effect/landmark/zombie_vendor
+	name = "zombie crash progression vendor landmark"
+	icon = 'icons/obj/machines/vending.dmi'
+	icon_state = "marinerequisitions"
+
+/obj/effect/landmark/zombie_vendor/Initialize(mapload)
+	GLOB.zombie_crash_vendor_landmarks += src // Need to track where the landmark will move to after the round starts.
+	return ..()
 
 /obj/effect/landmark/nuke_spawn
 	name = "nuke spawn landmark"
@@ -334,6 +364,7 @@
 		/obj/item/weapon/gun/revolver/standard_magnum,
 		/obj/item/weapon/gun/smg/standard_machinepistol,
 		/obj/item/weapon/gun/smg/standard_smg,
+		/obj/item/weapon/gun/smg/standard_heavysmg/guardian,
 		/obj/item/weapon/gun/smg/m25,
 		/obj/item/weapon/gun/smg/mp7,
 		/obj/item/weapon/gun/smg/skorpion,
@@ -364,6 +395,8 @@
 		/obj/item/weapon/gun/rifle/standard_assaultrifle,
 		/obj/item/weapon/gun/rifle/standard_dmr,
 		/obj/item/weapon/gun/rifle/standard_br,
+		/obj/item/weapon/gun/rifle/nt_halter,
+		/obj/item/weapon/gun/rifle/nt_halter/cqb,
 		/obj/item/weapon/gun/rifle/m412,
 		/obj/item/weapon/gun/rifle/m41a,
 		/obj/item/weapon/gun/rifle/mpi_km,

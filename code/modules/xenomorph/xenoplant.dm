@@ -49,6 +49,8 @@
 /obj/structure/xeno/plant/attack_alien(mob/living/carbon/xenomorph/xeno_attacker, damage_amount = xeno_attacker.xeno_caste.melee_damage * xeno_attacker.xeno_melee_damage_modifier, damage_type = BRUTE, armor_type = MELEE, effects = TRUE, armor_penetration = xeno_attacker.xeno_caste.melee_ap, isrightclick = FALSE)
 	if((xeno_attacker.status_flags & INCORPOREAL))
 		return FALSE
+	if(xeno_attacker.handcuffed)
+		return
 
 	if(!issamexenohive(xeno_attacker))
 		return ..()
@@ -177,7 +179,7 @@
 	if(!(X.xeno_caste.can_flags & CASTE_CAN_BE_GIVEN_PLASMA))
 		to_chat(X, span_xenowarning("But our body rejects the fruit, we do not share the same plasma type!"))
 		return FALSE
-	X.apply_status_effect(/datum/status_effect/plasma_surge, X.xeno_caste.plasma_max, bonus_regen, duration)
+	X.apply_status_effect(STATUS_EFFECT_PLASMA_SURGE, X.xeno_caste.plasma_max, bonus_regen, duration)
 	balloon_alert(X, "Plasma restored")
 	to_chat(X, span_xenowarning("[src] Restores our plasma reserves, our organism is on overdrive!"))
 	playsound(user, SFX_ALIEN_DROOL, 25)

@@ -1,12 +1,5 @@
-#define SKILL_SEX_DEFAULT 1
-#define SKILL_SEX_TRAINED 2
-#define SKILL_SEX_MASTER 3
-
-/datum/skills
-	var/sex = SKILL_SEX_DEFAULT
-
 /datum/skills/ceo
-	name = CHIEF_EXECUTIVE_OFFICER
+	name = NTC_CHIEF_EXECUTIVE_OFFICER
 	leadership = SKILL_LEAD_MASTER
 	police = SKILL_POLICE_MP
 	medical = SKILL_MEDICAL_MASTER
@@ -20,6 +13,23 @@
 	//wouldnt it be niceeeee aa a a aaa
 	large_vehicle = SKILL_LARGE_VEHICLE_VETERAN
 	mech = SKILL_MECH_TRAINED
+	sex = SKILL_SEX_MASTER
+
+/datum/skills/nm_ceo
+	name = NM_CHIEF_EXECUTIVE_OFFICER
+	leadership = SKILL_LEAD_TRAINED
+	police = SKILL_POLICE_MP
+	medical = SKILL_MEDICAL_MASTER
+	surgery = SKILL_SURGERY_MASTER
+	engineer = SKILL_ENGINEER_PLASTEEL
+	construction = SKILL_CONSTRUCTION_PLASTEEL
+	powerloader = SKILL_POWERLOADER_TRAINED
+	unarmed = SKILL_UNARMED_MP
+	combat = SKILL_COMBAT_TRAINED
+	smartgun = SKILL_SMART_DEFAULT
+	large_vehicle = SKILL_LARGE_VEHICLE_DEFAULT
+	mech = SKILL_MECH_DEFAULT
+	sex = SKILL_SEX_MASTER
 
 /datum/skills/slut
 	name = SQUAD_SLUT
@@ -27,7 +37,21 @@
 	combat = SKILL_COMBAT_DEFAULT //can still use guns
 	construction = SKILL_CONSTRUCTION_METAL //build a cum shack
 	stamina = SKILL_STAMINA_TRAINED //fucking is hard work
-	sex = SKILL_SEX_TRAINED
+	sex = SKILL_SEX_EXPERT
+	engineer = SKILL_ENGINEER_METAL
+
+/datum/skills/slut/clf
+	name = "Cult Offering"
 
 /datum/skills/civilian/mo
 	sex = SKILL_SEX_MASTER //Master at work
+
+/datum/skills/operations_officer
+	name = CORPORATE_LIAISON
+	leadership = SKILL_LEAD_TRAINED //not really trained to lead a military
+	police = SKILL_POLICE_MP //ig corporate training for self defence
+	medical = SKILL_MEDICAL_NOVICE
+	construction = SKILL_CONSTRUCTION_PLASTEEL
+	engineer = SKILL_ENGINEER_METAL
+	powerloader = SKILL_POWERLOADER_MASTER
+	combat = SKILL_COMBAT_UNTRAINED

@@ -14,9 +14,11 @@
 			return FALSE
 		set_resting(TRUE, FALSE)
 		return
+	/*
 	if(do_actions)
 		balloon_alert(src, "Busy!")
 		return
+		*/
 	get_up()
 
 ///Handles getting up, doing a basic check before relaying it to the actual proc that does it
@@ -47,12 +49,25 @@
 	hud_used?.rest_icon?.update_icon()
 
 
+/mob/living/human/verb/rclone()
+	set category = "OOC"
+	set name = "Reclone"
+
+	if(client && (stat == DEAD || CHECK_BITFIELD(restrained_flags, RESTRAINED_XENO_NEST))) //ask on death first time.
+		INVOKE_ASYNC(client, TYPE_PROC_REF(/client, ask_reclone), FALSE)
+		return
+	to_chat(src, span_notice("You must be dead or nested to use this."))
+
 /mob/living/verb/ghost()
 	set category = "OOC"
 	set name = "Ghost"
 
+	if(client && ishuman(src) && (stat == DEAD || CHECK_BITFIELD(restrained_flags, RESTRAINED_XENO_NEST))) //ask on death first time.
+		INVOKE_ASYNC(client, TYPE_PROC_REF(/client, ask_reclone), FALSE)
+		return
+
 	// Gamemode disallowed handler - START
-	if((!SSticker.mode || CHECK_BITFIELD(SSticker.mode.round_type_flags, MODE_NO_GHOSTS)))
+	if((!SSticker.mode || CHECK_BITFIELD(SSticker.mode.round_type_flags2, MODE_2_NO_GHOSTS_STRICT)))
 		if(client && check_rights_for(client, R_ADMIN))
 			switch(tgui_input_list(src, "Ghosting in this game mode would normally send you to the lobby, but since you are an admin you can bypass this.  What do you wish to do?", "Ghost", list("Ghost", "AGhost", "Return to lobby"), "AGhost"))
 				if("Ghost")
@@ -83,7 +98,7 @@
 		return
 	// Gamemode disallowed handler - END
 
-	if(stat == DEAD || isxenohivemind(src) || iszombie(src))
+	if(stat == DEAD || isxenohivemind(src) || iszombie(src) || isAI(src))
 		log_game("[key_name(usr)] has ghosted at [AREACOORD(usr)].")
 		message_admins("[ADMIN_TPMONTY(usr)] has ghosted.")
 		ghostize(TRUE)
@@ -100,6 +115,8 @@
 	log_game("[key_name(usr)] has ghosted at [AREACOORD(usr)].")
 	message_admins("[ADMIN_TPMONTY(usr)] has ghosted.")
 	ghostize(FALSE)
+	if(src in GLOB.possessed_sentient_zombie_list)
+		GLOB.possessed_sentient_zombie_list -= src
 
 /mob/living/point_to(atom/pointed_atom as mob|obj|turf in view(client.view, src))
 	if(!..())

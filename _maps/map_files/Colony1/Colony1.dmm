@@ -21,6 +21,12 @@
 	},
 /turf/open/floor/plating,
 /area/mainship/shipboard/sensors)
+"abF" = (
+/obj/effect/landmark/patrol_point/som/som_21,
+/turf/open/floor/plating/mainship,
+/area/mainship/groundhq/ntf/hallways/starboard_hallway{
+	name = "HQ Central Hallways"
+	})
 "abI" = (
 /obj/structure/cable,
 /obj/machinery/atmospherics/pipe/simple/supply/hidden/layer1{
@@ -107,7 +113,6 @@
 /turf/open/floor/mainship/red/full,
 /area/lv624/lazarus/armory)
 "aeo" = (
-/obj/structure/cable,
 /obj/structure/cable,
 /turf/open/floor/plating/plating_catwalk,
 /area/mainship/groundhq/ntf/hallways/starboard_hallway{
@@ -508,7 +513,7 @@
 /obj/structure/disposalpipe/segment{
 	dir = 1
 	},
-/obj/machinery/door/poddoor/shutters/mainship/open/indestructible{
+/obj/machinery/door/poddoor/shutters/mainship/open{
 	dir = 2;
 	id = "insidedorm3";
 	name = "\improper Quarters Privacy Shutters"
@@ -590,6 +595,13 @@
 /obj/structure/window/framed/colony,
 /turf/open/floor/plating,
 /area/mainship/groundhq/ntf/living/starboard_garden)
+"aLB" = (
+/obj/structure/cable,
+/obj/effect/landmark/patrol_point/xeno/xeno_11,
+/turf/open/floor/plating/plating_catwalk,
+/area/mainship/groundhq/ntf/hallways/aft_hallway{
+	name = "HQ Northeast Hallways"
+	})
 "aLC" = (
 /obj/structure/cable,
 /turf/open/floor/mainship/tcomms,
@@ -624,6 +636,7 @@
 "aOS" = (
 /obj/structure/flora/ausbushes/ppflowers,
 /obj/effect/ai_node,
+/obj/effect/landmark/sensor_tower,
 /turf/open/floor/plating/ground/snow/layer3,
 /area/desert_dam/exterior/valley/valley_wilderness)
 "aPE" = (
@@ -1334,7 +1347,7 @@
 /obj/structure/disposalpipe/segment{
 	dir = 1
 	},
-/obj/machinery/door/poddoor/shutters/mainship/open/indestructible{
+/obj/machinery/door/poddoor/shutters/mainship/open{
 	dir = 2;
 	id = 1001;
 	name = "\improper Quarters Privacy Shutters"
@@ -1600,7 +1613,6 @@
 	})
 "ciN" = (
 /obj/structure/mineral_door/wood,
-/obj/structure/cable,
 /obj/structure/cable,
 /obj/machinery/atmospherics/pipe/simple/supply/hidden/layer1{
 	dir = 1
@@ -1894,7 +1906,7 @@
 /area/mainship/groundhq/ntf/shipboard/brig)
 "cAs" = (
 /obj/structure/window/framed/colony,
-/obj/machinery/door/poddoor/shutters/mainship/open/indestructible{
+/obj/machinery/door/poddoor/shutters/mainship/open{
 	dir = 2;
 	id = 1000;
 	name = "\improper Quarters Privacy Shutters"
@@ -1996,7 +2008,6 @@
 /area/mainship/groundhq/ntf/shipboard/brig)
 "cFQ" = (
 /obj/structure/cable,
-/obj/structure/cable,
 /obj/machinery/atmospherics/pipe/simple/supply/hidden/layer1{
 	dir = 1
 	},
@@ -2026,8 +2037,8 @@
 /turf/open/floor/plating/ground/snow/layer0,
 /area/lv624/lazarus/armory)
 "cHf" = (
-/obj/machinery/door/airlock/mainship/generic/pilot,
 /obj/machinery/door/firedoor/mainship,
+/obj/structure/mineral_door/wood,
 /turf/open/floor/mainship/mono,
 /area/mainship/groundhq/ntf/hallways/hangar)
 "cHn" = (
@@ -2185,7 +2196,6 @@
 /obj/machinery/atmospherics/pipe/simple/supply/hidden/layer1{
 	dir = 4
 	},
-/obj/structure/cable,
 /obj/structure/cable,
 /turf/open/floor/mainship/orange,
 /area/mainship/groundhq/ntf/engineering/upper_engineering)
@@ -2405,7 +2415,7 @@
 /obj/structure/disposalpipe/segment{
 	dir = 1
 	},
-/obj/machinery/door/poddoor/shutters/mainship/open/indestructible{
+/obj/machinery/door/poddoor/shutters/mainship/open{
 	dir = 2;
 	id = "insidedorm2";
 	name = "\improper Quarters Privacy Shutters"
@@ -2561,7 +2571,7 @@
 /area/mainship/medical/lower_medical)
 "dpa" = (
 /obj/structure/window/framed/colony,
-/obj/machinery/door/poddoor/shutters/mainship/open/indestructible{
+/obj/machinery/door/poddoor/shutters/mainship/open{
 	dir = 2;
 	id = 1003;
 	name = "\improper Quarters Privacy Shutters"
@@ -3073,7 +3083,6 @@
 /area/mainship/groundhq/ntf/living/grunt_rnr)
 "dXO" = (
 /obj/structure/cable,
-/obj/structure/cable,
 /obj/machinery/atmospherics/pipe/manifold/supply/hidden/layer1{
 	dir = 8
 	},
@@ -3251,9 +3260,7 @@
 /turf/closed/wall,
 /area/mainship/engineering/engineering_workshop)
 "emY" = (
-/obj/machinery/vending/medical{
-	req_access = null
-	},
+/obj/machinery/vending/medical,
 /obj/structure/cable,
 /turf/open/floor/mainship/sterile/corner{
 	dir = 4
@@ -3593,7 +3600,6 @@
 /area/mainship/groundhq/ntf/living/commandbunks)
 "eLc" = (
 /obj/structure/cable,
-/obj/structure/cable,
 /obj/structure/disposalpipe/segment/corner{
 	dir = 8
 	},
@@ -3851,7 +3857,7 @@
 /obj/structure/disposalpipe/segment{
 	dir = 1
 	},
-/obj/machinery/door/poddoor/shutters/mainship/open/indestructible{
+/obj/machinery/door/poddoor/shutters/mainship/open{
 	dir = 2;
 	id = 1002;
 	name = "\improper Quarters Privacy Shutters"
@@ -4537,9 +4543,7 @@
 	name = "HQ Western hallways"
 	})
 "gbv" = (
-/obj/machinery/door/airlock/mainship/research/glass{
-	dir = 1
-	},
+/obj/structure/mineral_door/wood,
 /turf/open/floor/mainship/sterile/dark,
 /area/mainship/groundhq/ntf/medical/medical_science)
 "gcg" = (
@@ -4958,7 +4962,7 @@
 /area/mainship/groundhq/ntf/command/corporateliaison)
 "gIN" = (
 /obj/structure/mineral_door/wood,
-/obj/machinery/door/poddoor/shutters/mainship/open/indestructible{
+/obj/machinery/door/poddoor/shutters/mainship/open{
 	dir = 2;
 	id = "bar1";
 	name = "\improper Privacy Shutters"
@@ -4974,6 +4978,10 @@
 /area/mainship/command/corporateliaison{
 	name = "Ground CEO Office"
 	})
+"gLh" = (
+/obj/effect/landmark/patrol_point/tgmc_21,
+/turf/open/floor/prison,
+/area/mainship/groundhq/ntf/shipboard/brig_cells)
 "gLS" = (
 /obj/item/storage/box/crate/minisentry,
 /turf/open/floor/plating/ground/snow/layer0,
@@ -5596,7 +5604,6 @@
 /area/mainship/groundhq/ntf/shipboard/brig_cells)
 "hFA" = (
 /obj/structure/cable,
-/obj/structure/cable,
 /obj/machinery/atmospherics/pipe/manifold4w/supply/hidden/layer1,
 /turf/open/floor/mainship/sterile/side{
 	dir = 8
@@ -6212,13 +6219,6 @@
 	},
 /turf/open/floor/mainship/mono,
 /area/mainship/groundhq/ntf/living/officer_study)
-"isU" = (
-/obj/structure/cable,
-/obj/machinery/atmospherics/pipe/simple/supply/hidden/layer1{
-	dir = 4
-	},
-/turf/open/floor/plating/plating_catwalk,
-/area/mainship/groundhq/ntf/living/chapel)
 "isV" = (
 /obj/machinery/light{
 	dir = 1
@@ -6324,7 +6324,6 @@
 /turf/open/floor/wood,
 /area/mainship/hallways/ntf/dorm1)
 "izI" = (
-/obj/structure/cable,
 /obj/structure/cable,
 /obj/machinery/atmospherics/pipe/manifold/supply/hidden/layer1,
 /obj/structure/disposalpipe/segment/corner{
@@ -7101,6 +7100,18 @@
 	dir = 4
 	},
 /area/mainship/groundhq/ntf/medical/medical_science)
+"jyl" = (
+/obj/effect/landmark/sensor_tower,
+/turf/open/floor/mainship/mono,
+/area/mainship/hallways/hangar2)
+"jAb" = (
+/obj/effect/landmark/patrol_point/xeno/xeno_21,
+/turf/open/floor/plating/ground/snow/layer0,
+/area/lv624/ground/caves{
+	ceiling = 2;
+	name = "HQ Tunnels";
+	always_unpowered = 0
+	})
 "jAt" = (
 /turf/open/floor/carpet{
 	dir = 9;
@@ -7247,7 +7258,7 @@
 /area/mainship/groundhq/ntf/hallways/bathroom)
 "jEU" = (
 /obj/structure/window/framed/colony,
-/obj/machinery/door/poddoor/shutters/mainship/open/indestructible{
+/obj/machinery/door/poddoor/shutters/mainship/open{
 	dir = 2;
 	id = 1002;
 	name = "\improper Quarters Privacy Shutters"
@@ -7266,7 +7277,7 @@
 /area/mainship/groundhq/ntf/hallways/hangar)
 "jGg" = (
 /obj/structure/mineral_door/wood,
-/obj/machinery/door/poddoor/shutters/mainship/open/indestructible{
+/obj/machinery/door/poddoor/shutters/mainship/open{
 	dir = 2;
 	id = 1103;
 	name = "\improper Quarters Privacy Shutters"
@@ -7281,7 +7292,6 @@
 /obj/machinery/light{
 	dir = 8
 	},
-/obj/structure/cable,
 /obj/structure/cable,
 /obj/machinery/atmospherics/pipe/simple/supply/hidden/layer1{
 	dir = 1
@@ -7405,7 +7415,7 @@
 	})
 "jRE" = (
 /obj/structure/mineral_door/wood,
-/obj/machinery/door/poddoor/shutters/mainship/open/indestructible{
+/obj/machinery/door/poddoor/shutters/mainship/open{
 	dir = 2;
 	id = "bar4";
 	name = "\improper Privacy Shutters"
@@ -7468,7 +7478,7 @@
 /obj/structure/disposalpipe/segment{
 	dir = 1
 	},
-/obj/machinery/door/poddoor/shutters/mainship/open/indestructible{
+/obj/machinery/door/poddoor/shutters/mainship/open{
 	dir = 2;
 	id = "insidedorm4";
 	name = "\improper Quarters Privacy Shutters"
@@ -7499,7 +7509,6 @@
 /turf/open/floor/wood,
 /area/mainship/living/grunt_rnr)
 "jXb" = (
-/obj/structure/cable,
 /obj/structure/cable,
 /obj/machinery/atmospherics/pipe/simple/supply/hidden/layer1{
 	dir = 9
@@ -7623,7 +7632,6 @@
 /area/mainship/groundhq/ntf/living/grunt_rnr)
 "kgT" = (
 /obj/structure/cable,
-/obj/structure/cable,
 /obj/machinery/atmospherics/pipe/simple/supply/hidden/layer1{
 	dir = 6
 	},
@@ -7729,7 +7737,7 @@
 /obj/structure/disposalpipe/segment{
 	dir = 1
 	},
-/obj/machinery/door/poddoor/shutters/mainship/open/indestructible{
+/obj/machinery/door/poddoor/shutters/mainship/open{
 	dir = 2;
 	id = 1005;
 	name = "\improper Quarters Privacy Shutters"
@@ -8199,7 +8207,6 @@
 "laL" = (
 /obj/structure/catwalk,
 /obj/structure/cable,
-/obj/structure/cable,
 /obj/machinery/atmospherics/pipe/simple/supply/hidden/layer1{
 	dir = 1
 	},
@@ -8318,7 +8325,7 @@
 /area/mainship/groundhq/ntf/engineering/upper_engineering)
 "llv" = (
 /obj/structure/mineral_door/wood,
-/obj/machinery/door/poddoor/shutters/mainship/open/indestructible{
+/obj/machinery/door/poddoor/shutters/mainship/open{
 	dir = 2;
 	id = 1104;
 	name = "\improper Quarters Privacy Shutters"
@@ -8387,7 +8394,7 @@
 /obj/structure/disposalpipe/segment{
 	dir = 1
 	},
-/obj/machinery/door/poddoor/shutters/mainship/open/indestructible{
+/obj/machinery/door/poddoor/shutters/mainship/open{
 	dir = 2;
 	id = 1003;
 	name = "\improper Quarters Privacy Shutters"
@@ -8674,7 +8681,7 @@
 "lLS" = (
 /obj/structure/rack,
 /obj/item/storage/box/visual/grenade/teargas,
-/obj/item/shotgunbox/tracker,
+/obj/item/big_ammo_box/shotgun/tracker,
 /turf/open/floor/mainship/red,
 /area/mainship/groundhq/ntf/shipboard/brig)
 "lLU" = (
@@ -8744,7 +8751,7 @@
 /area/mainship/groundhq/ntf/medical/medical_science)
 "lRk" = (
 /obj/structure/window/framed/colony,
-/obj/machinery/door/poddoor/shutters/mainship/open/indestructible{
+/obj/machinery/door/poddoor/shutters/mainship/open{
 	dir = 2;
 	id = 1005;
 	name = "\improper Quarters Privacy Shutters"
@@ -8894,9 +8901,7 @@
 	},
 /area/mainship/groundhq/ntf/shipboard/brig_cells)
 "meu" = (
-/obj/machinery/vending/medical{
-	req_access = null
-	},
+/obj/machinery/vending/medical,
 /turf/open/floor/mainship/sterile/side{
 	dir = 4
 	},
@@ -9308,7 +9313,7 @@
 /obj/structure/disposalpipe/segment{
 	dir = 1
 	},
-/obj/machinery/door/poddoor/shutters/mainship/open/indestructible{
+/obj/machinery/door/poddoor/shutters/mainship/open{
 	dir = 2;
 	id = 998;
 	name = "\improper Quarters Privacy Shutters"
@@ -9813,10 +9818,10 @@
 "nvs" = (
 /obj/structure/disposalpipe/segment/corner,
 /obj/structure/cable,
-/obj/structure/cable,
 /obj/machinery/atmospherics/pipe/simple/supply/hidden/layer1{
 	dir = 10
 	},
+/obj/machinery/telecomms/relay/preset/tower/mapcomms,
 /turf/open/floor/mainship,
 /area/mainship/hallways/hangar2)
 "nvR" = (
@@ -10521,7 +10526,7 @@
 /obj/structure/disposalpipe/segment{
 	dir = 1
 	},
-/obj/machinery/door/poddoor/shutters/mainship/open/indestructible{
+/obj/machinery/door/poddoor/shutters/mainship/open{
 	dir = 2;
 	id = 1000;
 	name = "\improper Privacy Shutters"
@@ -10579,10 +10584,6 @@
 /obj/structure/closet/secure_closet/guncabinet/mp_armory,
 /turf/open/floor/mainship/red/full,
 /area/mainship/groundhq/ntf/engineering/engineering_workshop)
-"oxx" = (
-/obj/machinery/loadout_vendor,
-/turf/open/floor/mainship/mono,
-/area/mainship/squads/req)
 "oxF" = (
 /obj/machinery/light{
 	dir = 4
@@ -10654,7 +10655,7 @@
 /area/desert_dam/exterior/valley/valley_wilderness)
 "oAP" = (
 /obj/structure/window/framed/colony,
-/obj/machinery/door/poddoor/shutters/mainship/open/indestructible{
+/obj/machinery/door/poddoor/shutters/mainship/open{
 	dir = 2;
 	id = 998;
 	name = "\improper Quarters Privacy Shutters"
@@ -10807,7 +10808,7 @@
 	dir = 1
 	},
 /obj/structure/cable,
-/obj/machinery/door/poddoor/shutters/mainship/open/indestructible{
+/obj/machinery/door/poddoor/shutters/mainship/open{
 	dir = 2;
 	id = 1006;
 	name = "\improper Privacy Shutters"
@@ -11246,12 +11247,6 @@
 /obj/structure/table/mainship,
 /turf/open/floor/wood,
 /area/mainship/groundhq/ntf/living/grunt_rnr)
-"ppc" = (
-/obj/structure/cable,
-/turf/open/floor/plating/plating_catwalk,
-/area/mainship/groundhq/ntf/hallways/starboard_hallway{
-	name = "HQ Central Hallways"
-	})
 "ppO" = (
 /obj/machinery/computer/shuttle/shuttle_control/dropship/two{
 	possible_destinations = "lz1;lz2;hqlz1;hqlz2;alamo;normandy"
@@ -11262,27 +11257,6 @@
 "ppQ" = (
 /obj/structure/morgue/crematorium,
 /turf/open/floor/mainship/mono,
-/area/centcom/practice/medical{
-	outside = 0;
-	base_lighting_alpha = 0;
-	static_lighting = 1
-	})
-"pqb" = (
-/obj/machinery/atmospherics/pipe/simple/supply/hidden/layer1{
-	dir = 4
-	},
-/obj/structure/cable,
-/obj/structure/cable,
-/obj/structure/disposalpipe/segment{
-	dir = 4
-	},
-/turf/open/floor/plating/plating_catwalk,
-/area/mainship/squads/req)
-"pqM" = (
-/obj/machinery/door/airlock/mainship/medical/morgue{
-	dir = 2
-	},
-/turf/open/floor/mainship/sterile/dark,
 /area/centcom/practice/medical{
 	outside = 0;
 	base_lighting_alpha = 0;
@@ -12114,11 +12088,6 @@
 	},
 /turf/open/floor/mainship/mono,
 /area/mainship/groundhq/ntf/command/cic)
-"qrT" = (
-/obj/structure/cable,
-/obj/structure/cable,
-/turf/open/floor/mainship,
-/area/mainship/groundhq/ntf/hallways/hangar)
 "qrZ" = (
 /obj/item/toy/beach_ball,
 /turf/open/liquid/water/river/autosmooth,
@@ -12153,7 +12122,7 @@
 /area/mainship/engineering/engineering_workshop)
 "qtx" = (
 /obj/structure/mineral_door/wood,
-/obj/machinery/door/poddoor/shutters/mainship/open/indestructible{
+/obj/machinery/door/poddoor/shutters/mainship/open{
 	dir = 2;
 	id = 1100;
 	name = "\improper Quarters Privacy Shutters"
@@ -12210,13 +12179,6 @@
 	base_lighting_alpha = 0;
 	static_lighting = 1
 	})
-"qyb" = (
-/obj/machinery/atmospherics/pipe/simple/supply/hidden/layer1{
-	dir = 4
-	},
-/obj/structure/cable,
-/turf/open/floor/mainship/orange,
-/area/mainship/groundhq/ntf/engineering/upper_engineering)
 "qyd" = (
 /obj/machinery/atmospherics/pipe/simple/supply/hidden/layer1{
 	dir = 4
@@ -12400,7 +12362,6 @@
 /obj/machinery/atmospherics/pipe/simple/supply/hidden/layer1{
 	dir = 4
 	},
-/obj/structure/cable,
 /obj/structure/cable,
 /turf/open/floor/mainship/orange,
 /area/mainship/groundhq/ntf/engineering/upper_engineering)
@@ -12658,16 +12619,6 @@
 	},
 /turf/open/floor/plating/plating_catwalk,
 /area/mainship/squads/req)
-"qZO" = (
-/obj/structure/mineral_door/wood,
-/obj/structure/cable,
-/obj/machinery/atmospherics/pipe/simple/supply/hidden/layer1{
-	dir = 1
-	},
-/turf/open/floor/mainship/mono,
-/area/mainship/groundhq/ntf/hallways/stern_hallway{
-	name = "HQ Western hallways"
-	})
 "qZS" = (
 /obj/machinery/door/airlock/multi_tile/mainship/generic,
 /obj/structure/cable,
@@ -12704,7 +12655,7 @@
 /obj/structure/disposalpipe/segment{
 	dir = 1
 	},
-/obj/machinery/door/poddoor/shutters/mainship/open/indestructible{
+/obj/machinery/door/poddoor/shutters/mainship/open{
 	dir = 2;
 	id = "insidedorm1";
 	name = "\improper Quarters Privacy Shutters"
@@ -12849,6 +12800,10 @@
 /obj/machinery/light,
 /turf/open/floor/mainship/mono,
 /area/mainship/groundhq/ntf/command/corporateliaison)
+"rld" = (
+/obj/effect/landmark/patrol_point/som/som_11,
+/turf/open/floor/plating/ground/snow/layer0,
+/area/lv624/lazarus/armory)
 "rlh" = (
 /obj/machinery/vending/cargo_supply,
 /turf/open/floor/mainship/cargo,
@@ -12903,7 +12858,6 @@
 	name = "Kitchen"
 	})
 "rnl" = (
-/obj/structure/cable,
 /obj/structure/cable,
 /obj/machinery/atmospherics/pipe/simple/supply/hidden/layer1{
 	dir = 4
@@ -13327,16 +13281,9 @@
 /obj/effect/ai_node,
 /turf/open/floor/mainship/mono,
 /area/mainship/groundhq/ntf/engineering/engineering_workshop)
-"rQw" = (
-/obj/machinery/door/airlock/mainship/research/glass{
-	dir = 1;
-	name = "\improper Research Office Airlock"
-	},
-/turf/open/floor/mainship/sterile/dark,
-/area/mainship/groundhq/ntf/medical/medical_science)
 "rQy" = (
 /obj/structure/mineral_door/wood,
-/obj/machinery/door/poddoor/shutters/mainship/open/indestructible{
+/obj/machinery/door/poddoor/shutters/mainship/open{
 	dir = 2;
 	id = 1101;
 	name = "\improper Quarters Privacy Shutters"
@@ -13355,9 +13302,7 @@
 /turf/open/floor/mainship/sterile/dark,
 /area/mainship/groundhq/ntf/medical/medical_science)
 "rSS" = (
-/obj/machinery/vending/medical{
-	req_access = null
-	},
+/obj/machinery/vending/medical,
 /obj/machinery/light{
 	dir = 1
 	},
@@ -13374,7 +13319,7 @@
 /area/mainship/groundhq/ntf/medical/medical_science)
 "rVa" = (
 /obj/structure/window/framed/colony,
-/obj/machinery/door/poddoor/shutters/mainship/open/indestructible{
+/obj/machinery/door/poddoor/shutters/mainship/open{
 	dir = 2;
 	id = 1001;
 	name = "\improper Quarters Privacy Shutters"
@@ -13476,17 +13421,6 @@
 	dir = 8
 	},
 /area/lv624/lazarus/armory)
-"sam" = (
-/obj/machinery/door/airlock/mainship/medical{
-	req_access = list(5);
-	name = "\improper CMO Office"
-	},
-/turf/open/floor/mainship/sterile/dark,
-/area/centcom/practice/medical{
-	outside = 0;
-	base_lighting_alpha = 0;
-	static_lighting = 1
-	})
 "saC" = (
 /turf/closed/wall/mainship,
 /area/mainship/groundhq/ntf/engineering/engineering_workshop)
@@ -13906,14 +13840,6 @@
 	},
 /turf/open/floor/mainship/cargo,
 /area/mainship/groundhq/ntf/shipboard/brig)
-"sGH" = (
-/obj/machinery/door/airlock/mainship/medical/morgue,
-/turf/open/floor/mainship/sterile/dark,
-/area/centcom/practice/medical{
-	outside = 0;
-	base_lighting_alpha = 0;
-	static_lighting = 1
-	})
 "sHw" = (
 /turf/open/floor/wood,
 /area/mainship/groundhq/ntf/command/corporateliaison)
@@ -14395,7 +14321,6 @@
 	dir = 4
 	},
 /obj/structure/cable,
-/obj/structure/cable,
 /obj/machinery/atmospherics/pipe/simple/supply/hidden/layer1{
 	dir = 5
 	},
@@ -14858,19 +14783,13 @@
 	always_unpowered = 0
 	})
 "uhb" = (
-/obj/item/storage/box/crate/loot,
+/obj/item/storage/box/crate/loot/materials_pack,
 /turf/open/floor/mainship/mono,
 /area/mainship/hallways/hangar2)
 "uhf" = (
 /obj/effect/ai_node,
 /turf/open/floor/wood,
 /area/mainship/hallways/ntf/dorm1)
-"uhM" = (
-/obj/structure/window/framed/mainship,
-/obj/structure/cable,
-/obj/structure/cable,
-/turf/open/floor/plating,
-/area/mainship/groundhq/ntf/engineering/engine_core)
 "uhO" = (
 /obj/structure/table/mainship,
 /obj/item/binoculars,
@@ -15083,7 +15002,7 @@
 /obj/structure/disposalpipe/segment{
 	dir = 1
 	},
-/obj/machinery/door/poddoor/shutters/mainship/open/indestructible{
+/obj/machinery/door/poddoor/shutters/mainship/open{
 	dir = 2;
 	id = 999;
 	name = "\improper Quarters Privacy Shutters"
@@ -15252,9 +15171,7 @@
 /turf/open/floor/plating,
 /area/mainship/groundhq/ntf/living/chapel)
 "uNL" = (
-/obj/machinery/vending/medical{
-	req_access = null
-	},
+/obj/machinery/vending/medical,
 /obj/machinery/light,
 /turf/open/floor/mainship/sterile/side,
 /area/centcom/practice/medical{
@@ -15918,7 +15835,6 @@
 /area/mainship/groundhq/ntf/shipboard/brig_cells)
 "vFF" = (
 /obj/structure/cable,
-/obj/structure/cable,
 /obj/machinery/atmospherics/pipe/simple/supply/hidden/layer1{
 	dir = 10
 	},
@@ -16065,7 +15981,7 @@
 	})
 "vKo" = (
 /obj/structure/window/framed/colony,
-/obj/machinery/door/poddoor/shutters/mainship/open/indestructible{
+/obj/machinery/door/poddoor/shutters/mainship/open{
 	dir = 2;
 	id = 999;
 	name = "\improper Quarters Privacy Shutters"
@@ -16349,7 +16265,7 @@
 /obj/structure/disposalpipe/segment{
 	dir = 1
 	},
-/obj/machinery/door/poddoor/shutters/mainship/open/indestructible{
+/obj/machinery/door/poddoor/shutters/mainship/open{
 	dir = 2;
 	id = 998;
 	name = "\improper Quarters Privacy Shutters"
@@ -16434,6 +16350,12 @@
 	},
 /turf/open/floor/mainship/mono,
 /area/mainship/groundhq/ntf/command/corporateliaison)
+"wjs" = (
+/obj/effect/landmark/sensor_tower,
+/turf/open/floor/plating/plating_catwalk,
+/area/mainship/groundhq/ntf/hallways/starboard_hallway{
+	name = "HQ Central Hallways"
+	})
 "wjJ" = (
 /obj/machinery/disposal,
 /obj/structure/disposalpipe/trunk{
@@ -16453,7 +16375,7 @@
 /area/mainship/ntf/fcroom)
 "wkT" = (
 /obj/structure/mineral_door/wood,
-/obj/machinery/door/poddoor/shutters/mainship/open/indestructible{
+/obj/machinery/door/poddoor/shutters/mainship/open{
 	dir = 2;
 	id = "bar2";
 	name = "\improper Privacy Shutters"
@@ -16642,7 +16564,6 @@
 	dir = 2
 	},
 /obj/structure/cable,
-/obj/structure/cable,
 /obj/machinery/atmospherics/pipe/simple/supply/hidden/layer1{
 	dir = 1
 	},
@@ -16723,7 +16644,6 @@
 /obj/machinery/atmospherics/pipe/simple/supply/hidden/layer1{
 	dir = 4
 	},
-/obj/structure/cable,
 /obj/structure/cable,
 /obj/effect/ai_node,
 /turf/open/floor/mainship/orange,
@@ -17170,7 +17090,6 @@
 "xhD" = (
 /obj/structure/mineral_door/wood,
 /obj/structure/cable,
-/obj/structure/cable,
 /obj/machinery/atmospherics/pipe/simple/supply/hidden/layer1{
 	dir = 4
 	},
@@ -17298,7 +17217,7 @@
 /area/mainship/ntf/fcroom)
 "xrY" = (
 /obj/structure/mineral_door/wood,
-/obj/machinery/door/poddoor/shutters/mainship/open/indestructible{
+/obj/machinery/door/poddoor/shutters/mainship/open{
 	dir = 2;
 	id = 1102;
 	name = "\improper Quarters Privacy Shutters"
@@ -17324,6 +17243,10 @@
 /area/mainship/groundhq/ntf/hallways/starboard_hallway{
 	name = "HQ Central Hallways"
 	})
+"xso" = (
+/obj/effect/landmark/sensor_tower,
+/turf/open/floor/plating/ground/snow/layer2,
+/area/desert_dam/exterior/valley/valley_wilderness)
 "xtf" = (
 /obj/structure/bed/chair/sofa/corner{
 	dir = 8
@@ -17334,7 +17257,6 @@
 /turf/open/floor/mainship/mono,
 /area/mainship/groundhq/ntf/living/commandbunks)
 "xus" = (
-/obj/structure/cable,
 /obj/structure/cable,
 /turf/open/floor/plating/plating_catwalk,
 /area/mainship/groundhq/ntf/hallways/hangar)
@@ -17407,6 +17329,10 @@
 	dir = 8
 	},
 /area/mainship/groundhq/ntf/engineering/ce_room)
+"xCn" = (
+/obj/effect/landmark/patrol_point/tgmc_11,
+/turf/open/floor/mainship/mono,
+/area/mainship/groundhq/ntf/command/cic)
 "xCU" = (
 /obj/structure/table/reinforced,
 /obj/machinery/reagentgrinder,
@@ -17462,7 +17388,7 @@
 /obj/structure/disposalpipe/segment{
 	dir = 1
 	},
-/obj/machinery/door/poddoor/shutters/mainship/open/indestructible{
+/obj/machinery/door/poddoor/shutters/mainship/open{
 	dir = 2;
 	id = 1004;
 	name = "\improper Quarters Privacy Shutters"
@@ -17659,10 +17585,6 @@
 	},
 /turf/open/floor/plating/plating_catwalk,
 /area/mainship/groundhq/ntf/engineering/engineering_workshop)
-"xVs" = (
-/obj/structure/cable,
-/turf/open/floor/plating/plating_catwalk,
-/area/mainship/groundhq/ntf/hallways/hangar)
 "xVC" = (
 /obj/machinery/light/small{
 	dir = 1
@@ -17721,7 +17643,6 @@
 /obj/machinery/atmospherics/pipe/simple/supply/hidden/layer1{
 	dir = 6
 	},
-/obj/structure/cable,
 /obj/structure/cable,
 /turf/open/floor/plating/plating_catwalk,
 /area/centcom/practice/medical{
@@ -17794,6 +17715,10 @@
 /obj/effect/ai_node,
 /turf/open/floor/mainship/mono,
 /area/mainship/groundhq/ntf/living/commandbunks)
+"ybU" = (
+/obj/effect/landmark/sensor_tower,
+/turf/open/floor/plating/ground/snow/layer3,
+/area/desert_dam/exterior/valley/valley_wilderness)
 "ycr" = (
 /obj/machinery/camera/autoname/mainship,
 /turf/open/floor/mainship/mono,
@@ -17806,7 +17731,6 @@
 /turf/open/floor/wood,
 /area/mainship/living/grunt_rnr)
 "yec" = (
-/obj/structure/cable,
 /obj/structure/cable,
 /obj/machinery/atmospherics/pipe/simple/supply/hidden/layer1{
 	dir = 9
@@ -20002,7 +19926,7 @@ jVd
 neG
 yeP
 qZn
-uhM
+rfq
 ros
 dGK
 nOT
@@ -20029,7 +19953,7 @@ bLm
 saC
 ybh
 tuP
-tuP
+gLh
 coM
 tuP
 qPb
@@ -20519,7 +20443,7 @@ ujx
 eOi
 aZs
 ahZ
-ahZ
+xCn
 eLi
 vFI
 bdM
@@ -21073,7 +20997,7 @@ ixh
 uPF
 kTO
 kTO
-qyb
+cPt
 kTO
 dKw
 vWy
@@ -22283,7 +22207,7 @@ tad
 tad
 dNO
 tad
-sam
+lPX
 tad
 tad
 tad
@@ -22762,7 +22686,7 @@ saW
 iHo
 gfR
 adO
-pqb
+auW
 phZ
 gYd
 ctG
@@ -23198,7 +23122,7 @@ iCa
 rXW
 qFg
 qpA
-oxx
+qFg
 qFg
 lQa
 mDb
@@ -23400,8 +23324,8 @@ hKj
 hKj
 saW
 lrz
-xVs
-xVs
+xus
+xus
 xus
 ygm
 eXS
@@ -23560,7 +23484,7 @@ ppQ
 jkF
 lPo
 aRN
-pqM
+lPX
 tVh
 bas
 tVh
@@ -23986,7 +23910,7 @@ tad
 tad
 tad
 tad
-sGH
+lPX
 tad
 tad
 pNw
@@ -24591,7 +24515,7 @@ hKj
 oyC
 oyC
 tiq
-xVs
+xus
 aYh
 fav
 fav
@@ -24698,7 +24622,7 @@ hKj
 doP
 oyC
 oyC
-xVs
+xus
 mLh
 fav
 xRz
@@ -25036,7 +24960,7 @@ vdy
 mgs
 fKm
 mgs
-mgs
+jyl
 eMJ
 jDb
 fAf
@@ -25232,7 +25156,7 @@ hKj
 hKj
 doP
 doP
-qrT
+wRn
 fTV
 xRz
 xRz
@@ -25339,7 +25263,7 @@ doP
 doP
 doP
 doP
-qrT
+wRn
 fTV
 bim
 iTZ
@@ -25690,7 +25614,7 @@ nKd
 auC
 dBZ
 jEZ
-iTZ
+ybU
 rTJ
 hJa
 oVM
@@ -25766,7 +25690,7 @@ doP
 doP
 doP
 fav
-xVs
+xus
 oyC
 fTV
 iTZ
@@ -25873,7 +25797,7 @@ doP
 doP
 doP
 fav
-xVs
+xus
 oyC
 fav
 vik
@@ -25911,7 +25835,7 @@ eOe
 sVF
 hxS
 scJ
-rQw
+gbv
 rSP
 rSP
 rTJ
@@ -25980,7 +25904,7 @@ doP
 doP
 doP
 fav
-xVs
+xus
 wRn
 uRC
 iTZ
@@ -26866,8 +26790,8 @@ qAp
 tfV
 sMT
 hAS
-ppc
-ppc
+aeo
+aeo
 rrE
 xUr
 mOp
@@ -26880,8 +26804,8 @@ xUr
 xUr
 xUr
 wGV
-ppc
-ppc
+aeo
+aeo
 nNu
 pnq
 oGw
@@ -26956,7 +26880,7 @@ doP
 xkJ
 iTZ
 xkJ
-xkJ
+xso
 iTZ
 xkJ
 iTZ
@@ -26972,7 +26896,7 @@ tfV
 tfV
 tfV
 nEb
-ppc
+aeo
 vaB
 frD
 dBF
@@ -27079,7 +27003,7 @@ nqm
 ted
 aUF
 aUF
-ppc
+aeo
 frD
 lxp
 vhg
@@ -27179,14 +27103,14 @@ vNz
 kzw
 nxD
 afY
-ppc
-ppc
-hAS
-ppc
-ppc
 aeo
-ppc
-ppc
+aeo
+hAS
+aeo
+aeo
+aeo
+aeo
+aeo
 frD
 lxp
 vhg
@@ -27293,7 +27217,7 @@ cJQ
 sMk
 vMf
 aUF
-ppc
+aeo
 frD
 lxp
 vhg
@@ -27400,7 +27324,7 @@ gNj
 gNj
 gNj
 aUF
-ppc
+aeo
 frD
 lxp
 vhg
@@ -27507,7 +27431,7 @@ shv
 mNK
 gNj
 aUF
-ppc
+aeo
 frD
 lxp
 vhg
@@ -27614,7 +27538,7 @@ eRG
 pbA
 gNj
 aUF
-ppc
+aeo
 frD
 lxp
 vhg
@@ -27622,7 +27546,7 @@ dZi
 lxp
 lxp
 dZi
-lxp
+wjs
 lxp
 lxp
 lxp
@@ -27720,7 +27644,7 @@ wXM
 hFT
 lRV
 bKv
-ppc
+aeo
 hAS
 frD
 frD
@@ -27938,7 +27862,7 @@ lIU
 rVw
 mIT
 akp
-isU
+rnl
 akp
 wmQ
 czE
@@ -28045,7 +27969,7 @@ lWm
 qne
 mIT
 akp
-isU
+rnl
 akp
 agt
 gGH
@@ -28152,7 +28076,7 @@ shU
 oVM
 mIT
 akp
-isU
+rnl
 akp
 wmQ
 aID
@@ -28366,7 +28290,7 @@ mGA
 mGA
 mGA
 akp
-isU
+rnl
 akp
 agt
 tbr
@@ -28473,7 +28397,7 @@ dRI
 hDZ
 mGA
 akp
-isU
+rnl
 akp
 agt
 vxV
@@ -28580,7 +28504,7 @@ npa
 oxV
 mGA
 xpO
-isU
+rnl
 akp
 agt
 vxV
@@ -30996,7 +30920,7 @@ aRY
 oGw
 oGw
 oGw
-oGw
+jAb
 jcT
 hKj
 hKj
@@ -32895,7 +32819,7 @@ rVj
 rVj
 iWq
 iWq
-iWq
+abF
 iod
 hKj
 "}
@@ -33471,7 +33395,7 @@ uAC
 oHV
 fEK
 fGy
-qZO
+ciN
 rCj
 rCj
 rCj
@@ -34689,7 +34613,7 @@ slm
 oZE
 vym
 gLS
-mCl
+rld
 mCl
 mCl
 mCl
@@ -35374,7 +35298,7 @@ hKj
 hKj
 hKj
 qfG
-oHV
+aLB
 oHV
 oHV
 oHV

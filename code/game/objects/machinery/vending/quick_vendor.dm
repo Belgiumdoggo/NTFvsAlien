@@ -19,6 +19,7 @@ GLOBAL_LIST_INIT(quick_loadouts, init_quick_loadouts())
 		/datum/outfit/quick/tgmc/marine/standard_lasercarbine,
 		/datum/outfit/quick/tgmc/marine/light_carbine,
 		/datum/outfit/quick/tgmc/marine/shield_tank,
+		/datum/outfit/quick/tgmc/marine/shield_tank_45,
 		/datum/outfit/quick/tgmc/marine/machete,
 		/datum/outfit/quick/tgmc/marine/scout,
 		/datum/outfit/quick/tgmc/engineer/rrengineer,
@@ -79,18 +80,30 @@ GLOBAL_LIST_INIT(quick_loadouts, init_quick_loadouts())
 		/datum/outfit/quick/som/squad_leader/caliver,
 		/datum/outfit/quick/som/squad_leader/mpi,
 		/datum/outfit/quick/vsd/standard/grunt_one,
+		/datum/outfit/quick/vsd/standard/grunt_two,
+		/datum/outfit/quick/vsd/standard/grunt_three,
+		/datum/outfit/quick/vsd/standard/lmg,
 		/datum/outfit/quick/vsd/standard/ksg,
 		/datum/outfit/quick/vsd/engineer/l26,
+		/datum/outfit/quick/vsd/engineer/l27,
+		/datum/outfit/quick/vsd/engineer/l28,
+		/datum/outfit/quick/vsd/engineer/l29,
 		/datum/outfit/quick/vsd/medic/ksg,
 		/datum/outfit/quick/vsd/medic/vsd_rifle,
+		/datum/outfit/quick/vsd/medic/vsd_v34,
 		/datum/outfit/quick/vsd/medic/vsd_pdw,
 		/datum/outfit/quick/vsd/spec/flamer,
 		/datum/outfit/quick/vsd/spec/demolitionist,
 		/datum/outfit/quick/vsd/spec/gunslinger,
+		/datum/outfit/quick/vsd/spec/scout,
+		///datum/outfit/quick/vsd/spec/scoutalt,
 		// /datum/outfit/quick/vsd/spec/uslspec_one,
 		// /datum/outfit/quick/vsd/spec/uslspec_two,
-		/datum/outfit/quick/vsd/juggernaut,
-		/datum/outfit/quick/vsd/eod,
+		/datum/outfit/quick/vsd/escort/infiltrator,
+		/datum/outfit/quick/vsd/squadlead/juggernaut,
+		/datum/outfit/quick/vsd/squadlead/eod,
+		/datum/outfit/quick/vsd/squadlead/recon,
+		///datum/outfit/quick/vsd/reconalt,
 		/datum/outfit/quick/pmc/standard,
 		/datum/outfit/quick/pmc/engineer,
 		/datum/outfit/quick/pmc/medic,
@@ -104,9 +117,18 @@ GLOBAL_LIST_INIT(quick_loadouts, init_quick_loadouts())
 		/datum/outfit/quick/icc/standard/icc_assaultcarbine,
 		/datum/outfit/quick/icc/standard/icc_autoshotgun,
 		/datum/outfit/quick/icc/medic/icc_sharpshooter,
+		/datum/outfit/quick/icc/medic/icc_rifleman,
+		/datum/outfit/quick/icc/medic/icc_smg,
+		/datum/outfit/quick/icc/medic/icc_smg2,
 		/datum/outfit/quick/icc/guard/icc_rocket,
 		/datum/outfit/quick/icc/guard/icc_autoshotgun,
+		/datum/outfit/quick/icc/guard/icc_m16fl240,
+		/datum/outfit/quick/icc/guard/icc_hpr,
+		/datum/outfit/quick/icc/leader/icc_famas,
 		/datum/outfit/quick/icc/leader/icc_confrontationrifle,
+		/datum/outfit/quick/icc/leader/icc_m16masterkey,
+		/datum/outfit/quick/icc/leader/icc_lmg,
+		/datum/outfit/quick/icc/fieldcommander/icc_PR11upgraded,
 	)
 
 	for(var/X in loadout_list)
@@ -300,6 +322,7 @@ GLOBAL_LIST_INIT(quick_loadouts, init_quick_loadouts())
 		"KZ Medic",
 		"KZ Engineer",
 		"KZ Specialist",
+		"KZ Combat Escort",
 		"KZ Squad Leader",
 	)
 
@@ -325,6 +348,7 @@ GLOBAL_LIST_INIT(quick_loadouts, init_quick_loadouts())
 		"CM Medic",
 		"CM Guardsman",
 		"CM Squad Leader",
+		"CM Militia Captain",
 	)
 
 
@@ -348,16 +372,18 @@ GLOBAL_LIST_INIT(quick_loadouts, init_quick_loadouts())
 		"KZ Medic",
 		"KZ Engineer",
 		"KZ Specialist",
+		"KZ Combat Escort",
 		"KZ Squad Leader",
 	)
 
 
 /obj/machinery/quick_vendor/clf
-	desc = "An advanced vendor used by the CLF to rapidly equip their devotees"
+	desc = "An advanced vendor used by the Cult to rapidly equip their devotees"
 	faction = VENDOR_FACTION_CLF
 	categories = list(
-		"CLF Standard",
-		"CLF Medic",
-		"CLF Breeder",
-		"CLF Leader",
+		"Cultist",
+		"Cultist Mender",
+		"Cult Offering",
+		"Cultist Sect Leader",
+		"Cult Synthetic",
 	)

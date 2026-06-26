@@ -5,7 +5,6 @@
 	icon_state = "helmet"
 	worn_icon_state = "helmet"
 	accuracy_mod = 0
-	soft_armor = list(MELEE = 50, BULLET = 15, LASER = 50, ENERGY = 10, BOMB = 25, BIO = 0, FIRE = 10, ACID = 10)
 	atom_flags = CONDUCT
 	inventory_flags = COVEREYES|BLOCKSHARPOBJ
 	inv_hide_flags = HIDEEARS|HIDEEYES
@@ -39,11 +38,12 @@
 	item_flags = SYNTH_RESTRICTED
 
 /obj/item/clothing/head/helmet/HoS/dermal
-	name = "Dermal Armour Patch"
+	name = "dermal head guard"
 	desc = "You're not quite sure how you manage to take it on and off, but it implants nicely in your head."
 	icon_state = "dermal"
 	worn_icon_state = "dermal"
 	siemens_coefficient = 0.6
+	soft_armor = MARINE_ARMOR_HEAVY
 
 /obj/item/clothing/head/helmet/warden
 	name = "warden's hat"
@@ -118,7 +118,6 @@
 		slot_r_hand_str = 'icons/mob/inhands/items/items_right.dmi',
 	)
 	icon_state = "helmet"
-	soft_armor = list(MELEE = 50, BULLET = 70, LASER = 70, ENERGY = 60, BOMB = 55, BIO = 55, FIRE = 55, ACID = 60)
 	max_integrity = 5
 	var/list/helmet_overlays
 	inventory_flags = BLOCKSHARPOBJ
@@ -304,7 +303,7 @@
 	name = "\improper M4 pattern PMC open helmet"
 	desc = "An open version of standard enclosed helmets. It lacks filtration and HUD systems, but the ease of use and price make it a good choice for low ranking mercenaries and security."
 	icon_state = "pmc_helmet"
-	soft_armor = list(MELEE = 65, BULLET = 75, LASER = 65, ENERGY = 65, BOMB = 60, BIO = 30, FIRE = 45, ACID = 55)
+	soft_armor = list(MELEE = 55, BULLET = 75, LASER = 75, ENERGY = 75, BOMB = 50, BIO = 50, FIRE = 50, ACID = 60)
 	min_cold_protection_temperature = ICE_PLANET_MIN_COLD_PROTECTION_TEMPERATURE
 	inventory_flags =BLOCKSHARPOBJ
 	inv_hide_flags = HIDEEARS|HIDETOPHAIR
@@ -315,7 +314,7 @@
 	name = "\improper M4 Legionary pattern PMC helmet"
 	desc = "Standard issue enclosed helmet, produced by Ninetails Armory Division for their mercenaries and security assets."
 	icon_state = "pmc_helmet_standard"
-	soft_armor = list(MELEE = 65, BULLET = 75, LASER = 65, ENERGY = 65, BOMB = 60, BIO = 50, FIRE = 65, ACID = 55)
+	soft_armor = list(MELEE = 55, BULLET = 75, LASER = 75, ENERGY = 75, BOMB = 50, BIO = 50, FIRE = 50, ACID = 60)
 	inventory_flags = COVEREYES|COVERMOUTH|BLOCKSHARPOBJ
 	inv_hide_flags = HIDEEARS|HIDEEYES|HIDEFACE|HIDEMASK|HIDEALLHAIR
 
@@ -338,7 +337,7 @@
 	name = "\improper PMC beret"
 	desc = "The pinacle of fashion, combined with protective faceplate, for any aspiring mercenary leader."
 	icon_state = "officer_hat"
-	soft_armor = list(MELEE = 70, BULLET = 80, LASER = 70, ENERGY = 70, BOMB = 65, BIO = 50, FIRE = 60, ACID = 60)
+	soft_armor = list(MELEE = 55, BULLET = 75, LASER = 75, ENERGY = 75, BOMB = 50, BIO = 50, FIRE = 50, ACID = 60)
 	inventory_flags = BLOCKSHARPOBJ|BLOCKSHARPOBJ
 	inv_hide_flags = HIDEEYES|HIDEFACE
 
@@ -346,7 +345,7 @@
 	name = "\improper M4-L Sagittarii pattern PMC helmet"
 	desc = "A custom model of M4 helmet for snipers with additional enviromental protection."
 	icon_state = "pmc_sniper_hat"
-	soft_armor = list(MELEE = 60, BULLET = 70, LASER = 60, ENERGY = 60, BOMB = 50, BIO = 75, FIRE = 75, ACID = 75)
+	soft_armor = list(MELEE = 50, BULLET = 70, LASER = 70, ENERGY = 70, BOMB = 60, BIO = 60, FIRE = 60, ACID = 60) // Higher special resists but lower overall ones
 	inventory_flags = COVEREYES|COVERMOUTH|BLOCKSHARPOBJ
 	inv_hide_flags = HIDEEARS|HIDEEYES|HIDEFACE|HIDEMASK|HIDEALLHAIR
 
@@ -354,7 +353,7 @@
 	name = "\improper M7-H Cathaphract pattern PMC helmet"
 	desc = "A newest generation of Ninetails Armory. The heavy enclosed helmet with hardened cameras, a wise choice for mercenary who prefers close quarters combat."
 	icon_state = "pmc_heavyhelmet"
-	soft_armor = list(MELEE = 75, BULLET = 85, LASER = 75, ENERGY = 75, BOMB = 80, BIO = 50, FIRE = 65, ACID = 65)
+	soft_armor = list(MELEE = 55, BULLET = 75, LASER = 75, ENERGY = 75, BOMB = 65, BIO = 65, FIRE = 65, ACID = 65) //Tyr2 but averaged out
 	inventory_flags = COVEREYES|COVERMOUTH|BLOCKSHARPOBJ
 	inv_hide_flags = HIDEEARS|HIDEEYES|HIDEFACE|HIDEMASK|HIDEALLHAIR
 
@@ -477,6 +476,103 @@
 	soft_armor = list(MELEE = 50, BULLET = 70, LASER = 70, ENERGY = 60, BOMB = 55, BIO = 100, FIRE = 90, ACID = 90)
 	inv_hide_flags = HIDEEARS|HIDETOPHAIR|HIDELOWHAIR
 
+/*===========================CM - toned down and nerfed freelancer armor for balance ================================*/
+
+/obj/item/clothing/head/modular/style/booniecm
+	name = "CM3 boonie"
+	desc = "A boonie hat used by the Colonial Militia, purpose made for operations in enviroments with a lot of sun, or dense vegetation."
+	icon_state = "boonie_inhand"
+	worn_icon_state = "boonie"
+	inv_hide_flags = HIDE_EXCESS_HAIR
+	attachments_by_slot = list(
+		ATTACHMENT_SLOT_STORAGE,
+		ATTACHMENT_SLOT_HEAD_MODULE,
+	)
+	attachments_allowed = list(
+		/obj/item/armor_module/module/binoculars,
+		/obj/item/armor_module/storage/helmet,
+	)
+	starting_attachments = list(
+		/obj/item/armor_module/storage/helmet,
+	)
+	
+/obj/item/clothing/head/helmet/marine/cmfreelancer/beret
+	name = "\improper Colonial Militia beret"
+	desc = "A white beret, with a worn out Freelancers emblem. Not many people you can see wear such things, especially when they're not part of an official military force. Additionally issued with an armored platemask."
+	icon = 'icons/obj/clothing/headwear/ert_headwear.dmi'
+	icon_state = "freelancer_beret"
+	soft_armor = list(MELEE = 45, BULLET = 70, LASER = 70, ENERGY = 50, BOMB = 50, BIO = 65, FIRE = 50, ACID = 40)
+	inv_hide_flags = HIDEEARS
+	attachments_by_slot = list(
+		ATTACHMENT_SLOT_STORAGE,
+	)
+	starting_attachments = list(
+		/obj/item/armor_module/storage/helmet,
+	)
+
+/obj/item/clothing/head/helmet/marine/cmfreelancer
+	name = "\improper CM3 pattern helmet"
+	desc = "A sturdy blue helmet, based on the freelancer M3 helmet. Many years ago on the Terra, the sign of that helmet was inspiring hope, but now - a sign of self-preservation."
+	icon = 'icons/mob/clothing/headwear/ert_headwear.dmi'
+	worn_icon_list = list(
+		slot_head_str = 'icons/mob/clothing/headwear/ert_headwear.dmi',
+		slot_l_hand_str = 'icons/mob/inhands/items/items_left.dmi',
+		slot_r_hand_str = 'icons/mob/inhands/items/items_right.dmi',
+	)
+	icon_state = "freelancer_helmet"
+	siemens_coefficient = 2
+	soft_armor = list(MELEE = 50, BULLET = 70, LASER = 70, ENERGY = 50, BOMB = 60, BIO = 50, FIRE = 50, ACID = 55)
+	inv_hide_flags = HIDEEARS|HIDETOPHAIR
+	attachments_by_slot = list(
+		ATTACHMENT_SLOT_STORAGE,
+		ATTACHMENT_SLOT_HEAD_MODULE,
+	)
+	attachments_allowed = list(
+		/obj/item/armor_module/module/binoculars,
+		/obj/item/armor_module/storage/helmet,
+	)
+	
+/obj/item/clothing/head/helmet/marine/cmfreelancer/heavy
+	name = "\improper CM3 pattern heavy helmet"
+	desc = "A sturdy freelancer's helmet with additional plates. Many years ago on the Terra, the sign of that helmet was inspiring hope, but now - only apathy."
+	icon_state = "freelancer_helmet_heavy"
+	soft_armor = list(MELEE = 60, BULLET = 80, LASER = 70, ENERGY = 50, BOMB = 65, BIO = 40, FIRE = 40, ACID = 45)
+	attachments_allowed = list(
+		/obj/item/armor_module/module/binoculars,
+		/obj/item/armor_module/storage/helmet,
+	)
+	starting_attachments = list(
+		/obj/item/armor_module/storage/helmet,
+	)
+
+/obj/item/clothing/head/helmet/marine/cmfreelancer/specialist
+	name = "\improper CM3 pattern rocketeer helmet"
+	desc = "A sturdy freelancer's helmet with additional plates and protective riot visor. Many years ago on the Terra, the sign of that helmet was inspiring hope, but now - only apathy."
+	icon_state = "freelancer_helmet_specialist"
+	soft_armor = list(MELEE = 55, BULLET = 75, LASER = 60, ENERGY = 70, BOMB = 80, BIO = 40, FIRE = 55, ACID = 55)
+	attachments_allowed = list(
+		/obj/item/armor_module/module/binoculars,
+		/obj/item/armor_module/storage/helmet,
+	)
+	starting_attachments = list(
+		/obj/item/armor_module/module/binoculars,
+		/obj/item/armor_module/storage/helmet,
+	)
+
+/obj/item/clothing/head/helmet/marine/cmfreelancer/specialist/pyro
+	name = "\improper CMB08 pyro hood"
+	desc = "A repurposed firefighter helmet combined with additional flame retardant materials reinforced with metal plates. All of this allows the user to safely walk through fire. A complete psycho would wear the original freelance version, cuts had to be made with the new CMB08."
+	icon_state = "freelancer_helmet_pyro"
+	soft_armor = list(MELEE = 55, BULLET = 65, LASER = 65, ENERGY = 50, BOMB = 55, BIO = 50, FIRE = 100, ACID = 50)
+	inv_hide_flags = HIDEEARS|HIDETOPHAIR|HIDELOWHAIR
+	attachments_allowed = list(
+		/obj/item/armor_module/module/binoculars,
+		/obj/item/armor_module/storage/helmet,
+	)
+	starting_attachments = list(
+		/obj/item/armor_module/storage/helmet,
+	)
+
 /*=========================Imperium==================================*/
 
 /obj/item/clothing/head/helmet/marine/imperial
@@ -538,7 +634,6 @@
 		slot_r_hand_str = 'icons/mob/inhands/items/items_right.dmi',
 	)
 	icon_state = "spec"
-	soft_armor = list(MELEE = 50, BULLET = 70, LASER = 70, ENERGY = 60, BOMB = 55, BIO = 55, FIRE = 55, ACID = 60)
 	inventory_flags = BLOCKSHARPOBJ
 	inv_hide_flags = HIDEEARS
 
@@ -629,7 +724,7 @@
 		slot_r_hand_str = 'icons/mob/inhands/items/items_right.dmi',
 	)
 	worn_icon_state = "icc"
-	inv_hide_flags = HIDEEARS|HIDEEYES|HIDETOPHAIR
+	inv_hide_flags = HIDEEARS
 	soft_armor = list(MELEE = 50, BULLET = 60, LASER = 50, ENERGY = 60, BOMB = 70, BIO = 10, FIRE = 60, ACID = 50)
 
 /obj/item/clothing/head/helmet/marine/icc/guard
@@ -637,7 +732,7 @@
 	desc = "A high-quality ICCGF helmet, mostly seen worn by the ICC's highest quality troops, better well known as 'Guardsmen'. Like most helmets of the ICC it is made to fit a utility and combat role with noticeably high resistance to explosions and bullets."
 	icon_state = "icc_guard"
 	worn_icon_state = "icc_guard"
-	inv_hide_flags = HIDEEARS|HIDEEYES|HIDETOPHAIR
+	inv_hide_flags = HIDEEARS
 	soft_armor = list(MELEE = 60, BULLET = 65, LASER = 40, ENERGY = 60, BOMB = 80, BIO = 10, FIRE = 55, ACID = 40)
 
 /obj/item/clothing/head/helmet/marine/icc/guard/heavy
@@ -645,7 +740,7 @@
 	desc = "A high-quality ICCGF helmet, mostly seen worn by the ICC's highest quality troops, better well known as 'Guardsmen'. Like most helmets of the ICC it is made to fit a utility and combat role with noticeably high resistance to explosions and bullets, this one is heavily reinforced."
 	icon_state = "icc_guard_heavy"
 	worn_icon_state = "icc_guard_heavy"
-	inv_hide_flags = HIDEEARS|HIDEEYES|HIDETOPHAIR
+	inv_hide_flags = HIDEEARS|HIDEEYES
 	soft_armor = list(MELEE = 65, BULLET = 70, LASER = 40, ENERGY = 60, BOMB = 85, BIO = 10, FIRE = 55, ACID = 40)
 
 /obj/item/clothing/head/helmet/marine/vsd
@@ -657,7 +752,7 @@
 	worn_icon_list =  list(
 		slot_head_str = 'icons/mob/clothing/headwear/ert_headwear.dmi',
 	)
-	soft_armor = list(MELEE = 50, BULLET = 60, LASER = 60, ENERGY = 60, BOMB = 60, BIO = 60, FIRE = 55, ACID = 40)
+	soft_armor = MARINE_ARMOR_HEAVY
 
 /obj/item/clothing/head/helmet/marine/vsd/heavy
 	name = "\improper Crasher MT-H/43 powered ballistic helmet"

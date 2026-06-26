@@ -33,6 +33,7 @@
 	var/message = "error"
 	///UI style used by this computer
 	var/ui_style = "NukeDiskGenerator"
+	fragile = FALSE
 
 /obj/machinery/computer/code_generator/Initialize(mapload)
 	. = ..()
@@ -49,6 +50,7 @@
 	running = FALSE
 	deltimer(current_timer)
 	current_timer = null
+	stop_processing()
 	update_minimap_icon()
 	visible_message("<b>[src]</b> shuts down as it loses power. Any running programs will now exit")
 
@@ -123,8 +125,15 @@
 	busy = FALSE
 	running = TRUE
 	current_timer = addtimer(CALLBACK(src, PROC_REF(complete_segment)), segment_time, TIMER_STOPPABLE)
+	start_processing()
 	update_minimap_icon()
+	faction = user.faction
 	return TRUE
+
+/obj/machinery/computer/code_generator/examine(mob/user)
+	. = ..()
+	if(running)
+		. += "It is being operated by [faction]."
 
 ///What happens when a segment finishes running
 /obj/machinery/computer/code_generator/proc/complete_segment()
@@ -137,4 +146,4 @@
 ///Change minimap icon if its on or off
 /obj/machinery/computer/code_generator/proc/update_minimap_icon()
 	SSminimaps.remove_marker(src)
-	SSminimaps.add_marker(src, MINIMAP_FLAG_ALL, image('icons/UI_icons/map_blips_large.dmi', null, "[key_color]_disk[current_timer ? "_on" : "_off"]", MINIMAP_LABELS_LAYER))
+	SSminimaps.add_marker(src, MINIMAP_FLAG_ALL, image('icons/UI_icons/map_blips_large.dmi', null, "[key_color]_disk[current_timer ? "_on" : "_off"]", MINIMAP_PRIORITY_LAYER))

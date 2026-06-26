@@ -37,10 +37,9 @@
 	damage = 90
 	penetration = 0
 	sundering = 30
-	airburst_multiplier = 0.5
 
 /datum/ammo/bullet/sniper/flak/on_hit_mob(mob/target_mob, atom/movable/projectile/proj)
-	airburst(target_mob, proj)
+	airburst(target_mob, proj, 45)
 
 /datum/ammo/bullet/sniper/svd
 	name = "crude sniper bullet"
@@ -50,33 +49,6 @@
 	damage = 75
 	penetration = 35
 	sundering = 15
-
-/datum/ammo/bullet/sniper/dragoon
-	name = "exotic rifle bullet"
-	handful_amount = 4
-	damage = 55
-	penetration = 30
-	sundering = 6
-	accurate_range_min = 3
-
-/datum/ammo/bullet/sniper/dragoon/flathead
-	name = "flathead exotic rifle bullet"
-	handful_amount = 4
-	damage_type = STAMINA
-	damage = 60
-	penetration = 15
-	sundering = 20
-
-/datum/ammo/bullet/sniper/dragoon/pox
-	name = "green-tipped exotic rifle bullet"
-	damage = 35
-	penetration = 15
-	sundering = 3
-
-/datum/ammo/bullet/sniper/dragoon/pox/on_hit_mob(mob/target_mob, atom/movable/projectile/proj)
-	if(iscarbon(target_mob))
-		var/mob/living/carbon/carbon_victim = target_mob
-		carbon_victim.reagents.add_reagent(/datum/reagent/toxin/poxomelanin, 4, no_overdose = FALSE)
 
 /datum/ammo/bullet/sniper/martini
 	name = "crude heavy sniper bullet"
@@ -96,15 +68,6 @@
 
 	var/mob/living/living_victim = target_mob
 	living_victim.apply_status_effect(STATUS_EFFECT_SHATTER, shatter_duration)
-
-/datum/ammo/bullet/sniper/elite
-	name = "supersonic sniper bullet"
-	hud_state = "sniper_supersonic"
-	ammo_behavior_flags = AMMO_BALLISTIC
-	accuracy = 20
-	damage = 100
-	penetration = 60
-	sundering = 50
 
 /datum/ammo/bullet/sniper/pfc
 	name = "high caliber rifle bullet"

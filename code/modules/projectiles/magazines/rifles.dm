@@ -10,14 +10,14 @@
 	icon_state_mini = "mag_rifle"
 	w_class = WEIGHT_CLASS_NORMAL
 	default_ammo = /datum/ammo/bullet/rifle
-	max_rounds = 40
+	max_rounds = 50
 
 /obj/item/ammo_magazine/rifle/extended
 	name = "\improper PR-412 extended magazine (10x24mm)"
 	desc = "A 10mm assault extended rifle magazine."
 	icon_state = "m412_ext"
 	icon_state_mini = "mag_rifle_big_yellow"
-	max_rounds = 60
+	max_rounds = 70
 	bonus_overlay = "m412_ex"
 
 /obj/item/ammo_magazine/rifle/incendiary
@@ -228,12 +228,37 @@
 
 /obj/item/ammo_magazine/rifle/m16
 	name = "\improper M16 magazine (5.56x45mm)"
-	desc = "A 5.56x45mm magazine for the M16 assault rifle platform."
+	desc = "A thirty round 5.56x45mm magazine for the M16 assault rifle platform."
 	caliber = CALIBER_556X45
-	icon_state = "m16" //PLACEHOLDER
-	icon_state_mini = "mag_rifle_big"
+	icon_state = "m16"
+	icon_state_mini = "mag_rifle"
+	bonus_overlay = "m16_mag"
 	default_ammo = /datum/ammo/bullet/rifle
-	max_rounds = 30 //Also comes in 30 and 100 round Beta-C mag.
+	max_rounds = 30 //Other variants include a quad stacked 60 mag and 100 round Beta-C mag.
+
+/obj/item/ammo_magazine/rifle/m16_quadstack
+	name = "\improper M16 quad stacked magazine (5.56x45mm)"
+	desc = "A sixty round 5.56x45mm quad stacked magazine for the M16 assault rifle platform."
+	caliber = CALIBER_556X45
+	icon_state = "m16quad"
+	icon_state_mini = "mag_rifle_big"
+	bonus_overlay = "m16_quadmag"
+	default_ammo = /datum/ammo/bullet/rifle
+	max_rounds = 60 //Also comes in 30 and 100 round Beta-C mag.
+	aim_speed_mod = 0.2
+	wield_delay_mod = 0.2 SECONDS
+
+/obj/item/ammo_magazine/rifle/m16_cmag
+	name = "\improper M16 beta c-mag (5.56x45mm)"
+	desc = "A hundred round 5.56x45mm beta-c mag for the M16 assault rifle platform."
+	caliber = CALIBER_556X45
+	icon_state = "m16cmag"
+	icon_state_mini = "mag_drum"
+	bonus_overlay = "m16_cmag"
+	default_ammo = /datum/ammo/bullet/rifle
+	max_rounds = 100 //Also comes in 30 and 100 round Beta-C mag.
+	aim_speed_mod = 0.4
+	wield_delay_mod = 0.4 SECONDS
 
 //-------------------------------------------------------
 //FAMAS RIFLE
@@ -244,8 +269,22 @@
 	caliber = CALIBER_556X45
 	icon_state = "famas"
 	icon_state_mini = "mag_rifle_greyblue"
+	bonus_overlay = "famas_mag"
+	w_class = WEIGHT_CLASS_SMALL
 	default_ammo = /datum/ammo/bullet/rifle
 	max_rounds = 24
+
+/obj/item/ammo_magazine/rifle/famasext
+	name = "\improper FAMAS extended magazine (5.56x45mm)"
+	desc = "A 5.56x45mm magazine for the FAMAS assault rifle."
+	caliber = CALIBER_556X45
+	icon_state = "famasext"
+	icon_state_mini = "mag_rifle_greyblue"
+	bonus_overlay = "famas_extmag"
+	default_ammo = /datum/ammo/bullet/rifle
+	max_rounds = 36
+	aim_speed_mod = 0.1
+	wield_delay_mod = 0.1 SECONDS
 
 //-------------------------------------------------------
 //MG-42 Light Machine Gun
@@ -631,12 +670,11 @@
 	max_rounds = 8
 
 //-------------------------------------------------------
-//Dragoon
 /obj/item/ammo_magazine/rifle/boltclip/dragoon
 	name = "clip of 9.8x22mm rifle rounds"
 	desc = "A Disposible Stripper clip filled with exotic rifle bullets."
 	icon_state = "clipdragoon"
-	default_ammo = /datum/ammo/bullet/sniper/dragoon
+	default_ammo = /datum/ammo/bullet/dragoon
 	caliber = CALIBER_98x22
 	max_rounds = 5
 	w_class = WEIGHT_CLASS_SMALL
@@ -647,7 +685,7 @@
 	name = "clip of green-tipped 9.8x22mm rifle rounds"
 	desc = "A Disposible Stripper clip filled with exotic rifle bullets."
 	icon_state = "clipdragoonp"
-	default_ammo = /datum/ammo/bullet/sniper/dragoon/pox
+	default_ammo = /datum/ammo/bullet/dragoon/pox
 	caliber = CALIBER_98x22
 	max_rounds = 5
 	w_class = WEIGHT_CLASS_SMALL
@@ -784,7 +822,7 @@
 	caliber = CALIBER_12G
 	icon_state = "ml41"
 	default_ammo = /datum/ammo/bullet/shotgun/flechette
-	max_rounds = 16
+	max_rounds = 20
 	icon_state_mini = "mag_rifle"
 
 /obj/item/ammo_magazine/rifle/icc_autoshotgun/rubber
@@ -809,8 +847,21 @@
 	caliber = CALIBER_556X45
 	icon_state = "aug"
 	icon_state_mini = "mag_rifle_olive"
+	bonus_overlay = "l88_mag"
 	default_ammo = /datum/ammo/bullet/rifle
 	max_rounds = 30
+
+/obj/item/ammo_magazine/rifle/icc_assaultcarbinelbar
+	name = "\improper L-88 assault carbine lbar magazine (5.56x45mm)"
+	desc = "A magazine filled with 5.56x45mm rifle rounds for the L-88 series of firearms, an extended variant."
+	caliber = CALIBER_556X45
+	icon_state = "augext"
+	icon_state_mini = "mag_rifle_olive"
+	bonus_overlay = "l88_extmag"
+	default_ammo = /datum/ammo/bullet/rifle
+	max_rounds = 42
+	aim_speed_mod = 0.1
+	wield_delay_mod = 0.1 SECONDS
 
 /obj/item/ammo_magazine/rifle/icc_assaultcarbine/export
 	name = "\improper EM-88 assault carbine magazine (5.56x45mm)"

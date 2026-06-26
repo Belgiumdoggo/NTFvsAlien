@@ -8,6 +8,7 @@
 	idle_power_usage = 30
 	active_power_usage = 200
 	power_channel = EQUIP
+	allow_pass_flags = PASS_LOW_STRUCTURE|PASSABLE|PASS_WALKOVER
 
 	var/obj/item/card/id/idscan = null
 	var/authenticated = FALSE
@@ -17,7 +18,6 @@
 
 	var/department = ""
 	var/selected = "Ninetails"
-
 
 /obj/machinery/faxmachine/Initialize(mapload)
 	. = ..()
@@ -30,6 +30,13 @@
 		department += "[get_area_name(src, TRUE)]"
 	name += " ([department])"
 	GLOB.faxmachines += src
+	var/static/list/connections = list(
+		COMSIG_OBJ_TRY_ALLOW_THROUGH = PROC_REF(can_climb_over),
+		COMSIG_FIND_FOOTSTEP_SOUND = TYPE_PROC_REF(/atom/movable, footstep_override),
+		COMSIG_TURF_CHECK_COVERED = TYPE_PROC_REF(/atom/movable, turf_cover_check),
+	)
+	AddElement(/datum/element/connect_loc, connections)
+	AddComponent(/datum/component/climbable)
 
 
 /obj/machinery/faxmachine/Destroy()
@@ -71,7 +78,7 @@
 	dat += "<hr>"
 
 	if(authenticated)
-		dat += "<b>Logged in to:</b> Ninetails Private Corporate Network<br><br>"
+		dat += "<b>Logged in to:</b> XF-69 Planetary Fax Network<br><br>"
 		if(message)
 			dat += "<a href='byond://?src=[text_ref(src)];remove=1'>Remove Paper</a><br><br>"
 			if(sendcooldown)
@@ -180,24 +187,44 @@
 
 /obj/machinery/faxmachine/liasion
 	department = CORPORATE_LIAISON
+	faction = FACTION_TERRAGOV
 
 /obj/machinery/faxmachine/cic
 	department = "Combat Information Center"
+	faction = FACTION_TERRAGOV
 
 /obj/machinery/faxmachine/cmp
 	department = "Corpsec Commander"
+	faction = FACTION_TERRAGOV
 
 /obj/machinery/faxmachine/brig
 	department = "Corpsec Brig"
+	faction = FACTION_TERRAGOV
 
 /obj/machinery/faxmachine/research
 	department = "NTC Research"
+	faction = FACTION_TERRAGOV
 
 /obj/machinery/faxmachine/warden //Prison Station
 	department = "Warden"
+	faction = FACTION_TERRAGOV
 
 /obj/machinery/faxmachine/som
 	department = "SOM"
+	faction = FACTION_SOM
+
+/obj/machinery/faxmachine/kz
+	department = "KZ"
+	faction = FACTION_VSD
+
+/obj/machinery/faxmachine/pmc
+	department = "pmc"
+	faction = FACTION_NANOTRASEN
+
+/obj/machinery/faxmachine/cm
+	department = "CM"
+	faction = FACTION_ICC
 
 /obj/machinery/faxmachine/clf
-	department = "CLF"
+	department = "Cult"
+	faction = FACTION_CLF

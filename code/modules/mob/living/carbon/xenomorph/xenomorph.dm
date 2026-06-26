@@ -4,7 +4,13 @@
 //Just about ALL the procs are tied to the parent, not to the children
 //This is so they can be easily transferred between them without copypasta
 
-/mob/living/carbon/xenomorph/Initialize(mapload, do_not_set_as_ruler)
+/mob/living/carbon/xenomorph/Initialize(mapload, do_not_set_as_ruler, _hivenumber)
+	if(_hivenumber)
+		hivenumber = _hivenumber
+	else
+		if(is_centcom_level(z) && hivenumber == XENO_HIVE_NORMAL)
+			hivenumber = XENO_HIVE_ADMEME //so admins can safely spawn xenos in Thunderdome for tests.
+
 	if(mob_size == MOB_SIZE_BIG)
 		move_resist = MOVE_FORCE_EXTREMELY_STRONG
 		move_force = MOVE_FORCE_EXTREMELY_STRONG
@@ -17,14 +23,11 @@
 	add_abilities()
 
 	var/datum/game_mode/mode = SSticker.mode
-	if(mode.round_type_flags & MODE_SURVIVAL)
+	if(mode.round_type_flags2 & MODE_2_SURVIVAL)
 		DISABLE_BITFIELD(sight, SEE_MOBS)
 
 	create_reagents(1000)
 	gender = NEUTER
-
-	if(is_centcom_level(z) && hivenumber == XENO_HIVE_NORMAL)
-		hivenumber = XENO_HIVE_ADMEME //so admins can safely spawn xenos in Thunderdome for tests.
 
 	set_initial_hivenumber(prevent_ruler=do_not_set_as_ruler)
 	voice = "Woman (Journalist)" // TODO when we get tagging make this pick female only
@@ -83,6 +86,8 @@
 	set_jump_component()
 	AddComponent(/datum/component/seethrough_mob)
 
+	sync_hive_abilities()
+
 /mob/living/carbon/xenomorph/register_init_signals()
 	. = ..()
 	RegisterSignal(src, COMSIG_LIVING_WEEDS_ADJACENT_REMOVED, PROC_REF(handle_weeds_adjacent_removed))
@@ -111,6 +116,7 @@
 	if(restore_health_and_plasma)
 		// xenos that manage plasma through special means shouldn't gain it for free on aging
 		set_plasma(max(plasma_stored, xeno_caste.plasma_max * xeno_caste.plasma_regen_limit))
+		stun_health_damage = 0
 		health = maxHealth
 	setXenoCasteSpeed(xeno_caste.speed)
 
@@ -120,19 +126,20 @@
 
 ///Will multiply the base max health of this xeno by GLOB.xeno_stat_multiplicator_buff while maintaining current health percent.
 /mob/living/carbon/xenomorph/proc/apply_health_stat_buff()
-	var/new_max_health = max(xeno_caste.max_health * hive.health_mulitiplier, 10)
+	var/new_max_health = max(xeno_caste.max_health * hive.health_multiplier, 10)
 	var/new_endurance_health_max = new_max_health * 1.5
 	if(new_endurance_health_max != endurance_health_max)
-		endurance_health = endurance_health * new_endurance_health_max / endurance_health_max
+		endurance_health = endurance_health * (endurance_health_max ? (new_endurance_health_max / endurance_health_max) : 1)
 		endurance_health_max = new_endurance_health_max
 	if(new_max_health == maxHealth)
 		return
 	var/needed_healing = 0
+	var/new_stun_damage = stun_health_damage * (maxHealth ? (new_max_health/maxHealth) : 1)
 
 	if(health < 0) //In crit. Death threshold below 0 doesn't change with stat buff, so we can just apply damage equal to the max health change
 		needed_healing = maxHealth - new_max_health //Positive means our max health is going down, so heal to keep parity
 	else
-		var/current_health_percent = health / maxHealth //We want to keep this fixed so that applying the scalar doesn't heal or harm, relatively.
+		var/current_health_percent = maxHealth ? (health / maxHealth) : 1 //We want to keep this fixed so that applying the scalar doesn't heal or harm, relatively.
 		var/new_health = current_health_percent * new_max_health //What we're aiming for
 		var/new_total_damage = new_max_health - new_health
 		var/current_total_damage = maxHealth - health
@@ -145,6 +152,7 @@
 
 	maxHealth = new_max_health
 	updatehealth()
+	set_stun_health(new_stun_damage)
 
 /mob/living/carbon/xenomorph/proc/generate_nicknumber()
 	//We don't have a nicknumber yet, assign one to stick with us
@@ -160,15 +168,11 @@
 //Since Xenos change names like they change shoes, we need somewhere to hammer in all those legos
 //We set their name first, then update their real_name AND their mind name
 /mob/living/carbon/xenomorph/proc/generate_name()
+	if(istype(xeno_caste, /datum/xeno_caste/puppet))
+		return
 	var/playtime_mins = client?.get_exp(xeno_caste.caste_name)
 	var/rank_name
 	var/prefix = "[hive.prefix][xeno_caste.upgrade_name ? "[xeno_caste.upgrade_name] " : ""]"
-	if(!client?.prefs.show_xeno_rank || !client)
-		name = prefix + "[xeno_caste.display_name] ([nicknumber])"
-		real_name = name
-		if(mind)
-			mind.name = name
-		return
 	switch(playtime_mins)
 		if(0 to 600)
 			rank_name = "Young"
@@ -182,6 +186,8 @@
 			rank_name = "Prime"
 		else
 			rank_name = "Young"
+	if(!client?.prefs.show_xeno_rank || !client)
+		rank_name = ""
 	name = prefix + "[rank_name ? "[rank_name] " : ""][xeno_caste.display_name][src == hive.living_xeno_ruler ? " Regnant" :""] ([nicknumber])"
 
 	//Update linked data so they show up properly
@@ -260,11 +266,11 @@
 	. += xeno_caste.caste_desc
 	. += "<span class='notice'>"
 
+	if(handcuffed)
+		. += "\n[span_info("[p_they(TRUE)] is restrained! Use your <b>left</b> hand to <b>help</b> them free.")]"
+
 	if(xeno_desc)
 		. += "\n<span class='info'>[span_collapsible("Flavor Text", "[xeno_desc]")]</span>"
-
-	if(pose)
-		. += "\n[span_info(span_collapsible("Temporary Flavor Text", "[pose]"))]"
 
 	if(xenoprofile_pic)
 		. += "<span class='info'><img src=[xenoprofile_pic] width=300 height=350/></span>"
@@ -335,6 +341,8 @@
 		return FALSE //The target we're trying to pull must be adjacent and anchored.
 	if(status_flags & INCORPOREAL || AM.status_flags & INCORPOREAL)
 		return FALSE //Incorporeal things can't grab or be grabbed.
+	if(handcuffed)
+		return FALSE
 	if(AM.anchored)
 		return FALSE //We cannot grab anchored items.
 	if(!isliving(AM) && !SSresinshaping.active && AM.drag_windup && !do_after(src, AM.drag_windup, NONE, AM, BUSY_ICON_HOSTILE, BUSY_ICON_HOSTILE, extra_checks = CALLBACK(src, TYPE_PROC_REF(/mob, break_do_after_checks), list("health" = src.health))))
@@ -342,9 +350,9 @@
 	var/mob/living/L = AM
 	if(L.buckled)
 		return FALSE //to stop xeno from pulling marines on roller beds.
-	if(ishuman(L))
+	if(ishuman(L) && !ismonkey(L))
 		if(L.stat == DEAD && !(SSticker.mode.round_type_flags & MODE_XENO_GRAB_DEAD_ALLOWED)) // Can't drag dead human bodies.
-			to_chat(usr,span_xenowarning("This looks gross, better not touch it."))
+			to_chat(usr,span_xenowarning("We have no reason to do that."))
 			return FALSE
 		if(pulling != L)
 			pull_speed += XENO_DEADHUMAN_DRAG_SLOWDOWN
@@ -358,7 +366,7 @@
 	return ..()
 
 /mob/living/carbon/xenomorph/pull_response(mob/puller)
-	if(incapacitated() || HAS_TRAIT(src, TRAIT_FLOORED)) // If the Xeno is incapacitated, don't fight back against a grab/pull
+	if(incapacitated() || HAS_TRAIT(src, TRAIT_FLOORED) || handcuffed) // If the Xeno is incapacitated, don't fight back against a grab/pull
 		return TRUE
 	if(!ishuman(puller))
 		return TRUE
@@ -393,6 +401,8 @@
 	hud_to_add = GLOB.huds[DATA_HUD_MEDICAL_PAIN]
 	hud_to_add.add_hud_to(src)
 	hud_to_add = GLOB.huds[DATA_HUD_XENO_DEBUFF]
+	hud_to_add.add_hud_to(src)
+	hud_to_add = GLOB.huds[DATA_HUD_XENO_HUMAN_SHARED]
 	hud_to_add.add_hud_to(src)
 
 /mob/living/carbon/xenomorph/get_permeability_protection()
@@ -444,7 +454,7 @@
 
 
 /mob/living/carbon/xenomorph/Moved(atom/old_loc, movement_dir)
-	if(xeno_flags & XENO_ZOOMED)
+	if((xeno_flags & XENO_ZOOMED) && !(xeno_flags & XENO_CAN_MOVE_ZOOMED))
 		zoom_out()
 	handle_weeds_on_movement()
 	return ..()
@@ -594,7 +604,7 @@
 		return
 	buckle_mob(target, TRUE, TRUE, 90, 1, 1)
 
-/mob/living/carbon/xenomorph/MouseDrop_T(atom/dropping, mob/user)
+/mob/living/carbon/xenomorph/MouseDrop_T(atom/dropping, mob/user, params)
 	. = ..()
 	if(isxeno(user))
 		var/mob/living/carbon/xenomorph/xeno_user = user
@@ -606,7 +616,7 @@
 
 /// Updates the xenomorph's light based on their stored corrosive and neurotoxin ammo. The range, power, and color scales accordingly. More corrosive ammo = more green color; more neurotoxin ammo = more yellow color.
 /mob/living/carbon/xenomorph/proc/update_ammo_glow()
-	var/current_ammo = corrosive_ammo + neurotoxin_ammo
+	var/current_ammo = corrosive_ammo + neurotoxin_ammo + aphro_ammo
 	var/ammo_glow = BOILER_LUMINOSITY_AMMO * current_ammo
 	var/glow = CEILING(BOILER_LUMINOSITY_BASE + ammo_glow, 1)
 	var/color = BOILER_LUMINOSITY_BASE_COLOR
@@ -624,3 +634,14 @@
 	// Light from being on fire is not from us, but from an overlay attached to us. Therefore, we don't need to worry about it.
 	set_light_range_power_color(0, 0)
 	set_light_on(FALSE)
+
+/// Gives the xeno hive abilities from the hive's ability list
+/mob/living/carbon/xenomorph/proc/sync_hive_abilities()
+	if(hive)
+		for(var/datum/action/ability/hive_ability AS in hive.hive_abilities)
+			var/ability_type = ispath(hive_ability) ? hive_ability : hive_ability.type
+			if(actions_by_path[ability_type])
+				continue
+			if(((hive_ability.parent_type) in xeno_caste.actions) && !hive_ability.cooldown_duration)
+				continue
+			add_ability(hive_ability)
